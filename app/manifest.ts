@@ -6,7 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: 'AquaDaddy App',
     description: 'All about aquariumistics',
     start_url: '/',
-    display: 'standalone',
+    display: 'fullscreen',
     background_color: '#00ebff',
     theme_color: '#00ebff ',
     icons: [
