@@ -1,0 +1,9 @@
+{
+    "name": "AquaDaddy Application",
+    "short_name": "AquaDaddy App",
+    "description": "All about aquariumistics",
+    "start_url": "/",
+    "background_color": "00EBFF",
+    "theme_color": "00EBFF"
+    
+  }
