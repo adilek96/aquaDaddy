@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Bebas_Neue } from "next/font/google";
+import { Montserrat } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -7,7 +9,6 @@ const inter = Inter({ subsets: ["latin"] });
 import { Libre_Franklin } from "next/font/google";
 import { Chivo } from "next/font/google";
 import { Header } from "@/components/component/header";
-import { Bg } from "@/components/animations/bg";
 
 const libre_franklin = Libre_Franklin({
   subsets: ["latin"],
@@ -16,6 +17,20 @@ const libre_franklin = Libre_Franklin({
 
 const chivo = Chivo({
   subsets: ["latin"],
+  display: "swap",
+});
+
+const bebas = Bebas_Neue({
+  weight: "400",
+  subsets: ["latin"],
+  style: "normal",
+  display: "swap",
+  variable: "--font-bebas",
+});
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  style: "normal",
   display: "swap",
 });
 
@@ -31,7 +46,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${libre_franklin.className}  `}>
+      <body
+        className={`${libre_franklin.className} ${bebas.variable} ${montserrat.className}  `}
+      >
         <Header />
         {children}
       </body>

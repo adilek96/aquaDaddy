@@ -15,10 +15,17 @@ import { useEffect, useRef, useState } from "react";
 export function Bg() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [mouseMovement, setMouseMovement] = useState({ x: 0, y: 0 });
+  // const [ystate, setYstate] = useState(false);
+  // const [randomNum, setRandomNum] = useState(0);
+
+  // function getRandomNumber() {
+  //   // Генерируем случайное целое число от 0 до 10
+  //   setYstate(!ystate);
+  //   setRandomNum(Math.floor(Math.random() * 5));
+  // }
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
-      // console.log((event.clientX / maxWidth) * 100);
       setMousePosition({
         x: event.clientX,
         y: event.clientY,
@@ -29,13 +36,33 @@ export function Bg() {
       });
     };
 
-    document.addEventListener("mousemove", handleMouseMove);
+    const handleTouchMove = (event: TouchEvent) => {
+      if (event.touches.length > 0) {
+        const touch = event.touches[0];
+        const newX = touch.clientX;
+        const newY = touch.clientY;
 
-    // Очистка обработчика при размонтировании компонента
+        setMouseMovement({
+          x: newX - mousePosition.x,
+          y: newY - mousePosition.y,
+        });
+
+        setMousePosition({
+          x: newX,
+          y: newY,
+        });
+      }
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("touchmove", handleTouchMove);
+
+    // Очистка обработчиков при размонтировании компонента
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("touchmove", handleTouchMove);
     };
-  }, []);
+  }, [mousePosition]);
 
   const { rive, RiveComponent } = useRive({
     src: "/2.riv",
@@ -55,6 +82,7 @@ export function Bg() {
   useEffect(() => {
     const maxWidth = window.innerWidth;
     const maxHeight = window.innerHeight;
+
     if (moveToX) {
       moveToX.value = mouseMovement.x;
     }
@@ -67,7 +95,13 @@ export function Bg() {
     if (numY) {
       numY.value = 100 - (mousePosition.y / maxHeight) * 100;
     }
-  }, [mouseMovement.x, moveTo, numX, numY, mousePosition]);
+  }, [mouseMovement, numX, numY, mousePosition]);
+
+  // useEffect(() => {
+  //   // Функция, которая будет выполняться через определенные интервалы
+  //   setInterval(getRandomNumber, 10000);
+  //   // Очистка интервала при размонтировании компонента
+  // }, []);
 
   return (
     <RiveComponent

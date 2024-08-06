@@ -38,7 +38,7 @@ export function MainPage() {
     <div className="flex justify-center items-center h-[100vh] w-[100vw]  ">
       <div>
         <div className="grid grid-cols-1 sm:grid-cols-2 grid-flow-row-dense md:grid-cols-3 gap-8 p-4 sm:p-6 md:p-8  ">
-          <Card className="bg-primary/50  backdrop-blur-3xl text-primary-foreground hover:bg-green-500/50  transition-all duration-300 hover:text-secondary-foregroundcol-span-1 sm:col-span-1 md:col-span-3  hover:shadow-xl hover:shadow-black shadow-md shadow-black   hover:-translate-y-1 ">
+          <Card className="bg-[00EBFF]  backdrop-blur-md text-secondary-foreground hover:bg-green-300/50  transition-all duration-300   hover:text-secondary-foregroundcol-span-1 sm:col-span-1 md:col-span-3  border border-muted   hover:-translate-y-1   ">
             <CardHeader>
               <CardTitle>Aquariums</CardTitle>
               <CardDescription>
@@ -58,7 +58,7 @@ export function MainPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-secondary/40  backdrop-blur-2xl h-full text-secondary-foreground hover:bg-green-500/60  transition-all duration-300 col-span-1 sm:col-span-2  md:col-span-2 hover:shadow-xl hover:shadow-black shadow-md shadow-black  hover:translate-y-1 hover:-translate-x-1 ">
+          <Card className="bg-[00EBFF]  backdrop-blur-md h-full text-secondary-foreground hover:bg-green-300/60  transition-all duration-300 col-span-1 sm:col-span-2  md:col-span-2 border border-mutted  hover:translate-y-1 hover:-translate-x-1 ">
             <CardHeader>
               <CardTitle>Wiki</CardTitle>
               <CardDescription>
@@ -78,7 +78,7 @@ export function MainPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-secondary/40  backdrop-blur-3xl h-full text-secondary-foreground hover:bg-green-500/60 transition-all duration-300 col-span-1 sm:col-span-1 md:col-span-1 row-start-2 sm:row-start-1 md:row-start-1 hover:shadow-xl  hover:shadow-black shadow-md shadow-black   hover:translate-y-1 hover:translate-x-1">
+          <Card className="bg-[00EBFF]  backdrop-blur-md  h-full text-secondary-foreground hover:bg-green-300/60 transition-all duration-300 col-span-1 sm:col-span-1 md:col-span-1 row-start-2 sm:row-start-1 md:row-start-1 border border-mutted   hover:translate-y-1 hover:translate-x-1">
             <CardHeader>
               <CardTitle>Discovery</CardTitle>
               <CardDescription>
@@ -185,3 +185,5 @@ function XIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+// hover:shadow-xl hover:shadow-black shadow-md shadow-black
