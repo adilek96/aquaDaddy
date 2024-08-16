@@ -3,5 +3,18 @@
       "discovery-title": "Сообщество",
       "aquariums-title": "Мои аквариумы",
       "wiki-title": "Энциклопедия"
+    },
+    "Sign":{
+      "signIn": "Вход",
+      "signUp": "Регистрация",
+      "signIn-Message":"Войдите в ваш аккаунт",
+      "signUp-Message":"Создайте новый аккаунт",
+      "signIn-Message-bottom":"Нет аакаунта?",
+      "signUp-Message-bottom":"Есть аккаунт?",
+      "username": "Имя пользователя",
+      "email": "Электронная почта",
+      "password": "Пароль",
+      "repeat-password": "Повтор пароля"
+
     }
   }

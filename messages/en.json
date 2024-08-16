@@ -3,5 +3,18 @@
       "discovery-title": "Discovery",
       "aquariums-title": "My aquariums",
       "wiki-title": "Encyclopedia"
+    },
+    "Sign":{
+      "signIn": "SignIn",
+      "signUp": "SignUp",
+      "signIn-Message":"LogIn to your account",
+      "signUp-Message":"Create a new account to get started",
+      "signIn-Message-bottom":"You Don't have an anaccount?",
+      "signUp-Message-bottom":"Have an account?",
+      "username": "Username",
+      "email": "Email",
+      "password": "Password",
+      "repeat-password": "Repeat Password"
+
     }
   }
