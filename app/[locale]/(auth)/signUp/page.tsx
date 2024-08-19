@@ -12,7 +12,7 @@ export default async function SignUp() {
         <p>{t("signUp-Message-bottom")}</p>
 
         <Link href={"signIn"} className="underline text-green-600">
-          {t("signUp")}
+          {t("signIn")}
         </Link>
       </div>
     </>
