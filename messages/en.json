@@ -14,7 +14,11 @@
       "username": "Username",
       "email": "Email",
       "password": "Password",
-      "repeat-password": "Repeat Password"
+      "repeat-password": "Repeat Password",
+      "username-placeholder": "Enter your username",
+      "email-placeholder": "Enter your email",
+      "password-placeholder": "Enter your password",
+      "repeat-password-placeholder": "Repeat your password"
 
     }
   }

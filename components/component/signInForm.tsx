@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+"use client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -10,47 +9,59 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { AlertCircle } from "lucide-react";
+import { StrapiErrors } from "../helpers/StrapiErrors";
+import { SubmitButton } from "../ui/submitButton";
+import { useTranslations } from "next-intl";
+import { useFormState } from "react-dom";
+import { signInAction } from "@/app/actions/signInAction";
+import { ZodErrors } from "../helpers/ZodErrors";
 
-export default function SignInForm({ t }: any) {
+const INITIAL_STATE = {
+  data: null,
+  zodErrors: null,
+  strapiErrors: null,
+  message: null,
+};
+
+export default function SignInForm() {
+  const [formState, formAction] = useFormState(signInAction, INITIAL_STATE);
+  const t = useTranslations("Sign");
   return (
     <Card className="w-full max-w-md mx-auto bg-[00EBFF]  backdrop-blur-md border border-muted z-40 mt-20">
       <CardHeader>
         <CardTitle>{t("signIn")}</CardTitle>
         <CardDescription>{t("signIn-Message")}</CardDescription>
       </CardHeader>
-      <form>
+      <form action={formAction}>
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">{t("email")}</Label>
             <Input
               id="email"
               type="email"
-              placeholder="Enter your email"
+              placeholder={t("email-placeholder")}
               required
             />
+            <ZodErrors error={formState?.zodErrors?.email} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">{t("password")}</Label>
             <Input
               id="password"
               type="password"
-              placeholder="Enter your password"
+              placeholder={t("password-placeholder")}
               required
             />
+            <ZodErrors error={formState?.zodErrors?.password} />
           </div>
-
-          {/* {error && (
-            <div className="text-destructive flex items-center space-x-2">
-              <AlertCircle className="h-4 w-4" />
-              <span className="text-sm">{error}</span>
-            </div>
-          )} */}
         </CardContent>
-        <CardFooter>
-          <Button type="submit" className="w-full">
-            {t("signIn")}
-          </Button>
+        <CardFooter className="flex flex-col">
+          <SubmitButton
+            className="w-full"
+            text={t("signIn")}
+            loadingText="Loading"
+          />
+          <StrapiErrors error={formState?.strapiErrors?.message} />
         </CardFooter>
       </form>
     </Card>

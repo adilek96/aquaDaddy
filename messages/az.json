@@ -14,7 +14,12 @@
       "username": "İstifadəçi adı",
       "email": "E-poçt",
       "password": "Şifrə",
-      "repeat-password": "Şifrəni təkrarlayın"
+      "repeat-password": "Şifrəni təkrarlayın",
+      "username-placeholder": "İstifadəçi adınızı daxil edin",
+      "email-placeholder": "E-poçtunuzu daxil edin",
+      "password-placeholder": "Şifrənizi daxil edin",
+      "repeat-password-placeholder": "Şifrənizi təkrarlayın"
+
 
     }
   }

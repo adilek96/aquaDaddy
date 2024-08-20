@@ -1,9 +1,13 @@
 import { MainPage } from "@/components/component/main-page";
 
-export default function Home() {
+export default function Home({
+  params: { locale },
+}: {
+  params: { locale: string };
+}) {
   return (
     <div className="z-40">
-      <MainPage />
+      <MainPage locale={locale} />
     </div>
   );
 }

@@ -12,7 +12,7 @@ import { usePathname } from "next/navigation";
 
 export default function LanguageToggle() {
   const pathName = usePathname().slice(4);
-  console.log(pathName);
+
   return (
     <div className="flex items-center gap-4">
       <DropdownMenu>

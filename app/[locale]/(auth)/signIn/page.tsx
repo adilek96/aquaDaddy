@@ -7,7 +7,7 @@ export default async function SignIn() {
   const t = await getTranslations("Sign");
   return (
     <>
-      <SignInForm t={t} />
+      <SignInForm />
       <div className="font-bold flex flex-row gap-1 mt-5">
         <p>{t("signIn-Message-bottom")}</p>
         <Link href={"signUp"} className="underline text-green-600">

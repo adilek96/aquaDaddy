@@ -1,6 +1,6 @@
 "use server"
 import { z } from "zod";
-import { registerUserService } from "@/app/services/auth-service"
+import { loginUserService} from "@/app/services/auth-service"
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -14,34 +14,28 @@ const config = {
 };
 
 
-const schemaRegister = z.object({
-    username: z.string().min(3).max(20, {
-      message: "Username must be between 3 and 20 characters",
-    }),
+const schemaLogIn = z.object({
+ 
     password: z.string().min(6).max(100, {
       message: "Password must be between 6 and 100 characters",
     }),
-    repeatPassword: z.string().min(6).max(100, {
-        message: "Password must be between 6 and 100 characters",
-      }),
+   
     email: z.string().email({
       message: "Please enter a valid email address",
     }),
-  }).refine((data) => data.password === data.repeatPassword, {
-    
-    message: "Passwords don't match",
-    path: ['repeatPassword']
-  });
+  })
 
 
-export async function signUpAction(prevState: any, formData: FormData) {
+export async function signInAction(prevState: any, formData: FormData) {
 
-    const validatedFields = schemaRegister.safeParse({
-        username: formData.get("username"),
+    const validatedFields = schemaLogIn.safeParse({
+       
         password: formData.get("password"),
         email: formData.get("email"),
-        repeatPassword: formData.get("repeatPassword")
+        
     })
+
+    console.log(formData.get("email"))
 
 
     if(!validatedFields.success){
@@ -54,7 +48,7 @@ export async function signUpAction(prevState: any, formData: FormData) {
 
  
   
-    const responseData = await registerUserService(validatedFields.data);
+    const responseData = await loginUserService(validatedFields.data);
 
     if (!responseData) {
       return {
@@ -70,7 +64,7 @@ export async function signUpAction(prevState: any, formData: FormData) {
         ...prevState,
         strapiErrors: responseData.error,
         zodErrors: null,
-        message: "Failed to Register.",
+        message: "Failed to LogIn.",
       };
     }
 

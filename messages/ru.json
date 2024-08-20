@@ -14,7 +14,12 @@
       "username": "Имя пользователя",
       "email": "Электронная почта",
       "password": "Пароль",
-      "repeat-password": "Повтор пароля"
+      "repeat-password": "Повтор пароля",
+      "username-placeholder": "Введите свое имя пользователя",
+      "email-placeholder": "Введите адрес электронной почты",
+      "password-placeholder": "Введите ваш пароль",
+      "repeat-password-placeholder": "Повторите свой пароль"
+
 
     }
   }
