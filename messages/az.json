@@ -7,10 +7,14 @@
     "Sign":{
       "signIn": "Giriş",
       "signUp": "Qeydiyyat",
+      "forgot": "Şifrənin bərpası",
+      "reset" : "Şifrənin sıfırlanması",
+      "reset-Message" : "Yeni şifrə yaradın",
       "signIn-Message":"Hesabınıza daxil olun",
       "signUp-Message":"Başlamaq üçün yeni hesab yaradın",
       "signIn-Message-bottom":"Hesabınız yoxdur?",
       "signUp-Message-bottom":"Hesabınız var?",
+      "forgot-Message-bottom":"Yenidən daxil olmağa çalışın.",
       "username": "İstifadəçi adı",
       "email": "E-poçt",
       "password": "Şifrə",
@@ -19,7 +23,12 @@
       "email-placeholder": "E-poçtunuzu daxil edin",
       "password-placeholder": "Şifrənizi daxil edin",
       "repeat-password-placeholder": "Şifrənizi təkrarlayın"
-
-
+      
+    },
+    "Instruction": {
+      "title": "Təlimatlar göndərildi",
+      "message" :"Göstərdiyiniz e-poçt ünvanına təlimatlar göndərmişik. Zəhmət olmasa e-poçtunuzu yoxlayın və təlimatlarımıza əməl edin.",
+      "message-helper": "E-poçtu almasanız, 'Spam' qovluğunuzu yoxlayın və ya əlavə yardım üçün bizimlə əlaqə saxlayın.",
+      "button": "Əsas səhifə"
     }
   }

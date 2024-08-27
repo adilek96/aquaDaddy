@@ -17,13 +17,15 @@ const config = {
 const schemaLogIn = z.object({
  
     password: z.string().min(6).max(100, {
-      message: "Password must be between 6 and 100 characters",
+      message: "415-2",
+      
     }),
    
-    email: z.string().email({
-      message: "Please enter a valid email address",
+    identifier: z.string().email({
+      message: "415-3",
     }),
   })
+  
 
 
 export async function signInAction(prevState: any, formData: FormData) {
@@ -31,31 +33,33 @@ export async function signInAction(prevState: any, formData: FormData) {
     const validatedFields = schemaLogIn.safeParse({
        
         password: formData.get("password"),
-        email: formData.get("email"),
+        identifier: formData.get("email"),
         
     })
+   
+    
 
-    console.log(formData.get("email"))
 
 
     if(!validatedFields.success){
         return {
             ...prevState,
             zodErrors: validatedFields.error.flatten().fieldErrors,
-            message: "Missing Fields. Failed to Register"
+            message: "415-5"
         }
     }
 
  
+    
   
     const responseData = await loginUserService(validatedFields.data);
-
+    
     if (!responseData) {
       return {
         ...prevState,
         strapiErrors: null,
         zodErrors: null,
-        message: "Ops! Something went wrong. Please try again.",
+        message: "415-6",
       };
     }
   
@@ -64,7 +68,7 @@ export async function signInAction(prevState: any, formData: FormData) {
         ...prevState,
         strapiErrors: responseData.error,
         zodErrors: null,
-        message: "Failed to LogIn.",
+        message: "415-8",
       };
     }
 

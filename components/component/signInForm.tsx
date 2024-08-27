@@ -15,6 +15,7 @@ import { useTranslations } from "next-intl";
 import { useFormState } from "react-dom";
 import { signInAction } from "@/app/actions/signInAction";
 import { ZodErrors } from "../helpers/ZodErrors";
+import Link from "next/link";
 
 const INITIAL_STATE = {
   data: null,
@@ -23,9 +24,11 @@ const INITIAL_STATE = {
   message: null,
 };
 
-export default function SignInForm() {
+export default function SignInForm({ locale }: { locale: string }) {
   const [formState, formAction] = useFormState(signInAction, INITIAL_STATE);
   const t = useTranslations("Sign");
+  console.log(formState);
+
   return (
     <Card className="w-full max-w-md mx-auto bg-[00EBFF]  backdrop-blur-md border border-muted z-40 mt-20">
       <CardHeader>
@@ -38,6 +41,7 @@ export default function SignInForm() {
             <Label htmlFor="email">{t("email")}</Label>
             <Input
               id="email"
+              name="email"
               type="email"
               placeholder={t("email-placeholder")}
               required
@@ -48,6 +52,7 @@ export default function SignInForm() {
             <Label htmlFor="password">{t("password")}</Label>
             <Input
               id="password"
+              name="password"
               type="password"
               placeholder={t("password-placeholder")}
               required
@@ -56,6 +61,14 @@ export default function SignInForm() {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col">
+          <div className="flex justify-end w-full mb-3">
+            <Link
+              className="hover:text-blue-400"
+              href={`/${locale}/forgot-password`}
+            >
+              Forgot password
+            </Link>
+          </div>
           <SubmitButton
             className="w-full"
             text={t("signIn")}

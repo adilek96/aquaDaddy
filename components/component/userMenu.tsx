@@ -10,9 +10,11 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
 import { SVGProps } from "react";
+import LogOutButton from "../ui/logOutButton";
 
 export async function UserMenu({ locale }: { locale: string }) {
   const userPromise = await getUserMeLoader();
+
   if (!userPromise.ok) {
     return (
       <DropdownMenu>
@@ -75,9 +77,9 @@ export async function UserMenu({ locale }: { locale: string }) {
             <AvatarFallback>JD</AvatarFallback>
           </Avatar>
           <div className="grid gap-0.5 leading-none">
-            <div className="font-semibold">John Doe</div>
+            <div className="font-semibold">{userPromise.data.username}</div>
             <div className="text-sm text-muted-foreground">
-              john@example.com
+              {userPromise.data.email}
             </div>
           </div>
         </div>
@@ -90,10 +92,7 @@ export async function UserMenu({ locale }: { locale: string }) {
         </DropdownMenuItem>
 
         <DropdownMenuItem>
-          <Link href="#" className="flex items-center gap-2" prefetch={false}>
-            <div className="h-4 w-4" />
-            <span>Sign out</span>
-          </Link>
+          <LogOutButton />
         </DropdownMenuItem>
         <DropdownMenuSeparator />
       </DropdownMenuContent>

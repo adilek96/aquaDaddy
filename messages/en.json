@@ -7,10 +7,14 @@
     "Sign":{
       "signIn": "SignIn",
       "signUp": "SignUp",
+      "forgot": "Password recovery",
+      "reset" : "Reset password",
+      "reset-Message" : "Come up with a new password",
       "signIn-Message":"LogIn to your account",
       "signUp-Message":"Create a new account to get started",
-      "signIn-Message-bottom":"You Don't have an anaccount?",
+      "signIn-Message-bottom":"You Don't have an account?",
       "signUp-Message-bottom":"Have an account?",
+      "forgot-Message-bottom":"Try to log in again.",
       "username": "Username",
       "email": "Email",
       "password": "Password",
@@ -19,6 +23,28 @@
       "email-placeholder": "Enter your email",
       "password-placeholder": "Enter your password",
       "repeat-password-placeholder": "Repeat your password"
+      
+
+    },
+    "Instruction": {
+      "title": "Instructions have been sent",
+      "message" :"We have sent instructions to the email address you provided. Please check your email and follow our instructions.",
+      "message-helper": "If you did not receive the email, please check your spam folder or contact our support for further assistance.",
+      "button": "Home page"
+    },
+    "ZodErrors":{
+      "415-1" : "Username must be between 3 and 20 characters",
+      "415-2" : "Password must be between 6 and 100 characters",
+      "415-3" : "Please enter a valid email address",
+      "415-4" : "Passwords don't match",
+      "415-5" : "Missing Fields. Failed to Register"
+    },
+    "ValidErrors":{
+      "415-6" : "Ops! Something went wrong. Please try again.",
+      "415-7" : "Failed to Register.",
+      "415-8" : "Failed to LogIn.",
+      "415-9" : "Failed to Reset.",
+      "415-10": "Failed operation."
 
     }
   }
