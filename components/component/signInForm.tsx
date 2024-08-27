@@ -27,7 +27,6 @@ const INITIAL_STATE = {
 export default function SignInForm({ locale }: { locale: string }) {
   const [formState, formAction] = useFormState(signInAction, INITIAL_STATE);
   const t = useTranslations("Sign");
-  console.log(formState);
 
   return (
     <Card className="w-full max-w-md mx-auto bg-[00EBFF]  backdrop-blur-md border border-muted z-40 mt-20">
