@@ -4,28 +4,28 @@ import { registerUserService } from "@/app/services/auth-service"
 
 
 
-// const config = {
-//   maxAge: 60 * 60 * 24 * 7, // 1 week
-//   path: "/",
-//   domain: process.env.HOST ?? "localhost",
-//   httpOnly: true,
-//   secure: process.env.NODE_ENV === "production",
-// };
-
-
 const schemaRegister = z.object({
-    username: z.string().min(3).max(20, {
+    username: z.string().min(3, {
+      message: "415-7"
+    }).max(20, {
       message: "415-1",
     }),
-    password: z.string().min(6).max(100, {
+    password: z.string().min(6, {
+      message: "415-6"
+    }).max(100, {
       message: "415-2",
     }),
-    repeatPassword: z.string().min(6).max(100, {
-        message: "415-2",
-      }),
+
+    repeatPassword: z.string().min(6, {
+      message: "415-6"
+    }).max(100, {
+      message: "415-2",
+    }),
+
     email: z.string().email({
       message: "415-3",
     }),
+
   }).refine((data) => data.password === data.repeatPassword, {
     
     message: "415-4",

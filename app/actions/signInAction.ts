@@ -16,7 +16,9 @@ const config = {
 
 const schemaLogIn = z.object({
  
-    password: z.string().min(6).max(100, {
+    password: z.string().min(6, {
+      message: "415-6"
+    }).max(100, {
       message: "415-2",
       
     }),

@@ -30,5 +30,22 @@
       "message" :"Göstərdiyiniz e-poçt ünvanına təlimatlar göndərmişik. Zəhmət olmasa e-poçtunuzu yoxlayın və təlimatlarımıza əməl edin.",
       "message-helper": "E-poçtu almasanız, 'Spam' qovluğunuzu yoxlayın və ya əlavə yardım üçün bizimlə əlaqə saxlayın.",
       "button": "Əsas səhifə"
+    },
+    "ZodErrors":{
+      "415-1" : "İstifadəçi adı 3 ilə 20 simvol arasında olmalıdır",
+      "415-2" : "Şifrə 6 ilə 100 simvol arasında olmalıdır",
+      "415-3" : "Mövcüt olan e-poçt ünvanı daxil edin",
+      "415-4" : "Şifrələr uyğun gəlmir",
+      "415-5" : "Çatışmayan sahələr. Qeydiyyatdan keçmək alınmadı",
+      "415-6" : "Şifrənin uzunluğu minimum 6 simvoldur",
+      "415-7" : "Minimum ad uzunluğu 3 simvoldur"
+   
+    },
+    "ValidErrors":{
+      "415-6" : "Ops! Xəta baş verdi. Yenidən cəhd edin.",
+      "415-7" : "Qeydiyyatdan keçmək alınmadı..",
+      "415-8" : "Daxil olmaq alınmadı.",
+      "415-9" : "Sıfırlamaq alınmadı.",
+      "415-10": "Uğursuz əməliyyat."
     }
   }

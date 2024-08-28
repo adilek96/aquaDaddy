@@ -37,7 +37,10 @@
       "415-2" : "Password must be between 6 and 100 characters",
       "415-3" : "Please enter a valid email address",
       "415-4" : "Passwords don't match",
-      "415-5" : "Missing Fields. Failed to Register"
+      "415-5" : "Missing Fields. Failed to Register",
+      "415-6" : "Minimum password length is 6 characters",
+      "415-7" : "Minimum name length is 3 characters"
+   
     },
     "ValidErrors":{
       "415-6" : "Ops! Something went wrong. Please try again.",

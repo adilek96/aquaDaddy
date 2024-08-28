@@ -14,12 +14,17 @@ const config = {
 
 
 const schemaResetPassword = z.object({
-    password: z.string().min(6).max(100, {
-        message: "415.2",
+      password: z.string().min(6, {
+      message: "415-6"
+      }).max(100, {
+      message: "415-2",
       }),
-      passwordConfirmation: z.string().min(6).max(100, {
-        message: "415.2",
-    }),
+
+      passwordConfirmation: z.string().min(6, {
+        message: "415-6"
+      }).max(100, {
+        message: "415-2",
+      }),
     code: z.string().min(1, {
         message: "Please get link in your email"
       }),
