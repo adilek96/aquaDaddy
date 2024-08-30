@@ -3,7 +3,7 @@ import { logOutAction } from "@/app/actions/logOutAction";
 import Link from "next/link";
 import React, { SVGProps } from "react";
 
-export default function LogOutButton() {
+export default function LogOutButton({ text }: { text: string }) {
   return (
     <Link
       href="/"
@@ -12,7 +12,7 @@ export default function LogOutButton() {
       prefetch={false}
     >
       <SignOut className="h-4 w-4" />
-      <span>Log out</span>
+      <span>{text}</span>
     </Link>
   );
 }
@@ -33,9 +33,9 @@ function SignOut(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
     >
       <path
         stroke="currentColor"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
         d="M16 12H4m12 0-4 4m4-4-4-4m3-4h2a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-2"
       />
     </svg>

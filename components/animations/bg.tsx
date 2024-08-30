@@ -1,8 +1,5 @@
 "use client";
 import { Fit } from "@rive-app/canvas";
-// import Rive from "@rive-app/react-canvas";
-
-// export const Bg = () => <Rive src="/2.riv" stateMachines="State Machine 1" />;
 
 import {
   Alignment,
@@ -15,14 +12,6 @@ import { useEffect, useRef, useState } from "react";
 export function Bg() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [mouseMovement, setMouseMovement] = useState({ x: 0, y: 0 });
-  // const [ystate, setYstate] = useState(false);
-  // const [randomNum, setRandomNum] = useState(0);
-
-  // function getRandomNumber() {
-  //   // Генерируем случайное целое число от 0 до 10
-  //   setYstate(!ystate);
-  //   setRandomNum(Math.floor(Math.random() * 5));
-  // }
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {

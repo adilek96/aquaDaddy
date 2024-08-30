@@ -49,5 +49,17 @@
       "415-9" : "Failed to Reset.",
       "415-10": "Failed operation."
 
+    },
+    "Settings": {
+      "title": "Settings",
+      "theme": "Switch theme",
+      "animate": "On/Off animation"
+    },
+    "Header": {
+      "settings": "Settings",
+      "signIn": "SignIn",
+      "logout": "Log out",
+      "profile": "Profile"
     }
+   
   }

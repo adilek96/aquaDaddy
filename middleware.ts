@@ -10,9 +10,11 @@ const intlMiddleware = createMiddleware({
 });
 
 export async function middleware(request: NextRequest) {
+
   // Запускаем два промиса параллельно: интернационализация и проверка пользователя
   const intlPromise = intlMiddleware(request); // Промис для обработки локализации
   const userPromise = getUserMeLoader(); // Промис для получения пользователя
+  
 
   const [intlResponse, user] = await Promise.all([intlPromise, userPromise]);
 
@@ -20,16 +22,19 @@ export async function middleware(request: NextRequest) {
   if (intlResponse) {
 
   const currentPath = request.nextUrl.pathname;
+  
 
   // Проверяем аутентификацию для нужных маршрутов
   if ((currentPath.substring(4).startsWith("myTanks") || currentPath.substring(4).startsWith("profile")) && user.ok === false) {
     return NextResponse.redirect(new URL(`${currentPath.substring(0, 4)}signIn`, request.url));
   }
-  if ((currentPath.substring(4).startsWith("signIn") || currentPath.substring(4).startsWith("signUp")) && user.ok === true) {
+  if ((currentPath.substring(4).startsWith("signIn") || currentPath.substring(4).startsWith("signUp") || currentPath.substring(4).startsWith("reset-password") || currentPath.substring(4).startsWith("forgot-password")) && user.ok === true) {
     return NextResponse.redirect(new URL(`${currentPath.substring(0, 3)}`, request.url));
   }
+ 
 
   return NextResponse.next(), intlResponse;
+  
 }
 }
 

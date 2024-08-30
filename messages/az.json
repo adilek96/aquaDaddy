@@ -47,5 +47,16 @@
       "415-8" : "Daxil olmaq alınmadı.",
       "415-9" : "Sıfırlamaq alınmadı.",
       "415-10": "Uğursuz əməliyyat."
+    },
+    "Settings": {
+      "title": "Ayarlar",
+      "theme": "Qaranlıq rejimi",
+      "animate": "Animasıyanı söndür"
+    },
+    "Header": {
+      "settings": "Ayarlar",
+      "signIn": "Giriş",
+      "logout": "Çıxış",
+      "profile": "Profil"
     }
   }
