@@ -16,7 +16,7 @@ export async function MainPage({ locale }: { locale: any }) {
     <div className="flex justify-center items-center h-[100vh] w-[100vw]  ">
       <div>
         <div className="grid grid-cols-1 sm:grid-cols-2 grid-flow-row-dense md:grid-cols-3 gap-8 p-4 sm:p-6 md:p-8  ">
-          <Card className="bg-[00EBFF]  backdrop-blur-md text-secondary-foreground hover:bg-green-300/50  transition-all duration-300   hover:text-secondary-foregroundcol-span-1 sm:col-span-1 md:col-span-3  border border-muted   hover:-translate-y-1   ">
+          <Card className="bg-[#00EBFF]/5  backdrop-blur-md text-secondary-foreground hover:bg-green-300/50  transition-all duration-300   hover:text-secondary-foregroundcol-span-1 sm:col-span-1 md:col-span-3  border border-muted   hover:-translate-y-1   ">
             <CardHeader>
               <CardTitle>{t("aquariums-title")}</CardTitle>
               <CardDescription>
@@ -41,7 +41,7 @@ export async function MainPage({ locale }: { locale: any }) {
             </CardContent>
           </Card>
 
-          <Card className="bg-[00EBFF]  backdrop-blur-md h-full text-secondary-foreground hover:bg-green-300/60  transition-all duration-300 col-span-1 sm:col-span-2  md:col-span-2 border border-mutted  hover:translate-y-1 hover:-translate-x-1 ">
+          <Card className="bg-[#00EBFF]/5  backdrop-blur-md h-full text-secondary-foreground hover:bg-green-300/60  transition-all duration-300 col-span-1 sm:col-span-2  md:col-span-2 border border-mutted  hover:translate-y-1 hover:-translate-x-1 ">
             <CardHeader>
               <CardTitle>{t("wiki-title")}</CardTitle>
               <CardDescription>
@@ -61,7 +61,7 @@ export async function MainPage({ locale }: { locale: any }) {
             </CardContent>
           </Card>
 
-          <Card className="bg-[00EBFF]  backdrop-blur-md  h-full text-secondary-foreground hover:bg-green-300/60 transition-all duration-300 col-span-1 sm:col-span-1 md:col-span-1 row-start-2 sm:row-start-1 md:row-start-1 border border-mutted   hover:translate-y-1 hover:translate-x-1 ">
+          <Card className="bg-[#00EBFF]/5  backdrop-blur-md  h-full text-secondary-foreground hover:bg-green-300/60 transition-all duration-300 col-span-1 sm:col-span-1 md:col-span-1 row-start-2 sm:row-start-1 md:row-start-1 border border-mutted   hover:translate-y-1 hover:translate-x-1 ">
             <CardHeader>
               <CardTitle>{t("discovery-title")}</CardTitle>
               <CardDescription>

@@ -9,6 +9,7 @@ import { getMessages } from "next-intl/server";
 import { Bg } from "@/components/animations/bg";
 import { cookies } from "next/headers";
 import { ThemeProvider } from "next-themes";
+import Settings from "@/components/component/settings";
 
 const libre_franklin = Libre_Franklin({
   subsets: ["latin"],
@@ -68,6 +69,7 @@ export default async function RootLayout({
               >
                 <Bg />
               </div>
+              <Settings />
             </main>
           </NextIntlClientProvider>
         </ThemeProvider>

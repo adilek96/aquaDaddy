@@ -1,4 +1,5 @@
 "use client";
+import { useAnimationStore } from "@/store/animationStore";
 import { Fit } from "@rive-app/canvas";
 
 import {
@@ -12,6 +13,8 @@ import { useEffect, useRef, useState } from "react";
 export function Bg() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [mouseMovement, setMouseMovement] = useState({ x: 0, y: 0 });
+  const { isAnimate, setIsAnimate } = useAnimationStore();
+  const [animate, setAnimate] = useState<null | string>();
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
@@ -86,17 +89,13 @@ export function Bg() {
     }
   }, [mouseMovement, numX, numY, mousePosition]);
 
-  // useEffect(() => {
-  //   // Функция, которая будет выполняться через определенные интервалы
-  //   setInterval(getRandomNumber, 10000);
-  //   // Очистка интервала при размонтировании компонента
-  // }, []);
+  useEffect(() => {
+    setAnimate(localStorage.getItem("animate"));
+  }, [isAnimate]);
 
-  return (
-    <RiveComponent
-      style={{ height: "100vh", width: "100vw" }}
+  if (animate !== "true") {
+    return <div style={{ height: "100vh", width: "100vw" }}></div>;
+  }
 
-      // onMouseLeave={() => rive && rive.play}
-    />
-  );
+  return <RiveComponent style={{ height: "100vh", width: "100vw" }} />;
 }

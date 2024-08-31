@@ -18,7 +18,7 @@ export default function HomeButton() {
         className={`rounded-md ${pathname.length === 0 ? "hidden" : "flex"} `}
       >
         <ArrowIcon className="w-6 h-6 text-muted-foreground " />
-        <span className="sr-only">Select language</span>
+        <span className="sr-only">Back</span>
       </Button>
     );
   }
@@ -34,7 +34,7 @@ export default function HomeButton() {
           className="flex h-full w-full justify-center items-center"
         >
           <HomeIcon className="w-6 h-6 text-muted-foreground " />
-          <span className="sr-only">Select language</span>
+          <span className="sr-only">Home</span>
         </Link>
       </Button>
     </>
