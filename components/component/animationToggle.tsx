@@ -1,20 +1,31 @@
 "use client";
-import { SVGProps } from "react";
+import { SVGProps, useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { useAnimationStore } from "@/store/animationStore";
 
 export default function AnimationToggle() {
   const { isAnimate, setIsAnimate } = useAnimationStore();
 
+  useEffect(() => {
+    const initialStorageValue = localStorage.getItem("animate");
+
+    if (initialStorageValue === null || initialStorageValue === undefined) {
+      localStorage.setItem("animate", "true");
+      setIsAnimate(true);
+    } else {
+      setIsAnimate(initialStorageValue === "true");
+    }
+  }, [setIsAnimate]);
+
   const changeHandler = () => {
-    setIsAnimate();
-    localStorage.setItem("animate", `${isAnimate}`);
+    setIsAnimate(!isAnimate);
+    localStorage.setItem("animate", `${!isAnimate}`);
   };
 
   return (
     <Button variant="ghost" size="icon" onClick={() => changeHandler()}>
       <div className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full text-black hover:opacity-70 dark:text-white ">
-        {!isAnimate ? <Off /> : <On />}
+        {isAnimate ? <Off /> : <On />}
       </div>
       <span className="sr-only">Animation switch</span>
     </Button>

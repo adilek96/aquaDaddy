@@ -59,7 +59,7 @@ export default async function RootLayout({
           <NextIntlClientProvider messages={messages}>
             <main className="flex relative  w-full h-full min-h-screen flex-col items-center justify-center bg-transparent bg-opacity-0 ">
               <Header locale={locale} />
-              <div className="w-full h-full z-40 flex flex-col items-center justify-center">
+              <div className="w-full h-full z-40 flex flex-col items-center justify-center ">
                 {children}
               </div>
 

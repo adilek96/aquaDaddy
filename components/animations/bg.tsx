@@ -93,9 +93,9 @@ export function Bg() {
     setAnimate(localStorage.getItem("animate"));
   }, [isAnimate]);
 
-  if (animate !== "true") {
-    return <div style={{ height: "100vh", width: "100vw" }}></div>;
+  if (animate === "true") {
+    return <RiveComponent style={{ height: "100vh", width: "100vw" }} />;
   }
 
-  return <RiveComponent style={{ height: "100vh", width: "100vw" }} />;
+  return <div style={{ height: "100vh", width: "100vw" }}></div>;
 }

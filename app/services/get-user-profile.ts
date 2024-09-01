@@ -1,18 +1,22 @@
 import { getAuthToken } from "./get-token"
 import { getStrapiURL } from "@/lib/utils";
+import qs from "qs";
 
+const query = qs.stringify({
+  populate: { image: { fields: ["url", "alternativeText"] } },
+});
 
-export async function getUserMeLoader() {
+export async function getUserLoader() {
   const baseUrl = getStrapiURL();
-  const url = new URL("/api/users/me?populate[0]=photoUrl&populate[1]=url", baseUrl);
- 
-  
+
+  const url = new URL("/api/users/5", baseUrl);
+  url.search = query;
 
   const authToken = await getAuthToken();
   if (!authToken) return { ok: false, data: null, error: null };
 
   try {
-    const response = await fetch(url.href, {
+    const response = await fetch(query, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
