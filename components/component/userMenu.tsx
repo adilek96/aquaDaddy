@@ -19,7 +19,7 @@ import { getStrapiURL } from "@/lib/utils";
 export async function UserMenu({ locale }: { locale: string }) {
   const userPromise = await getUserMeLoader();
   const t = await getTranslations("Header");
-  const url = new URL(userPromise.data.photoUrl.url, getStrapiURL());
+  const url = new URL(userPromise.data.url, getStrapiURL());
 
   if (!userPromise.ok) {
     return (
@@ -30,7 +30,7 @@ export async function UserMenu({ locale }: { locale: string }) {
             size="icon"
             className="rounded-full bg-[00EBFF]  backdrop-blur-3xl "
           >
-            <Avatar className="h-8 w-8 flex justify-center items-center">
+            <Avatar className="h-8 w-8 rounded-full flex justify-center items-center">
               <UserIcon />
             </Avatar>
             <span className="sr-only">Toggle user menu</span>
@@ -79,7 +79,7 @@ export async function UserMenu({ locale }: { locale: string }) {
         className="bg-secondary/40  backdrop-blur-3xl "
       >
         <div className="flex items-center gap-2 p-2 cursor-default">
-          <Avatar className="h-8 w-8">
+          <Avatar className="h-8 w-8 rounded-full">
             {url !== undefined || url !== null ? (
               <AvatarImage src={String(url)} alt="Profile picture" />
             ) : (
@@ -97,7 +97,7 @@ export async function UserMenu({ locale }: { locale: string }) {
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           <Link
-            href="#"
+            href={`/${locale}/profile`}
             className="flex items-center gap-2 w-full"
             prefetch={false}
           >

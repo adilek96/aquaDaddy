@@ -39,7 +39,15 @@
       "415-4" : "Passwords don't match",
       "415-5" : "Missing Fields. Failed to Register",
       "415-6" : "Minimum password length is 6 characters",
-      "415-7" : "Minimum name length is 3 characters"
+      "415-7" : "Minimum name length is 3 characters",
+      "415-8" : "Please update or add new image",
+      "415-9" : "Max file size is 5MB",
+      "415-10": ".jpg, .jpeg, .png and .webp files are accepted",
+      "415-11": "Max name length is 100 characters",
+      "415-12": "Error when selecting a country",
+      "415-13": "Bio must be 400 characters or less"
+   
+
    
     },
     "ValidErrors":{
@@ -47,8 +55,11 @@
       "415-7" : "Failed to Register.",
       "415-8" : "Failed to LogIn.",
       "415-9" : "Failed to Reset.",
-      "415-10": "Failed operation."
-
+      "415-10": "Failed operation.",
+      "415-11": "Invalid Image",
+      "415-12": "Failed upload image to server",
+      "415-13": "Failed to update profile",
+      "415-14": "Failed fields"
     },
     "Settings": {
       "title": "Settings",
@@ -60,6 +71,16 @@
       "signIn": "SignIn",
       "logout": "Log out",
       "profile": "Profile"
+    },
+    "Profile": {
+      "title": "Edit Profile",
+      "subtitle": "Update your personal information",
+      "username": "Username",
+      "email": "Email",
+      "country": "Country",
+      "cauntryPlaceholder": "Select your country",
+      "bio": "Bio",
+      "button": "Save changes"
     }
    
   }

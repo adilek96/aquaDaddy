@@ -38,7 +38,13 @@
       "415-4" : "Şifrələr uyğun gəlmir",
       "415-5" : "Çatışmayan sahələr. Qeydiyyatdan keçmək alınmadı",
       "415-6" : "Şifrənin uzunluğu minimum 6 simvoldur",
-      "415-7" : "Minimum ad uzunluğu 3 simvoldur"
+      "415-7" : "Minimum ad uzunluğu 3 simvoldur",
+      "415-8" : "Zəhmət olmasa yeni şəkil əlavə edin",
+      "415-9" : "Maksimum fayl ölçüsü - 5 MB",
+      "415-10": "Qəbul edilə bilən fayl formatı: .jpg, .jpeg, .png and .webp",
+      "415-11": "Maksimal ad uzunluğu 100 simvoldur",
+      "415-12": "Ölkə seçimində xəta",
+      "415-13": "Bio 400 simvol və ya daha az olmalıdır"
    
     },
     "ValidErrors":{
@@ -46,7 +52,11 @@
       "415-7" : "Qeydiyyatdan keçmək alınmadı..",
       "415-8" : "Daxil olmaq alınmadı.",
       "415-9" : "Sıfırlamaq alınmadı.",
-      "415-10": "Uğursuz əməliyyat."
+      "415-10": "Uğursuz əməliyyat.",
+      "415-11": "Yanlış şəkil",
+      "415-12": "Şəkli serverə yükləmək alınmadı",
+      "415-13": "Profili yeniləmək alınmadı",
+      "415-14": "Uğursuz sahələr"
     },
     "Settings": {
       "title": "Ayarlar",
@@ -58,5 +68,15 @@
       "signIn": "Giriş",
       "logout": "Çıxış",
       "profile": "Profil"
+    },
+    "Profile": {
+      "title": "Profil",
+      "subtitle": "Şəxsi məlumatlarınızı yeniləyin",
+      "username": "İstifadəçi adı",
+      "email": "E-poçt",
+      "country": "Ölkə",
+      "cauntryPlaceholder": "Ölkənizi seçin",
+      "bio": "Haqqımda",
+      "button": "Yadda saxla"
     }
   }
