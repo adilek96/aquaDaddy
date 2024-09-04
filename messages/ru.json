@@ -79,6 +79,7 @@
       "country": "Страна",
       "cauntryPlaceholder": "Выберите страну",
       "bio": "Обо мне",
+      "bioPlaceholder": "Расскажите нам о себе",
       "button": "Сохранить изменения"
     }
    

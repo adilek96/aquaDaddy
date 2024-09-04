@@ -80,7 +80,8 @@
       "country": "Country",
       "cauntryPlaceholder": "Select your country",
       "bio": "Bio",
-      "button": "Save changes"
+      "button": "Save changes",
+      "bioPlaceholder": "Tell us about yourself"
     }
    
   }
