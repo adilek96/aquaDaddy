@@ -159,8 +159,4 @@ export async function profileUpdateAction(prevState: any, formData: FormData) {
   
 
     revalidatePath("[slug]/profile")
-   
-
-
-  
 }

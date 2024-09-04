@@ -120,12 +120,13 @@ export function ProfileEditPage({
           </div>
           <div className="space-y-2">
             <Label htmlFor="country">{t("country")}</Label>
-            <Select name="country" onValueChange={setSelectedCountry}>
+            <Select
+              name="country"
+              defaultValue={user.data.country}
+              onValueChange={setSelectedCountry}
+            >
               <SelectTrigger className="w-[250px]">
-                <SelectValue
-                  placeholder={t("cauntryPlaceholder")}
-                  defaultValue={user.data.country}
-                />
+                <SelectValue placeholder={t("cauntryPlaceholder")} />
               </SelectTrigger>
               <SelectContent>
                 {countries.map((country) => (
