@@ -143,7 +143,7 @@ export function ProfileEditPage({
             <Textarea
               id="bio"
               name="bio"
-              placeholder="Tell us about yourself"
+              placeholder={t("bioPlaceholder")}
               className="resize-none max-w-md mx-auto  "
               defaultValue={user.data.bio}
               rows={4}
