@@ -19,7 +19,10 @@ import { getStrapiURL } from "@/lib/utils";
 export async function UserMenu({ locale }: { locale: string }) {
   const userPromise = await getUserMeLoader();
   const t = await getTranslations("Header");
-  const url = new URL(userPromise.data.photoUrl.url, getStrapiURL());
+  const url =
+    userPromise.data !== null
+      ? new URL(userPromise.data.photoUrl.url, getStrapiURL())
+      : null;
 
   if (!userPromise.ok) {
     return (

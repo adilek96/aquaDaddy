@@ -62,7 +62,8 @@ export function ProfileEditPage({
     user.data.country
   );
 
-  const url = new URL(user.data.photoUrl.url, getStrapiURL());
+  const url =
+    user.data !== null ? new URL(user.data.photoUrl.url, getStrapiURL()) : null;
 
   useEffect(() => {
     const fetchCountries = async () => {
