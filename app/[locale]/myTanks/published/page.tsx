@@ -37,13 +37,18 @@ const user = {
   ],
 };
 
-export default async function MyTanks() {
+export default async function Published() {
   return (
     <>
       <h2 className="text-3xl font-bold my-10 ml-5 font-bebas  leading-none  tracking-wide   cursor-default ">
-        <Link href={"./myTanks"}>My Aquariums</Link>
+        <span>
+          <Link href={"../myTanks"}>My Aquariums</Link>
+        </span>
+        <span> / </span>
+        <span>
+          <Link href={"../myTanks/published"}>Published</Link>
+        </span>
       </h2>
-
       <div className="flex flex-wrap justify-evenly mb-10">
         {user.aquariums.map((aquarium, index) => (
           <TankCard aquarium={aquarium} index={index} />
