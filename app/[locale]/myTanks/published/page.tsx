@@ -51,7 +51,7 @@ export default async function Published() {
       </h2>
       <div className="flex flex-wrap justify-evenly mb-10">
         {user.aquariums.map((aquarium, index) => (
-          <TankCard aquarium={aquarium} index={index} />
+          <TankCard aquarium={aquarium} key={index} />
         ))}
       </div>
     </>

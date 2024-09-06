@@ -2,19 +2,10 @@ import React from "react";
 import { Card, CardContent } from "../ui/card";
 import Link from "next/link";
 
-export default function TankCard({
-  aquarium,
-  index,
-}: {
-  aquarium: any;
-  index: number;
-}) {
+export default function TankCard({ aquarium }: { aquarium: any }) {
   return (
     <>
-      <Card
-        className="w-[300px] rounded-t-xl mb-10 cursor-pointer shadow-lg bg-white/50 dark:bg-black/50  hover:bg-green-300/50 dark:hover:bg-green-700/20 transition-all duration-300 hover:translate-y-1"
-        key={index}
-      >
+      <Card className="w-[300px] rounded-t-xl mb-10 cursor-pointer shadow-lg bg-white/50 dark:bg-black/50  hover:bg-green-300/50 dark:hover:bg-green-700/20 transition-all duration-300 hover:translate-y-1">
         <Link href={"/"}>
           <CardContent className="p-0 cursor-pointer">
             <img
