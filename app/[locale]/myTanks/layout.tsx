@@ -1,5 +1,6 @@
 import Image from "next/image";
 import UserCard from "@/components/component/userCard";
+import { getUserAquariums } from "@/app/services/get-user-aquariums";
 
 export default async function MyTanksLayout({
   children,
@@ -8,7 +9,8 @@ export default async function MyTanksLayout({
   children: React.ReactNode;
   params: { locale: string };
 }) {
-  console.log(locale);
+  const response = await getUserAquariums();
+
   return (
     <>
       <div className="w-[95%] mx-auto dark:bg-black/10  bg-[#00EBFF]/5 rounded-xl backdrop-blur-md  border border-muted z-40 mt-20">
@@ -23,7 +25,7 @@ export default async function MyTanksLayout({
         </div>
         <div className="w-full h-fit  flex flex-row flex-wrap">
           <div className="md:w-[30%] w-full h-fit flex justify-center">
-            <UserCard locale={locale} />
+            <UserCard locale={locale} data={response.data} />
           </div>
           <div className="md:w-[70%] w-full h-full flex justify-center  mx-auto">
             <div className="w-[95%] h-fit border border-mutted bg-white/60 dark:bg-black/60 my-12 px-5 rounded-xl">
