@@ -2,7 +2,13 @@
     "HomePage": {
       "discovery-title": "Kəşf et",
       "aquariums-title": "Mənim akvariumlarım",
-      "wiki-title": "Ensiklopediya"
+      "wiki-title": "Ensiklopediya",
+      "wiki-description": "Su canlıları və ekosistemlərinə öyrənə biləcəyiniz bir yer.",
+      "discovery-description": "Yeni canlıları və su dünyasını keşf edə biləcəyiniz bir yer.",
+      "aquariums-description": "Su canlılarını idarə etmək və yönetmək üçün bir yer.",
+      "wiki-link": "Ensiklopediyaya bax",
+      "aquariums-link": "Akvariumları gör",
+      "discovery-link": "Keşf et"
     },
     "Sign":{
       "signIn": "Giriş",

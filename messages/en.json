@@ -2,7 +2,13 @@
     "HomePage": {
       "discovery-title": "Discovery",
       "aquariums-title": "My aquariums",
-      "wiki-title": "Encyclopedia"
+      "wiki-title": "Encyclopedia",
+      "wiki-description": "Discover and learn about aquatic life and ecosystems.",
+      "discovery-description": "Uncover new species and explore the underwater world.",
+      "aquariums-description": "Explore and manage your aquatic ecosystems.",
+      "wiki-link": "Explore Wiki",
+      "aquariums-link": "View Aquariums",
+      "discovery-link": "Start Exploring"
     },
     "Sign":{
       "signIn": "SignIn",
