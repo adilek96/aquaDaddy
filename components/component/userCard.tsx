@@ -5,7 +5,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { UserIcon } from "@/public/user";
 import { GlobeIcon } from "@/public/globe";
 import { Fish, Flower, Shell, Waves } from "lucide-react";
-import { getStrapiURL } from "@/lib/utils";
 
 const collectionsIcons = [
   { name: "Plants", count: 25, icon: Flower },
@@ -23,18 +22,16 @@ export default function UserCard({
   locale: string;
   data: any;
 }) {
-  console.log(data);
-  const url = data !== null ? new URL(data.photoUrl.url, getStrapiURL()) : null;
   return (
     <>
       <Card className="md:w-[350px] w-[95%] h-fit mb-10 pb-10 border border-mutted  rounded-2xl backdrop-blur-3xl relative flex justify-center bg-white/60 dark:bg-black/60">
         <div className="w-[130px] h-[130px] absolute -top-12 flex items-center justify-center backdrop-blur-3xl rounded-full bg-[#00EBFF]/20">
           <Avatar className="w-[120px] h-[120px] flex items-center justify-center">
-            {url !== null ? (
+            {/* {url !== null ? (
               <AvatarImage src={String(url)} alt="Profile picture" />
             ) : (
               <UserIcon />
-            )}
+            )} */}
 
             <AvatarFallback>JP</AvatarFallback>
           </Avatar>

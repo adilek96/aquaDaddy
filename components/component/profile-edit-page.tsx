@@ -1,166 +1,163 @@
-"use client";
-export const dynamic = "force-static";
-import { useEffect, useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { SubmitButton } from "../ui/submitButton";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
-import { useFormState } from "react-dom";
-import { profileUpdateAction } from "@/app/actions/profileUpdateAction";
-import ProfileImageUploderForm from "./profileImageUploderForm";
-import { getStrapiURL } from "@/lib/utils";
-import { StrapiErrors } from "../helpers/StrapiErrors";
-import { ZodErrors } from "../helpers/ZodErrors";
-import { useTranslations } from "next-intl";
+// "use client";
+// export const dynamic = "force-static";
+// import { useEffect, useState } from "react";
+// import { Input } from "@/components/ui/input";
+// import { Label } from "@/components/ui/label";
+// import { Textarea } from "@/components/ui/textarea";
+// import {
+//   Card,
+//   CardContent,
+//   CardDescription,
+//   CardFooter,
+//   CardHeader,
+//   CardTitle,
+// } from "@/components/ui/card";
+// import { SubmitButton } from "../ui/submitButton";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "../ui/select";
+// import { useFormState } from "react-dom";
 
-interface Country {
-  code: string;
-  name: string;
-}
+// import { ZodErrors } from "../helpers/ZodErrors";
+// import { useTranslations } from "next-intl";
 
-type UserPromise =
-  | { ok: true; data: any; error: null }
-  | { ok: false; data: null; error: any };
+// interface Country {
+//   code: string;
+//   name: string;
+// }
 
-const INITIAL_STATE = {
-  data: null,
-  zodErrors: null,
-  strapiErrors: null,
-  message: null,
-};
+// type UserPromise =
+//   | { ok: true; data: any; error: null }
+//   | { ok: false; data: null; error: any };
 
-export function ProfileEditPage({
-  user,
-  locale,
-}: {
-  user: UserPromise;
-  locale: string;
-}) {
-  const t = useTranslations("Profile");
-  const [formState, formAction] = useFormState(
-    profileUpdateAction,
-    INITIAL_STATE
-  );
+// const INITIAL_STATE = {
+//   data: null,
+//   zodErrors: null,
+//   strapiErrors: null,
+//   message: null,
+// };
 
-  const [countries, setCountries] = useState<Country[]>([]);
-  const [selectedCountry, setSelectedCountry] = useState<string | null>(
-    user.data.country
-  );
+// export function ProfileEditPage({
+//   user,
+//   locale,
+// }: {
+//   user: UserPromise;
+//   locale: string;
+// }) {
+//   const t = useTranslations("Profile");
+//   const [formState, formAction] = useFormState(
+//     profileUpdateAction,
+//     INITIAL_STATE
+//   );
 
-  const url =
-    user.data !== null ? new URL(user.data.photoUrl.url, getStrapiURL()) : null;
+//   const [countries, setCountries] = useState<Country[]>([]);
+//   const [selectedCountry, setSelectedCountry] = useState<string | null>(
+//     user.data.country
+//   );
 
-  useEffect(() => {
-    const fetchCountries = async () => {
-      try {
-        const trueLocale = locale === "az" ? "en" : locale;
-        const response = await fetch(
-          `https://flagcdn.com/${trueLocale}/codes.json`
-        );
-        const data = await response.json();
-        const formattedCountries: Country[] = Object.entries(data).map(
-          ([code, name]) => ({
-            code,
-            name: name as string,
-          })
-        );
-        setCountries(formattedCountries);
-      } catch (error) {
-        console.error("Error fetching country data:", error);
-      }
-    };
+//   const url =
+//     user.data !== null ? new URL(user.data.photoUrl.url, getStrapiURL()) : null;
 
-    fetchCountries();
-  }, []);
+//   useEffect(() => {
+//     const fetchCountries = async () => {
+//       try {
+//         const trueLocale = locale === "az" ? "en" : locale;
+//         const response = await fetch(
+//           `https://flagcdn.com/${trueLocale}/codes.json`
+//         );
+//         const data = await response.json();
+//         const formattedCountries: Country[] = Object.entries(data).map(
+//           ([code, name]) => ({
+//             code,
+//             name: name as string,
+//           })
+//         );
+//         setCountries(formattedCountries);
+//       } catch (error) {
+//         console.error("Error fetching country data:", error);
+//       }
+//     };
 
-  return (
-    <Card className="w-full max-w-md mx-auto bg-[#00EBFF]/5  backdrop-blur-md border border-muted z-40 mt-20 mb-10 ">
-      <CardHeader className="text-center">
-        <CardTitle>{t("title")}</CardTitle>
-        <CardDescription>{t("subtitle")}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <ProfileImageUploderForm url={url} selectedCountry={selectedCountry} />
+//     fetchCountries();
+//   }, []);
 
-        <form action={formAction}>
-          <div className="space-y-2">
-            <Label htmlFor="name">{t("username")}</Label>
-            <Input
-              id="name"
-              name="name"
-              placeholder="John Doe"
-              defaultValue={user.data.username}
-              required
-            />
-            <ZodErrors error={formState?.zodErrors?.username} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">{t("email")}</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="john@example.com"
-              defaultValue={user.data.email}
-              disabled
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="country">{t("country")}</Label>
-            <Select
-              name="country"
-              defaultValue={user.data.country}
-              onValueChange={setSelectedCountry}
-            >
-              <SelectTrigger className="w-[250px]">
-                <SelectValue placeholder={t("cauntryPlaceholder")} />
-              </SelectTrigger>
-              <SelectContent>
-                {countries.map((country) => (
-                  <SelectItem key={country.code} value={country.code}>
-                    {country.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <ZodErrors error={formState?.zodErrors?.country} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="bio">{t("bio")}</Label>
-            <Textarea
-              id="bio"
-              name="bio"
-              placeholder={t("bioPlaceholder")}
-              className="resize-none max-w-md mx-auto  "
-              defaultValue={user.data.bio}
-              rows={4}
-            />
-          </div>
-          <ZodErrors error={formState?.zodErrors?.bio} />
-          <CardFooter className="flex w-full flex-col mt-5 justify-center">
-            <StrapiErrors error={formState?.strapiErrors?.message} />
-            <SubmitButton
-              className="w-full"
-              text={t("button")}
-              loadingText="Loading"
-            />
-          </CardFooter>
-        </form>
-      </CardContent>
-    </Card>
-  );
-}
+//   return (
+//     <Card className="w-full max-w-md mx-auto bg-[#00EBFF]/5  backdrop-blur-md border border-muted z-40 mt-20 mb-10 ">
+//       <CardHeader className="text-center">
+//         <CardTitle>{t("title")}</CardTitle>
+//         <CardDescription>{t("subtitle")}</CardDescription>
+//       </CardHeader>
+//       <CardContent className="space-y-6">
+//         <ProfileImageUploderForm url={url} selectedCountry={selectedCountry} />
+
+//         <form action={formAction}>
+//           <div className="space-y-2">
+//             <Label htmlFor="name">{t("username")}</Label>
+//             <Input
+//               id="name"
+//               name="name"
+//               placeholder="John Doe"
+//               defaultValue={user.data.username}
+//               required
+//             />
+//             <ZodErrors error={formState?.zodErrors?.username} />
+//           </div>
+//           <div className="space-y-2">
+//             <Label htmlFor="email">{t("email")}</Label>
+//             <Input
+//               id="email"
+//               type="email"
+//               placeholder="john@example.com"
+//               defaultValue={user.data.email}
+//               disabled
+//             />
+//           </div>
+//           <div className="space-y-2">
+//             <Label htmlFor="country">{t("country")}</Label>
+//             <Select
+//               name="country"
+//               defaultValue={user.data.country}
+//               onValueChange={setSelectedCountry}
+//             >
+//               <SelectTrigger className="w-[250px]">
+//                 <SelectValue placeholder={t("cauntryPlaceholder")} />
+//               </SelectTrigger>
+//               <SelectContent>
+//                 {countries.map((country) => (
+//                   <SelectItem key={country.code} value={country.code}>
+//                     {country.name}
+//                   </SelectItem>
+//                 ))}
+//               </SelectContent>
+//             </Select>
+//             <ZodErrors error={formState?.zodErrors?.country} />
+//           </div>
+//           <div className="space-y-2">
+//             <Label htmlFor="bio">{t("bio")}</Label>
+//             <Textarea
+//               id="bio"
+//               name="bio"
+//               placeholder={t("bioPlaceholder")}
+//               className="resize-none max-w-md mx-auto  "
+//               defaultValue={user.data.bio}
+//               rows={4}
+//             />
+//           </div>
+//           <ZodErrors error={formState?.zodErrors?.bio} />
+//           <CardFooter className="flex w-full flex-col mt-5 justify-center">
+//             <StrapiErrors error={formState?.strapiErrors?.message} />
+//             <SubmitButton
+//               className="w-full"
+//               text={t("button")}
+//               loadingText="Loading"
+//             />
+//           </CardFooter>
+//         </form>
+//       </CardContent>
+//     </Card>
+//   );
+// }
