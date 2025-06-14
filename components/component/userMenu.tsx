@@ -1,4 +1,3 @@
-import { getUserMeLoader } from "@/app/services/get-user-me-loader";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -14,17 +13,12 @@ import LogOutButton from "../ui/logOutButton";
 import { getTranslations } from "next-intl/server";
 import SettingsWrapper from "./settingsWrapper";
 import { UserIcon } from "@/public/user";
-import { getStrapiURL } from "@/lib/utils";
 
 export async function UserMenu({ locale }: { locale: string }) {
-  const userPromise = await getUserMeLoader();
   const t = await getTranslations("Header");
-  const url =
-    userPromise.data !== null
-      ? new URL(userPromise.data.photoUrl.url, getStrapiURL())
-      : null;
+  const url = null;
 
-  if (!userPromise.ok) {
+  if (true) {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -91,10 +85,10 @@ export async function UserMenu({ locale }: { locale: string }) {
             <AvatarFallback>JD</AvatarFallback>
           </Avatar>
           <div className="grid gap-0.5 leading-none">
-            <div className="font-semibold">{userPromise.data.username}</div>
+            {/* <div className="font-semibold">{userPromise.data.username}</div>
             <div className="text-sm text-muted-foreground">
               {userPromise.data.email}
-            </div>
+            </div> */}
           </div>
         </div>
         <DropdownMenuSeparator />

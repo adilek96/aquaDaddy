@@ -17,7 +17,7 @@ export default function Settings() {
         isOpen ? "flex" : "hidden"
       } justify-center items-center absolute top-0 left-0 z-40 backdrop-blur-md transition-all duration-700`}
     >
-      <Card className="w-full min-w-[300px] max-w-md mx-auto bg-[#01EBFF]/5  backdrop-blur-3xl border border-muted z-40 mt-20">
+      <Card className="w-[98%] min-w-[300px] max-w-md mx-auto bg-[#01EBFF]/5  dark:bg-black/50  backdrop-blur-3xl border border-muted z-40 mt-20">
         <CardHeader>
           <CardTitle>{t("title")}</CardTitle>
           <br />

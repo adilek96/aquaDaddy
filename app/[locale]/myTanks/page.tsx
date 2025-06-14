@@ -1,7 +1,7 @@
 import { Fish, Flower, Shell, Waves } from "lucide-react";
 import TankCard from "@/components/component/tankCard";
 import Link from "next/link";
-import { getUserAquariums } from "@/app/services/get-user-aquariums";
+
 import { Button } from "@/components/ui/button";
 
 const user = {

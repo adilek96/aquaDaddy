@@ -12,25 +12,12 @@
     },
     "Sign":{
       "signIn": "SignIn",
-      "signUp": "SignUp",
-      "forgot": "Password recovery",
-      "reset" : "Reset password",
-      "reset-Message" : "Come up with a new password",
       "signIn-Message":"LogIn to your account",
-      "signUp-Message":"Create a new account to get started",
-      "signIn-Message-bottom":"You Don't have an account?",
-      "signUp-Message-bottom":"Have an account?",
-      "forgot-Message-bottom":"Try to log in again.",
-      "username": "Username",
-      "email": "Email",
-      "password": "Password",
-      "repeat-password": "Repeat Password",
-      "username-placeholder": "Enter your username",
-      "email-placeholder": "Enter your email",
-      "password-placeholder": "Enter your password",
-      "repeat-password-placeholder": "Repeat your password"
-      
-
+      "signIn-Type": "Sign in method",
+      "signIn-Or": "Or",
+      "signIn-Other": "Try another method",
+      "signInWithApple": "Signin with Apple Id",
+      "signInWithGoogle": "Signin with Google"
     },
     "Instruction": {
       "title": "Instructions have been sent",

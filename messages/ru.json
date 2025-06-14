@@ -12,25 +12,12 @@
     },
     "Sign":{
       "signIn": "Вход",
-      "signUp": "Регистрация",
-      "forgot": "Восстановление пароля",
-      "reset" : "Сброс пароля",
-      "reset-Message" : "Придумайте новый пароль",
       "signIn-Message":"Войдите в ваш аккаунт",
-      "signUp-Message":"Создайте новый аккаунт",
-      "signIn-Message-bottom":"Нет аакаунта?",
-      "signUp-Message-bottom":"Есть аккаунт?",
-      "forgot-Message-bottom":"Попытаться войти снова.",
-      "username": "Имя пользователя",
-      "email": "Электронная почта",
-      "password": "Пароль",
-      "repeat-password": "Повтор пароля",
-      "username-placeholder": "Введите свое имя пользователя",
-      "email-placeholder": "Введите адрес электронной почты",
-      "password-placeholder": "Введите ваш пароль",
-      "repeat-password-placeholder": "Повторите свой пароль"
-
-
+      "signIn-Type": "Метод входа",
+      "signIn-Or": "Или",
+      "signIn-Other": "Попробуйте другой способ",
+      "signInWithApple": "Войти с помощью Apple Id",
+      "signInWithGoogle": "Войти с помощью Google"
     },
     "Instruction": {
       "title": "Инструкции высланы",

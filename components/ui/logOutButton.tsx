@@ -1,16 +1,11 @@
 "use client";
-import { logOutAction } from "@/app/actions/logOutAction";
+
 import Link from "next/link";
 import React, { SVGProps } from "react";
 
 export default function LogOutButton({ text }: { text: string }) {
   return (
-    <Link
-      href="/"
-      onClick={() => logOutAction()}
-      className="flex items-center gap-2 w-full"
-      prefetch={false}
-    >
+    <Link href="/" className="flex items-center gap-2 w-full" prefetch={false}>
       <SignOut className="h-4 w-4" />
       <span>{text}</span>
     </Link>
