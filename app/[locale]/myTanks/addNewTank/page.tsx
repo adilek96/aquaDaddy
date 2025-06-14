@@ -1,4 +1,3 @@
-import AquariumAddingForm from "@/components/component/aquariumAddingForm";
 import Link from "next/link";
 import React from "react";
 
@@ -11,7 +10,7 @@ export default function AddNewTank() {
         </span>
       </h2>
 
-      <AquariumAddingForm />
+      {/* <AquariumAddingForm /> */}
     </>
   );
 }
