@@ -43,27 +43,6 @@ export async function MainPage({ locale }: { locale: any }) {
           </Card>
 
           <Card className="bg-[#00EBFF]/5 dark:bg-black/50  dark:hover:bg-green-700/70  backdrop-blur-md h-full text-secondary-foreground hover:bg-green-300/60  transition-all duration-300 col-span-1 sm:col-span-2  md:col-span-2 border border-mutted  hover:translate-y-1 hover:-translate-x-1 ">
-            {/* <CardHeader>
-              <CardTitle>{t("wiki-title")}</CardTitle>
-              <CardDescription>
-                Discover and learn about aquatic life and ecosystems.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <BookIcon className="h-6 w-6" />
-                  <span className="text-2xl font-bold">250</span>
-                </div>
-                <Link
-                  href={`${locale}/wiki`}
-                  className="text-sm underline"
-                  prefetch={false}
-                >
-                  Explore Wiki
-                </Link>
-              </div>
-            </CardContent> */}
             <CardFilling
               title={t("wiki-title")}
               description={t("wiki-description")}
@@ -75,23 +54,6 @@ export async function MainPage({ locale }: { locale: any }) {
           </Card>
 
           <Card className="bg-[#00EBFF]/5 dark:bg-black/50  dark:hover:bg-green-700/70  backdrop-blur-md  h-full text-secondary-foreground hover:bg-green-300/60 transition-all duration-300 col-span-1 sm:col-span-1 md:col-span-1 row-start-2 sm:row-start-1 md:row-start-1 border border-mutted   hover:translate-y-1 hover:translate-x-1 ">
-            {/* <CardHeader>
-              <CardTitle>{t("discovery-title")}</CardTitle>
-              <CardDescription>
-                Uncover new species and explore the underwater world.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <CompassIcon className="h-6 w-6" />
-                  <span className="text-2xl font-bold">1,000+</span>
-                </div>
-                <Link href="#" className="text-sm underline" prefetch={false}>
-                  Start Exploring
-                </Link>
-              </div>
-            </CardContent> */}
             <CardFilling
               title={t("discovery-title")}
               description={t("discovery-description")}
@@ -189,5 +151,3 @@ function XIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
-
-// hover:shadow-xl hover:shadow-black shadow-md shadow-black

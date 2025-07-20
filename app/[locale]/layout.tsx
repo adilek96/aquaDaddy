@@ -7,9 +7,9 @@ import { Header } from "@/components/component/header";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { Bg } from "@/components/animations/bg";
-import { cookies } from "next/headers";
 import { ThemeProvider } from "next-themes";
 import Settings from "@/components/component/settings";
+import { SessionProvider } from "next-auth/react";
 
 const libre_franklin = Libre_Franklin({
   subsets: ["latin"],
@@ -56,22 +56,24 @@ export default async function RootLayout({
           enableSystem={false}
           defaultTheme="light"
         >
-          <NextIntlClientProvider messages={messages}>
-            <main className="flex relative  w-full h-full min-h-screen flex-col items-center justify-center bg-transparent bg-opacity-0 ">
-              <Header locale={locale} />
-              <div className="w-full h-full z-40 flex flex-col items-center justify-center ">
-                {children}
-              </div>
+          <SessionProvider>
+            <NextIntlClientProvider messages={messages}>
+              <main className="flex relative  w-full h-full min-h-screen flex-col items-center justify-center bg-transparent bg-opacity-0 ">
+                <Header locale={locale} />
+                <div className="w-full h-full z-40 flex flex-col items-center justify-center ">
+                  {children}
+                </div>
 
-              <div
-                className="w-[100vw] h-[100vh] fixed top-0 z-10 overflow-hidden   "
-                style={{ width: "100%", height: "100%" }}
-              >
-                <Bg />
-              </div>
-              <Settings />
-            </main>
-          </NextIntlClientProvider>
+                <div
+                  className="w-[100vw] h-[100vh] fixed top-0 z-10 overflow-hidden   "
+                  style={{ width: "100%", height: "100%" }}
+                >
+                  <Bg />
+                </div>
+                <Settings />
+              </main>
+            </NextIntlClientProvider>
+          </SessionProvider>
         </ThemeProvider>
       </body>
     </html>

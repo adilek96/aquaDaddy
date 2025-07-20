@@ -1,14 +1,17 @@
 "use client";
 
-import Link from "next/link";
 import React, { SVGProps } from "react";
+import { signOut } from "next-auth/react";
 
 export default function LogOutButton({ text }: { text: string }) {
   return (
-    <Link href="/" className="flex items-center gap-2 w-full" prefetch={false}>
+    <button
+      onClick={() => signOut()}
+      className="flex items-center gap-2 w-full"
+    >
       <SignOut className="h-4 w-4" />
       <span>{text}</span>
-    </Link>
+    </button>
   );
 }
 

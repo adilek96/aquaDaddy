@@ -1,41 +1,36 @@
 import createMiddleware from 'next-intl/middleware';
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { auth } from '@/auth';
 
-
-// Создаем middleware для интернационализации
 const intlMiddleware = createMiddleware({
   locales: ['en', 'ru', 'az'],
   defaultLocale: 'en'
 });
 
 export async function middleware(request: NextRequest) {
+  const [intlResponse, session] = await Promise.all([
+    intlMiddleware(request),
+    auth()
+  ]);
 
-  // Запускаем два промиса параллельно: интернационализация и проверка пользователя
-  const intlPromise = intlMiddleware(request); // Промис для обработки локализации
-
-  
-
-  const [intlResponse] = await Promise.all([intlPromise]);
-
-  // Проверяем, был ли ответ от i18n middleware
-  if (intlResponse) {
+  if (!intlResponse) return NextResponse.next();
 
   const currentPath = request.nextUrl.pathname;
-  
+  const localePrefix = currentPath.substring(0, 4); // "/az/", "/ru/", etc.
+  const pathAfterLocale = currentPath.substring(4);
 
-  // // Проверяем аутентификацию для нужных маршрутов
-  // if ((currentPath.substring(4).startsWith("myTanks") || currentPath.substring(4).startsWith("profile")) && user.ok === false) {
-  //   return NextResponse.redirect(new URL(`${currentPath.substring(0, 4)}signIn`, request.url));
-  // }
-  // if ((currentPath.substring(4).startsWith("signIn") || currentPath.substring(4).startsWith("signUp") || currentPath.substring(4).startsWith("reset-password") || currentPath.substring(4).startsWith("forgot-password")) && user.ok === true) {
-  //   return NextResponse.redirect(new URL(`${currentPath.substring(0, 3)}`, request.url));
-  // }
- 
+  const isAuthed = session && session.user;
 
-  return NextResponse.next(), intlResponse;
-  
-}
+  if ((pathAfterLocale.startsWith('myTanks') || pathAfterLocale.startsWith('profile')) && !isAuthed) {
+    return NextResponse.redirect(new URL(`${localePrefix}signIn`, request.url));
+  }
+
+  if (pathAfterLocale.startsWith('signIn') && isAuthed) {
+    return NextResponse.redirect(new URL(`${localePrefix}`, request.url));
+  }
+
+  return intlResponse;
 }
 
 export const config = {
