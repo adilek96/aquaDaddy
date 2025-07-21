@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Tektur } from "next/font/google";
 import { Montserrat } from "next/font/google";
-import "../globals.css";
+import "./globals.css";
 import { Libre_Franklin } from "next/font/google";
 import { Header } from "@/components/component/header";
 import { NextIntlClientProvider } from "next-intl";
@@ -10,6 +10,7 @@ import { Bg } from "@/components/animations/bg";
 import { ThemeProvider } from "next-themes";
 import Settings from "@/components/component/settings";
 import { SessionProvider } from "next-auth/react";
+import { cookies } from "next/headers";
 
 const libre_franklin = Libre_Franklin({
   subsets: ["latin"],
@@ -37,14 +38,12 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-  params: { locale },
 }: {
   children: React.ReactNode;
-  params: { locale: string };
 }) {
-  const messages = await getMessages();
-
-  // const isAnimate = cookies().get("animate-off");
+  const cookieStore = cookies();
+  const locale = cookieStore.get("NEXT_LOCALE")?.value || "en";
+  const messages = await getMessages({ locale });
 
   return (
     <html suppressHydrationWarning lang={locale}>
@@ -56,10 +55,10 @@ export default async function RootLayout({
           enableSystem={false}
           defaultTheme="light"
         >
-          <SessionProvider>
-            <NextIntlClientProvider messages={messages}>
+          <NextIntlClientProvider messages={messages} locale={locale}>
+            <SessionProvider>
               <main className="flex relative  w-full h-full min-h-screen flex-col items-center justify-center bg-transparent bg-opacity-0 ">
-                <Header locale={locale} />
+                <Header />
                 <div className="w-full h-full z-40 flex flex-col items-center justify-center ">
                   {children}
                 </div>
@@ -72,8 +71,8 @@ export default async function RootLayout({
                 </div>
                 <Settings />
               </main>
-            </NextIntlClientProvider>
-          </SessionProvider>
+            </SessionProvider>
+          </NextIntlClientProvider>
         </ThemeProvider>
       </body>
     </html>

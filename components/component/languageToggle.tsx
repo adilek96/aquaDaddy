@@ -6,13 +6,17 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { JSX, SVGProps } from "react";
-import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { GlobeIcon } from "@/public/globe";
 
 export default function LanguageToggle() {
-  const pathName = usePathname().slice(4);
+  const router = useRouter();
+
+  const setLang = (lang: string) => {
+    document.cookie = `NEXT_LOCALE=${lang}; path=/`;
+    router.refresh();
+  };
 
   return (
     <div className="flex items-center gap-4">
@@ -23,30 +27,26 @@ export default function LanguageToggle() {
             <span className="sr-only">Select language</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="start"
-          sideOffset={8}
-          className="bg-secondary/40  backdrop-blur-3xl "
-        >
-          <DropdownMenuItem>
-            <Link className="flex items-center gap-2" href={`/en/${pathName}`}>
+        <div className=" backdrop-blur-3xl ">
+          <DropdownMenuContent
+            align="start"
+            sideOffset={8}
+            className="bg-secondary/40"
+          >
+            <DropdownMenuItem onClick={() => setLang("en")}>
               <FlagIcon className="w-5 h-5" />
               <span>English</span>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Link className="flex items-center gap-2" href={`/ru/${pathName}`}>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setLang("ru")}>
               <FlagIcon className="w-5 h-5" />
               <span>Russian</span>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Link className="flex items-center gap-2" href={`/az/${pathName}`}>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setLang("az")}>
               <FlagIcon className="w-5 h-5" />
               <span>Azerbaijan</span>
-            </Link>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </div>
       </DropdownMenu>
     </div>
   );

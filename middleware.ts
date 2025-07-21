@@ -1,38 +1,27 @@
-import createMiddleware from 'next-intl/middleware';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { auth } from '@/auth';
 
-const intlMiddleware = createMiddleware({
-  locales: ['en', 'ru', 'az'],
-  defaultLocale: 'en'
-});
+const PRIVATE_PATHS = ['/myTanks', '/profile'];
 
 export async function middleware(request: NextRequest) {
-  const [intlResponse, session] = await Promise.all([
-    intlMiddleware(request),
-    auth()
-  ]);
-
-  if (!intlResponse) return NextResponse.next();
-
-  const currentPath = request.nextUrl.pathname;
-  const localePrefix = currentPath.substring(0, 4); // "/az/", "/ru/", etc.
-  const pathAfterLocale = currentPath.substring(4);
-
+  const session = await auth();
+  const { pathname } = request.nextUrl;
   const isAuthed = session && session.user;
 
-  if ((pathAfterLocale.startsWith('myTanks') || pathAfterLocale.startsWith('profile')) && !isAuthed) {
-    return NextResponse.redirect(new URL(`${localePrefix}signIn`, request.url));
+  // Проверка приватных роутов
+  if (PRIVATE_PATHS.some((p) => pathname.startsWith(p)) && !isAuthed) {
+    return NextResponse.redirect(new URL('/signIn', request.url));
   }
 
-  if (pathAfterLocale.startsWith('signIn') && isAuthed) {
-    return NextResponse.redirect(new URL(`${localePrefix}`, request.url));
+  // Если авторизован и на странице входа — редирект на главную
+  if (pathname === '/signIn' && isAuthed) {
+    return NextResponse.redirect(new URL('/', request.url));
   }
 
-  return intlResponse;
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/', '/(az|ru|en)/:path*']
+  matcher: ['/', '/myTanks/:path*', '/profile/:path*', '/signIn']
 };

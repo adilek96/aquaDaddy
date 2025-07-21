@@ -9,7 +9,6 @@ export default function AddNewTank() {
           <Link href={"../myTanks"}>My Aquariums</Link>
         </span>
       </h2>
-
       {/* <AquariumAddingForm /> */}
     </>
   );

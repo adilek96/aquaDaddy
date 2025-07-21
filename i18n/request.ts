@@ -1,5 +1,6 @@
 import {notFound} from 'next/navigation';
 import {getRequestConfig} from 'next-intl/server';
+import { cookies } from "next/headers";
 
 // Can be imported from a shared config
 const locales = ['en', 'ru', 'az'];
@@ -7,8 +8,8 @@ const locales = ['en', 'ru', 'az'];
 import { headers } from 'next/headers';
 
 export default getRequestConfig(async () => {
-  const headersList = headers();
-  const locale = headersList.get('x-next-intl-locale') || 'en';
+  const cookieStore = cookies();
+  const locale = cookieStore.get("NEXT_LOCALE")?.value || "en";
 
   // Validate that the incoming `locale` parameter is valid
   if (!locales.includes(locale as any)) notFound();

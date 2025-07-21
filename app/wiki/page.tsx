@@ -1,22 +1,11 @@
 import CardFilling from "@/components/component/cardFilling";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { BookIcon, FishIcon } from "lucide-react";
-import { getTranslations } from "next-intl/server";
-import Link from "next/link";
+import { Card } from "@/components/ui/card";
+import { BookIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import React from "react";
 
-export default async function Wiki({
-  params: { locale },
-}: {
-  params: { locale: string };
-}) {
-  const t = await getTranslations("HomePage");
+export default function Wiki() {
+  const t = useTranslations("HomePage");
 
   return (
     <div className="flex justify-center items-center h-[100vh] w-[100vw]  ">

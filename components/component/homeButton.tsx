@@ -9,8 +9,6 @@ import { useSession } from "next-auth/react";
 export default function HomeButton() {
   const pathname = usePathname().substring(4);
   const router = useRouter();
-  const { data: session } = useSession();
-  console.log(`%cSession: ${JSON.stringify(session)}`, "color: red");
 
   if (pathname.length > 0 && pathname.includes("/")) {
     return (

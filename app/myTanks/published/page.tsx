@@ -2,8 +2,6 @@ import { Fish, Flower, Shell, Waves } from "lucide-react";
 import TankCard from "@/components/component/tankCard";
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
-
 const user = {
   name: "Jane Doe",
   avatar: "/placeholder.svg?height=200&width=200",
@@ -39,20 +37,18 @@ const user = {
   ],
 };
 
-export default async function MyTanks() {
+export default function Published() {
   return (
     <>
-      <div className="flex no-wrap justify-between items-center">
-        <h2 className="text-3xl font-bold my-10 ml-5 font-bebas  leading-none  tracking-wide   cursor-default ">
-          <Link href={"./myTanks"}>My Aquariums</Link>
-        </h2>
-        <Link href={"myTanks/addNewTank"}>
-          <Button variant={"ghost"} className="mr-5 bg-red-500">
-            +
-          </Button>
-        </Link>
-      </div>
-
+      <h2 className="text-3xl font-bold my-10 ml-5 font-bebas  leading-none  tracking-wide   cursor-default ">
+        <span>
+          <Link href={"../myTanks"}>My Aquariums</Link>
+        </span>
+        <span> / </span>
+        <span>
+          <Link href={"../myTanks/published"}>Published</Link>
+        </span>
+      </h2>
       <div className="flex flex-wrap justify-evenly mb-10">
         {user.aquariums.map((aquarium, index) => (
           <TankCard aquarium={aquarium} key={index} />

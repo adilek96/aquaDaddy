@@ -10,7 +10,7 @@ export default function SettingsWrapper() {
   return (
     <>
       <button onClick={setIsOpen} className="flex items-center gap-2 w-full">
-        <Settings className="h-5 w-5" />
+        <Settings className="h-4 w-4" />
         <span>{t("settings")}</span>
       </button>
     </>

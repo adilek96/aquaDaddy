@@ -1,12 +1,10 @@
 import Image from "next/image";
 import UserCard from "@/components/component/userCard";
 
-export default async function MyTanksLayout({
+export default function MyTanksLayout({
   children,
-  params: { locale },
 }: {
   children: React.ReactNode;
-  params: { locale: string };
 }) {
   return (
     <>
@@ -22,7 +20,7 @@ export default async function MyTanksLayout({
         </div>
         <div className="w-full h-fit  flex flex-row flex-wrap">
           <div className="md:w-[30%] w-full h-fit flex justify-center">
-            {/* <UserCard locale={locale} data={response.data} /> */}
+            {/* <UserCard data={response.data} /> */}
           </div>
           <div className="md:w-[70%] w-full h-full flex justify-center  mx-auto">
             <div className="w-[95%] h-fit border border-mutted bg-white/60 dark:bg-black/60 my-12 px-5 rounded-xl">

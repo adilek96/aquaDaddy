@@ -10,7 +10,7 @@ import { JSX, SVGProps } from "react";
 import { getTranslations } from "next-intl/server";
 import CardFilling from "./cardFilling";
 
-export async function MainPage({ locale }: { locale: any }) {
+export async function MainPage() {
   const t = await getTranslations("HomePage");
 
   return (
@@ -31,8 +31,7 @@ export async function MainPage({ locale }: { locale: any }) {
                   <span className="text-2xl font-bold">12</span>
                 </div>
                 <Link
-                  href={`${locale}/myTanks`}
-                  // href="#"
+                  href={`/myTanks`}
                   className="text-sm underline"
                   prefetch={false}
                 >
@@ -47,7 +46,7 @@ export async function MainPage({ locale }: { locale: any }) {
               title={t("wiki-title")}
               description={t("wiki-description")}
               icon={<BookIcon className="h-6 w-6" />}
-              link={`${locale}/wiki`}
+              link={`/wiki`}
               count={250}
               linkText={t("wiki-link")}
             />

@@ -1,3 +1,4 @@
+"use client";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -5,20 +6,22 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
 import { SVGProps } from "react";
 import LogOutButton from "../ui/logOutButton";
-import { getTranslations } from "next-intl/server";
 import SettingsWrapper from "./settingsWrapper";
 import { UserIcon } from "@/public/user";
+import { useTranslations } from "next-intl";
+import { useSession } from "next-auth/react";
 
-export async function UserMenu({ locale }: { locale: string }) {
-  const t = await getTranslations("Header");
-  const url = null;
+export function UserMenu() {
+  const t = useTranslations("Header");
+  const { data: session } = useSession();
 
-  if (true) {
+  if (!session?.user) {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -30,89 +33,114 @@ export async function UserMenu({ locale }: { locale: string }) {
             <Avatar className="h-8 w-8 rounded-full flex justify-center items-center">
               <UserIcon />
             </Avatar>
+
             <span className="sr-only">Toggle user menu</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="end"
-          className="bg-secondary/40  backdrop-blur-3xl "
-        >
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <SettingsWrapper />
-          </DropdownMenuItem>
+        <div className="backdrop-blur-3xl ">
+          <DropdownMenuContent
+            align="end"
+            sideOffset={8}
+            className="bg-secondary/40"
+          >
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <SettingsWrapper />
+            </DropdownMenuItem>
 
-          <DropdownMenuItem>
-            <Link
-              href={`/${locale}/signIn`}
-              className="flex items-center gap-2 w-full"
-              prefetch={false}
-            >
-              <SignIn className="w-4 h-4" />
-              <span>{t("signIn")}</span>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-        </DropdownMenuContent>
+            <DropdownMenuItem>
+              <Link
+                href={`/signIn`}
+                className="flex items-center gap-2 w-full"
+                prefetch={false}
+              >
+                <SignIn className="w-4 h-4" />
+                <span>{t("signIn")}</span>
+              </Link>
+            </DropdownMenuItem>
+
+            <DropdownMenuSeparator />
+          </DropdownMenuContent>
+        </div>
+      </DropdownMenu>
+    );
+  } else {
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-full bg-[00EBFF]  backdrop-blur-3xl "
+          >
+            <Avatar className="h-8 w-8 flex justify-center items-center">
+              {session.user.image !== undefined ||
+              session.user.image !== null ? (
+                <Image
+                  src={String(session.user.image)}
+                  alt="Profile picture"
+                  fill={true}
+                  loading="lazy"
+                />
+              ) : (
+                <UserIcon />
+              )}
+              <AvatarFallback>JD</AvatarFallback>
+            </Avatar>
+
+            <span className="sr-only">Toggle user menu</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <div className=" backdrop-blur-3xl ">
+          <DropdownMenuContent
+            align="end"
+            sideOffset={8}
+            className="bg-secondary/40"
+          >
+            <div className="flex items-center gap-2 p-2 cursor-default ">
+              <Avatar className="h-8 w-8 rounded-full">
+                {session.user.image !== undefined ||
+                session.user.image !== null ? (
+                  <Image
+                    src={String(session.user.image)}
+                    alt="Profile picture"
+                    fill={true}
+                    loading="lazy"
+                  />
+                ) : (
+                  <UserIcon />
+                )}
+                <AvatarFallback>JD</AvatarFallback>
+              </Avatar>
+              <div className="grid gap-0.5 leading-none">
+                <div className="font-semibold">{session.user.name}</div>
+                <div className="text-sm ">{session.user.email}</div>
+              </div>
+            </div>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <Link
+                href={`/profile`}
+                className="flex items-center gap-2 w-full"
+                prefetch={false}
+              >
+                <Profile className="h-4 w-4" />
+                <span>{t("profile")}</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <SettingsWrapper />
+            </DropdownMenuItem>
+
+            <DropdownMenuItem>
+              <LogOutButton text={t("logout")} />
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </DropdownMenuContent>
+        </div>
       </DropdownMenu>
     );
   }
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="rounded-full bg-[00EBFF]  backdrop-blur-3xl "
-        >
-          <Avatar className="h-8 w-8 flex justify-center items-center">
-            <UserIcon />
-          </Avatar>
-          <span className="sr-only">Toggle user menu</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align="end"
-        className="bg-secondary/40  backdrop-blur-3xl "
-      >
-        <div className="flex items-center gap-2 p-2 cursor-default">
-          <Avatar className="h-8 w-8 rounded-full">
-            {url !== undefined || url !== null ? (
-              <AvatarImage src={String(url)} alt="Profile picture" />
-            ) : (
-              <UserIcon />
-            )}
-            <AvatarFallback>JD</AvatarFallback>
-          </Avatar>
-          <div className="grid gap-0.5 leading-none">
-            {/* <div className="font-semibold">{userPromise.data.username}</div>
-            <div className="text-sm text-muted-foreground">
-              {userPromise.data.email}
-            </div> */}
-          </div>
-        </div>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <Link
-            href={`/${locale}/profile`}
-            className="flex items-center gap-2 w-full"
-            prefetch={false}
-          >
-            <Profile className="h-4 w-4" />
-            <span>{t("profile")}</span>
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <SettingsWrapper />
-        </DropdownMenuItem>
-
-        <DropdownMenuItem>
-          <LogOutButton text={t("logout")} />
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
 }
 
 function SignIn(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {

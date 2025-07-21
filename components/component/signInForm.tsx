@@ -20,6 +20,7 @@ export default function SignInForm() {
 
   const withApple = (
     <Button
+      type="button"
       variant="ghost"
       className="rounded-md bg-[00EBFF] h-full backdrop-blur-3xl gap-3"
     >
@@ -31,54 +32,58 @@ export default function SignInForm() {
 
   const withGoogle = (
     <Button
+      type="button"
       variant="ghost"
       className="rounded-md bg-[00EBFF]  h-full  backdrop-blur-3xl gap-3 "
       onClick={() => signIn("google", { redirectTo: "/" })}
     >
       <GoogleIcon />
       <span>{t("signInWithGoogle")}</span>
+
       <span className="sr-only">Signin with Google</span>
     </Button>
   );
 
   return (
-    <Card className="w-[98%] max-w-md  mx-auto  backdrop-blur-md border border-muted bg-[#00EBFF]/5 dark:bg-black/30 z-40 mt-20">
-      <CardHeader>
-        <CardTitle>{t("signIn")}</CardTitle>
-        <CardDescription>{t("signIn-Message")}</CardDescription>
-      </CardHeader>
-      <form>
-        <CardContent className="space-y-4">
-          <CardDescription className="flex justify-center">
-            {t("signIn-Type")}
-          </CardDescription>
-          <div className="flex justify-center">
-            {!toggleMethod
-              ? isApple
-                ? withApple
-                : withGoogle
-              : isApple
-              ? withGoogle
-              : withApple}
-          </div>
-        </CardContent>
-        <CardFooter className="flex flex-col">
-          <CardDescription className="flex justify-center">
-            {t("signIn-Or")}
-          </CardDescription>
+    <>
+      <Card className="w-[98%] max-w-md  mx-auto  backdrop-blur-md border border-muted bg-[#00EBFF]/5 dark:bg-black/30 z-40 mt-20">
+        <CardHeader>
+          <CardTitle>{t("signIn")}</CardTitle>
+          <CardDescription>{t("signIn-Message")}</CardDescription>
+        </CardHeader>
+        <form>
+          <CardContent className="space-y-4">
+            <CardDescription className="flex justify-center">
+              {t("signIn-Type")}
+            </CardDescription>
+            <div className="flex justify-center">
+              {!toggleMethod
+                ? isApple
+                  ? withApple
+                  : withGoogle
+                : isApple
+                ? withGoogle
+                : withApple}
+            </div>
+          </CardContent>
+          <CardFooter className="flex flex-col">
+            <CardDescription className="flex justify-center">
+              {t("signIn-Or")}
+            </CardDescription>
 
-          <Button
-            variant="ghost"
-            type="button"
-            className="rounded-md bg-[00EBFF]  backdrop-blur-3xl mt-2"
-            onClick={() => setToggleMethod(!toggleMethod)}
-          >
-            {t("signIn-Other")}
-            <span className="sr-only">Toggle signin method</span>
-          </Button>
-        </CardFooter>
-      </form>
-    </Card>
+            <Button
+              variant="ghost"
+              type="button"
+              className="rounded-md bg-[00EBFF]  backdrop-blur-3xl mt-2"
+              onClick={() => setToggleMethod(!toggleMethod)}
+            >
+              {t("signIn-Other")}
+              <span className="sr-only">Toggle signin method</span>
+            </Button>
+          </CardFooter>
+        </form>
+      </Card>
+    </>
   );
 }
 

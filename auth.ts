@@ -5,11 +5,7 @@ import { prisma } from './lib/prisma';
 
 
 
-
-
-
-
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
     Google({
@@ -23,9 +19,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
-    signIn: '/signIn',
+    signIn: "/signIn",
   },
-  
- 
+
+
 
 });
