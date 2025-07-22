@@ -10,7 +10,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
-import { SVGProps } from "react";
+import { SVGProps, useEffect } from "react";
 import LogOutButton from "../ui/logOutButton";
 import SettingsWrapper from "./settingsWrapper";
 import { UserIcon } from "@/public/user";
@@ -20,6 +20,13 @@ import { useSession } from "next-auth/react";
 export function UserMenu() {
   const t = useTranslations("Header");
   const { data: session } = useSession();
+
+  useEffect(() => {
+    const measurementSystem = localStorage.getItem("measurement_system");
+    if (measurementSystem === null) {
+      localStorage.setItem("measurement_system", "metric");
+    }
+  }, []);
 
   if (!session?.user) {
     return (

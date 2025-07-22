@@ -7,6 +7,12 @@ generator client {
     provider = "prisma-client-js"
 }
 
+enum AquariumType {
+    FRESHWATER
+    SALTWATER
+    PALUDARIUM
+}
+
 model User {
     id            String    @id @default(cuid())
     name          String?
@@ -15,8 +21,12 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
-    createdAt     DateTime  @default(now())
-    updatedAt     DateTime  @updatedAt
+
+    aquariums Aquarium[]
+    ratings   Rating[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model Account {
@@ -46,4 +56,98 @@ model Session {
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     createdAt    DateTime @default(now())
     updatedAt    DateTime @updatedAt
+}
+
+model Aquarium {
+    id           String       @id @default(cuid())
+    userId       String
+    user         User         @relation(fields: [userId], references: [id])
+    name         String
+    description  String?
+    type         AquariumType
+    shape        String
+    lengthCm     Float?
+    widthCm      Float?
+    heightCm     Float?
+    volumeLiters Float?
+    startDate    DateTime?
+    isPublic     Boolean      @default(false)
+
+    waterParams WaterParameters?
+    inhabitants Inhabitant[]
+    maintenance Maintenance[]
+    reminders   Reminder[]
+    images      AquariumImage[]
+    waterLogs   WaterLog[]
+    ratings     Rating[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model WaterParameters {
+    id           String   @id @default(cuid())
+    aquariumId   String   @unique
+    aquarium     Aquarium @relation(fields: [aquariumId], references: [id])
+    pH           Float?
+    temperatureC Float?
+    hardness     Float?
+    nitrates     Float?
+    lastUpdated  DateTime @default(now())
+}
+
+model Inhabitant {
+    id         String   @id @default(cuid())
+    aquariumId String
+    aquarium   Aquarium @relation(fields: [aquariumId], references: [id])
+    species    String
+    count      Int
+    addedAt    DateTime @default(now())
+}
+
+model Maintenance {
+    id          String   @id @default(cuid())
+    aquariumId  String
+    aquarium    Aquarium @relation(fields: [aquariumId], references: [id])
+    performedAt DateTime
+    description String
+}
+
+model Reminder {
+    id          String   @id @default(cuid())
+    aquariumId  String
+    aquarium    Aquarium @relation(fields: [aquariumId], references: [id])
+    title       String
+    remindAt    DateTime
+    isCompleted Boolean  @default(false)
+}
+
+model AquariumImage {
+    id         String   @id @default(cuid())
+    aquariumId String
+    aquarium   Aquarium @relation(fields: [aquariumId], references: [id])
+    url        String
+    uploadedAt DateTime @default(now())
+}
+
+model WaterLog {
+    id           String   @id @default(cuid())
+    aquariumId   String
+    aquarium     Aquarium @relation(fields: [aquariumId], references: [id])
+    recordedAt   DateTime
+    pH           Float?
+    temperatureC Float?
+    nitrates     Float?
+}
+
+model Rating {
+    id         String   @id @default(cuid())
+    userId     String
+    aquariumId String
+    user       User     @relation(fields: [userId], references: [id])
+    aquarium   Aquarium @relation(fields: [aquariumId], references: [id])
+    value      Int
+    createdAt  DateTime @default(now())
+
+    @@unique([userId, aquariumId])
 }

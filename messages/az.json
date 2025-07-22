@@ -40,8 +40,15 @@
       "415-10": "Qəbul edilə bilən fayl formatı: .jpg, .jpeg, .png and .webp",
       "415-11": "Maksimal ad uzunluğu 100 simvoldur",
       "415-12": "Ölkə seçimində xəta",
-      "415-13": "Bio 400 simvol və ya daha az olmalıdır"
-   
+      "415-13": "Bio 400 simvol və ya daha az olmalıdır",
+      "415-14": "Ad tələb olunur",
+      "415-15": "Ad çox uzundur",
+      "415-16": "Zəhmət olmasa növ seçin",
+      "415-17": "Forma tələb olunur",
+      "415-18": "Uzunluq müsbət olmalıdır",
+      "415-19": "En müsbət olmalıdır",
+      "415-20": "Hündürlük müsbət olmalıdır",
+      "415-21": "Həcm müsbət olmalıdır"
     },
     "ValidErrors":{
       "415-6" : "Ops! Xəta baş verdi. Yenidən cəhd edin.",
@@ -57,7 +64,8 @@
     "Settings": {
       "title": "Ayarlar",
       "theme": "Qaranlıq rejimi",
-      "animate": "Animasıyanı söndür"
+      "animate": "Animasıyanı söndür",
+      "measurement": "Ölçü vahidləri"
     },
     "Header": {
       "settings": "Ayarlar",
@@ -75,5 +83,37 @@
       "bio": "Haqqımda",
       "bioPlaceholder": "Özünüz haqqında bizə məlumat verin",
       "button": "Yadda saxla"
+    },
+    "AquariumForm": {
+      "title": "Yeni akvarium əlavə et",
+      "subtitle": "Akvariumunuz haqqında daha çox məlumat əlavə edin",
+      "tankName": "Akvarium adı",
+      "tankNamePlaceholder": "Mənim akvariumum",
+      "type": "Növ",
+      "typePlaceholder": "Növ seçin",
+      "freshwater": "Şirin su",
+      "saltwater": "Dəniz suyu",
+      "paludarium": "Paludarium",
+      "shape": "Forma",
+      "shapePlaceholder": "Forma seçin",
+      "rectangular": "Düzbucaqlı",
+      "cube": "Kub",
+      "bowFront": "Qövs ön",
+      "hexagon": "Altıbucaqlı",
+      "cylinder": "Silindr",
+      "description": "Təsvir (istəyə bağlı)",
+      "descriptionPlaceholder": "Akvariumunuz haqqında bizə məlumat verin...",
+      "startDate": "Başlama tarixi (istəyə bağlı)",
+      "startDatePlaceholder": "Bu akvariumu nə vaxt başladınız?",
+      "length": "Uzunluq",
+      "width": "En",
+      "height": "Hündürlük",
+      "volume": "Həcm",
+      "addButton": "Akvarium əlavə et",
+      "addingButton": "Əlavə edilir...",
+      "successMessage": "Akvarium uğurla əlavə edildi!",
+      "loginRequired": "Akvarium əlavə etmək üçün daxil olmalısınız",
+      "fixErrors": "Zəhmət olmasa aşağıdakı xətaları düzəldin",
+      "tryAgain": "Akvarium əlavə etmək alınmadı. Yenidən cəhd edin."
     }
   }

@@ -38,10 +38,15 @@
       "415-10": ".jpg, .jpeg, .png and .webp files are accepted",
       "415-11": "Max name length is 100 characters",
       "415-12": "Error when selecting a country",
-      "415-13": "Bio must be 400 characters or less"
-   
-
-   
+      "415-13": "Bio must be 400 characters or less",
+      "415-14": "Name is required",
+      "415-15": "Name too long",
+      "415-16": "Please select a type",
+      "415-17": "Shape is required",
+      "415-18": "Length must be positive",
+      "415-19": "Width must be positive",
+      "415-20": "Height must be positive",
+      "415-21": "Volume must be positive"
     },
     "ValidErrors":{
       "415-6" : "Ops! Something went wrong. Please try again.",
@@ -57,7 +62,8 @@
     "Settings": {
       "title": "Settings",
       "theme": "Switch theme",
-      "animate": "On/Off animation"
+      "animate": "On/Off animation",
+      "measurement": "Unit of measurement"
     },
     "Header": {
       "settings": "Settings",
@@ -75,6 +81,37 @@
       "bio": "Bio",
       "button": "Save changes",
       "bioPlaceholder": "Tell us about yourself"
+    },
+    "AquariumForm": {
+      "title": "Add New Aquarium",
+      "subtitle": "Add more information about your tank",
+      "tankName": "Tank name",
+      "tankNamePlaceholder": "My Aquarium",
+      "type": "Type",
+      "typePlaceholder": "Select type",
+      "freshwater": "Freshwater",
+      "saltwater": "Saltwater",
+      "paludarium": "Paludarium",
+      "shape": "Shape",
+      "shapePlaceholder": "Select shape",
+      "rectangular": "Rectangular",
+      "cube": "Cube",
+      "bowFront": "Bow Front",
+      "hexagon": "Hexagon",
+      "cylinder": "Cylinder",
+      "description": "Description (optional)",
+      "descriptionPlaceholder": "Tell us about your aquarium...",
+      "startDate": "Start Date (optional)",
+      "startDatePlaceholder": "When did you start this aquarium?",
+      "length": "Length",
+      "width": "Width",
+      "height": "Height",
+      "volume": "Volume",
+      "addButton": "Add Aquarium",
+      "addingButton": "Adding...",
+      "successMessage": "Aquarium added successfully!",
+      "loginRequired": "You must be logged in to add an aquarium",
+      "fixErrors": "Please fix the errors below",
+      "tryAgain": "Failed to add aquarium. Please try again."
     }
-   
   }

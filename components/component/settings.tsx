@@ -7,6 +7,7 @@ import AnimationToggle from "./animationToggle";
 import { useSettingStore } from "@/store/modalsStore";
 import { Button } from "../ui/button";
 import { DropdownMenuSeparator } from "../ui/dropdown-menu";
+import MeasurementToggle from "./measurementToggle";
 
 export default function Settings() {
   const { isOpen, setIsOpen } = useSettingStore();
@@ -30,6 +31,12 @@ export default function Settings() {
             <CardDescription>{t("animate")}</CardDescription>
 
             <AnimationToggle />
+          </div>
+          <DropdownMenuSeparator />
+          <div className="flex  w-full justify-between items-center ">
+            <CardDescription>{t("measurement")}</CardDescription>
+
+            <MeasurementToggle />
           </div>
         </CardHeader>
         <Button
