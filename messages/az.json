@@ -85,6 +85,7 @@
       "button": "Yadda saxla"
     },
     "AquariumForm": {
+      "aquariums-title": "Mənim akvariumlarım",
       "title": "Yeni akvarium əlavə et",
       "subtitle": "Akvariumunuz haqqında daha çox məlumat əlavə edin",
       "tankName": "Akvarium adı",
@@ -114,6 +115,21 @@
       "successMessage": "Akvarium uğurla əlavə edildi!",
       "loginRequired": "Akvarium əlavə etmək üçün daxil olmalısınız",
       "fixErrors": "Zəhmət olmasa aşağıdakı xətaları düzəldin",
-      "tryAgain": "Akvarium əlavə etmək alınmadı. Yenidən cəhd edin."
+      "tryAgain": "Akvarium əlavə etmək alınmadı. Yenidən cəhd edin.",
+      "sphere": "Kürə",
+      "hemisphere": "Yarımkürə",
+      "depth": "Dərinlik",
+      "bowK": "Forma əmsalı (k)",
+      "side": "Tərəf",
+      "diameter": "Diametr"
+    },
+    "MyTanks": {
+      "title": "Mənim akvariumlarım",
+      "subtitle": "Akvariumlarınızı idarə edin və araşdırın.",
+      "searchPlaceholder": "Axtarış...",
+      "sort": "Çeşidlə",
+      "sortByName": "Ada görə",
+      "sortByNextService": "Növbəti xidmət tarixinə görə",
+      "notAssigned": "təyin edilməyib"
     }
   }

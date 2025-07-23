@@ -4,7 +4,6 @@ import { Button } from "../ui/button";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 
 export default function HomeButton() {
   const pathname = usePathname().substring(4);

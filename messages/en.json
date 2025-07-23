@@ -83,6 +83,7 @@
       "bioPlaceholder": "Tell us about yourself"
     },
     "AquariumForm": {
+      "aquariums-title": "My aquariums",
       "title": "Add New Aquarium",
       "subtitle": "Add more information about your tank",
       "tankName": "Tank name",
@@ -112,6 +113,21 @@
       "successMessage": "Aquarium added successfully!",
       "loginRequired": "You must be logged in to add an aquarium",
       "fixErrors": "Please fix the errors below",
-      "tryAgain": "Failed to add aquarium. Please try again."
+      "tryAgain": "Failed to add aquarium. Please try again.",
+      "sphere": "Sphere",
+      "hemisphere": "Hemisphere",
+      "depth": "Depth",
+      "bowK": "Shape coefficient (k)",
+      "side": "Side",
+      "diameter": "Diameter"
+    },
+    "MyTanks": {
+      "title": "My aquariums",
+      "subtitle": "Explore and manage your aquariums.",
+      "searchPlaceholder": "Search...",
+      "sort": "Sort",
+      "sortByName": "By name",
+      "sortByNextService": "By next service date",
+      "notAssigned": "not assigned"
     }
   }
