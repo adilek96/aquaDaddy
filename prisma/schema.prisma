@@ -73,6 +73,12 @@ model Aquarium {
     startDate    DateTime?
     isPublic     Boolean      @default(false)
 
+    // Дополнительные поля для разных форм аквариума
+    diameterCm Float?
+    sideCm     Float?
+    depthCm    Float?
+    k          Float?
+
     waterParams WaterParameters?
     inhabitants Inhabitant[]
     maintenance Maintenance[]

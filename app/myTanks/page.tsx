@@ -1,16 +1,11 @@
-import TankCard from "@/components/component/tankCard";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getTranslations } from "next-intl/server";
-import { SVGProps } from "react";
-import { Suspense } from "react";
+
 import AquariumLists from "@/components/component/aquariumLists";
 
 export default async function MyTanks() {
   const t = await getTranslations("MyTanks");
-  // TODO: fetch aquariums from DB
-
-  // TODO: implement search and sort state (client component)
 
   return (
     <>
@@ -20,7 +15,7 @@ export default async function MyTanks() {
         </h2>
 
         <Link href={"myTanks/addNewTank"}>
-          <Button variant={"ghost"} className="mr-5 bg-red-500">
+          <Button variant={"ghost"} className="mr-5 bg-red-500 text-white">
             +
           </Button>
         </Link>

@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { fetchAquariums } from "@/app/actions/aquariumListFetch";
 import { useTranslations } from "next-intl";
 import TankCard from "./tankCard";
-import { Button } from "../ui/button";
 import { useSession } from "next-auth/react";
 import {
   Select,
@@ -15,9 +14,14 @@ import {
 import { Input } from "../ui/input";
 import LoadingBlock from "../ui/loadingBlock";
 
+import { useSearchParams } from "next/navigation";
+import { useSettingStore } from "@/store/modalsStore";
+
 export default function AquariumLists() {
   const t = useTranslations("MyTanks");
   const { data: session } = useSession();
+  const searchParams = useSearchParams();
+  const { openSuccessModal } = useSettingStore();
   const userId = session?.user?.id;
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("nextService");
@@ -50,6 +54,27 @@ export default function AquariumLists() {
       setLoading(false);
     });
   }, [search, sort, userId]);
+
+  // Обработка URL параметров для показа модального окна
+  useEffect(() => {
+    const success = searchParams.get("success");
+    const id = searchParams.get("id");
+    const name = searchParams.get("name");
+
+    if (success === "true" && id && name) {
+      openSuccessModal({
+        aquariumId: id,
+        aquariumName: decodeURIComponent(name),
+      });
+
+      // Очищаем URL параметры
+      const url = new URL(window.location.href);
+      url.searchParams.delete("success");
+      url.searchParams.delete("id");
+      url.searchParams.delete("name");
+      window.history.replaceState({}, "", url.toString());
+    }
+  }, [searchParams, openSuccessModal]);
 
   return (
     <>

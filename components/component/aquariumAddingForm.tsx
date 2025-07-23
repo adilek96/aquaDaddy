@@ -3,14 +3,6 @@ import { aquariumAddingAction } from "@/app/actions/aquariumAddingAction";
 import React, { useEffect, useState } from "react";
 import { useFormState } from "react-dom";
 import { useTranslations } from "next-intl";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { ZodErrors } from "../helpers/ZodErrors";
@@ -23,15 +15,20 @@ import {
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
 import { SubmitButton } from "../ui/submitButton";
+import { useRouter } from "next/navigation";
 
 const INITIAL_STATE = {
   data: null,
   zodErrors: null,
   message: null,
+  success: false,
+  aquariumId: undefined,
+  aquariumName: undefined,
 };
 
 export default function AquariumAddingForm() {
   const t = useTranslations("AquariumForm");
+  const router = useRouter();
   const [currentMeasurementSystem, setCurrentMeasurementSystem] =
     useState<string>("metric");
   const [formState, formAction] = useFormState(
@@ -96,50 +93,67 @@ export default function AquariumAddingForm() {
   ): number => {
     // Преобразование в см, если imperial
     const toCm = (val: number) => (system === "imperial" ? val * 2.54 : val);
+
+    let volumeInLiters = 0;
+
     switch (shape) {
       case "rectangular": {
         const l = toCm(values.length ?? 0);
         const w = toCm(values.width ?? 0);
         const h = toCm(values.height ?? 0);
-        return (l * w * h) / 1000; // литры
+        volumeInLiters = (l * w * h) / 1000; // литры
+        break;
       }
       case "cube": {
         const l = toCm(values.length ?? 0);
         const h = toCm(values.height ?? 0);
-        return (l * l * h) / 1000; // литры
+        volumeInLiters = (l * l * h) / 1000; // литры
+        break;
       }
       case "cylinder": {
         const d = toCm(values.diameter ?? 0);
         const h = toCm(values.height ?? 0);
         const r = d / 2;
-        return (Math.PI * r * r * h) / 1000;
+        volumeInLiters = (Math.PI * r * r * h) / 1000;
+        break;
       }
       case "sphere": {
         const d = toCm(values.diameter ?? 0);
         const r = d / 2;
-        return ((4 / 3) * Math.PI * Math.pow(r, 3)) / 1000;
+        volumeInLiters = ((4 / 3) * Math.PI * Math.pow(r, 3)) / 1000;
+        break;
       }
       case "hemisphere": {
         const d = toCm(values.diameter ?? 0);
         const r = d / 2;
-        return ((2 / 3) * Math.PI * Math.pow(r, 3)) / 1000;
+        volumeInLiters = ((2 / 3) * Math.PI * Math.pow(r, 3)) / 1000;
+        break;
       }
       case "hexagon": {
         const a = toCm(values.side ?? 0);
         const h = toCm(values.height ?? 0);
         const S = ((3 * Math.sqrt(3)) / 2) * a * a;
-        return (S * h) / 1000;
+        volumeInLiters = (S * h) / 1000;
+        break;
       }
       case "bow": {
         const w = toCm(values.width ?? 0);
         const h = toCm(values.height ?? 0);
         const d = toCm(values.depth ?? 0);
         const k = values.k ?? 0.9;
-        return (w * h * d * k) / 1000;
+        volumeInLiters = (w * h * d * k) / 1000;
+        break;
       }
       default:
         return 0;
     }
+
+    // Конвертируем в галлоны, если система имперская
+    if (system === "imperial") {
+      return volumeInLiters / 3.78541; // Конвертируем литры в галлоны
+    }
+
+    return volumeInLiters; // Возвращаем литры для метрической системы
   };
 
   // Автоматический расчет объема при изменении размеров или формы
@@ -225,6 +239,18 @@ export default function AquariumAddingForm() {
   useEffect(() => {
     setIsVolumeManuallyChanged(false);
   }, [currentMeasurementSystem]);
+
+  // Обработка успешного добавления аквариума
+  useEffect(() => {
+    if (formState.success && formState.aquariumId && formState.aquariumName) {
+      // Редиректим на страницу со списком аквариумов с параметрами для модального окна
+      router.push(
+        `/myTanks?success=true&id=${
+          formState.aquariumId
+        }&name=${encodeURIComponent(formState.aquariumName)}`
+      );
+    }
+  }, [formState.success, formState.aquariumId, formState.aquariumName, router]);
 
   // Обработчики изменения полей (добавляю новые)
   const handleShapeChange = (value: string) => {

@@ -142,7 +142,32 @@
       "temperature": "Temperature",
       "hardness": "Hardness",
       "nitrates": "Nitrates",
-      "loading": "Loading..."
+      "loading": "Loading...",
+      "successModalTitle": "Aquarium Added Successfully!",
+      "successModalDescription": "Your new aquarium has been successfully created",
+      "successModalAquariumName": "Aquarium name",
+      "successModalMessage": "Now you can add additional information about the aquarium by following the edit link, or return to your aquarium list.",
+      "successModalEditButton": "Edit Aquarium",
+      "successModalBackToList": "Back to List",
+      "updateSuccessMessage": "Aquarium updated successfully!",
+      "updateTryAgain": "Failed to update aquarium. Please try again.",
+      "notFound": "Aquarium not found or you don't have permission to edit it",
+      "updateButton": "Update Aquarium",
+      "updatingButton": "Updating..."
+    },
+    "AquariumDetails": {
+      "description": "Description",
+      "specifications": "Specifications",
+      "content": "Content",
+      "timeline": "Timeline",
+      "overview": "Overview",
+      "maintenance": "Maintenance",
+      "startDate": "Start Date",
+      "nextService": "Next Service",
+      "noScheduledMaintenance": "No scheduled maintenance",
+      "public": "Public",
+      "private": "Private",
+      "editAquarium": "Edit Aquarium"
     },
     "MyTanks": {
       "title": "My aquariums",

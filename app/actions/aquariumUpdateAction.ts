@@ -8,8 +8,8 @@ import { getMessages } from "next-intl/server";
 import { measurCalcInch } from "@/components/helpers/measurCalcInch";
 import { measurCalcGal } from "@/components/helpers/mesurCalcGal";
 
-// Схема валидации для формы добавления аквариума
-const AquariumSchema = z.object({
+// Схема валидации для формы обновления аквариума
+const AquariumUpdateSchema = z.object({
   name: z.string().min(1, "415-14").max(100, "415-15"),
   type: z.enum(["FRESHWATER", "SALTWATER", "PALUDARIUM"], {
     required_error: "415-16",
@@ -27,6 +27,7 @@ const AquariumSchema = z.object({
   sideCm: z.string().transform((val) => val === "" ? null : Number(val)).pipe(z.number().positive().nullable()),
   depthCm: z.string().transform((val) => val === "" ? null : Number(val)).pipe(z.number().positive().nullable()),
   k: z.string().transform((val) => val === "" ? null : Number(val)).pipe(z.number().positive().nullable()),
+  aquariumId: z.string().min(1, "Aquarium ID is required"),
 });
 
 type FormState = {
@@ -34,18 +35,15 @@ type FormState = {
   zodErrors: Record<string, string[]> | null;
   message: string | null;
   success?: boolean;
-  aquariumId?: string;
-  aquariumName?: string;
 };
 
-export async function aquariumAddingAction(
+export async function aquariumUpdateAction(
   prevState: FormState,
   formData: FormData
 ): Promise<FormState> {
   // Получаем переводы в начале функции
   const messages = await getMessages();
  
-  
   try {
     // Получаем текущего пользователя
     const session = await auth();
@@ -54,7 +52,7 @@ export async function aquariumAddingAction(
       return {
         data: null,
         zodErrors: null,
-        message: (messages as any).AquariumForm?.loginRequired || "You must be logged in to add an aquarium",
+        message: (messages as any).AquariumForm?.loginRequired || "You must be logged in to update an aquarium",
       };
     }
 
@@ -75,25 +73,37 @@ export async function aquariumAddingAction(
       sideCm: formData.get("sideCm") || "",
       depthCm: formData.get("depthCm") || "",
       k: formData.get("k") || "",
+      aquariumId: formData.get("aquariumId") || "",
     };
 
-    
+    const validatedData = AquariumUpdateSchema.parse(rawData);
 
-    const validatedData = AquariumSchema.parse(rawData);
+    // Проверяем, что аквариум принадлежит пользователю
+    const existingAquarium = await prisma.aquarium.findFirst({
+      where: {
+        id: validatedData.aquariumId,
+        userId: session.user.id,
+      },
+    });
 
-    // Данные уже обработаны схемой валидации
-    const processedData = validatedData;
+    if (!existingAquarium) {
+      return {
+        data: null,
+        zodErrors: null,
+        message: (messages as any).AquariumForm?.notFound || "Aquarium not found or you don't have permission to edit it",
+      };
+    }
 
     // Конвертируем единицы измерения если используется имперская система
-    const measurementSystem = processedData.measurementSystem || "metric";
-    let finalLengthCm = processedData.lengthCm;
-    let finalWidthCm = processedData.widthCm;
-    let finalHeightCm = processedData.heightCm;
-    let finalVolumeLiters = processedData.volumeLiters;
-    let finalDiameterCm = processedData.diameterCm;
-    let finalSideCm = processedData.sideCm;
-    let finalDepthCm = processedData.depthCm;
-    let finalK = processedData.k;
+    const measurementSystem = validatedData.measurementSystem || "metric";
+    let finalLengthCm = validatedData.lengthCm;
+    let finalWidthCm = validatedData.widthCm;
+    let finalHeightCm = validatedData.heightCm;
+    let finalVolumeLiters = validatedData.volumeLiters;
+    let finalDiameterCm = validatedData.diameterCm;
+    let finalSideCm = validatedData.sideCm;
+    let finalDepthCm = validatedData.depthCm;
+    let finalK = validatedData.k;
 
     if (measurementSystem === "imperial") {
       // Конвертируем дюймы в сантиметры для хранения в базе данных
@@ -116,29 +126,26 @@ export async function aquariumAddingAction(
         finalDepthCm = measurCalcInch(finalDepthCm, "imperial");
       }
       // Конвертируем галлоны в литры для хранения в базе данных
-      // measurCalcGal конвертирует литры в галлоны, но нам нужно наоборот
       if (finalVolumeLiters !== null && finalVolumeLiters !== undefined) {
-        // Если пользователь ввел объем в галлонах, конвертируем в литры
         finalVolumeLiters = finalVolumeLiters * 3.78541;
       }
     }
 
- 
-
-   
-    // Создаем аквариум в базе данных
-    const aquarium = await prisma.aquarium.create({
+    // Обновляем аквариум в базе данных
+    const updatedAquarium = await prisma.aquarium.update({
+      where: {
+        id: validatedData.aquariumId,
+      },
       data: {
-        userId: session.user.id,
-        name: processedData.name,
-        type: processedData.type,
-        shape: processedData.shape,
-        description: processedData.description || null,
+        name: validatedData.name,
+        type: validatedData.type,
+        shape: validatedData.shape,
+        description: validatedData.description || null,
         lengthCm: finalLengthCm,
         widthCm: finalWidthCm,
         heightCm: finalHeightCm,
         volumeLiters: finalVolumeLiters,
-        startDate: processedData.startDate ? new Date(processedData.startDate) : null,
+        startDate: validatedData.startDate ? new Date(validatedData.startDate) : null,
         // Дополнительные поля для разных форм
         diameterCm: finalDiameterCm,
         sideCm: finalSideCm,
@@ -147,16 +154,15 @@ export async function aquariumAddingAction(
       },
     });
 
-    // Обновляем кэш страницы
+    // Обновляем кэш страниц
     revalidatePath("/myTanks");
+    revalidatePath(`/myTanks/${validatedData.aquariumId}`);
 
     return {
-      data: aquarium,
+      data: updatedAquarium,
       zodErrors: null,
-      message: (messages as any).AquariumForm?.successMessage || "Aquarium added successfully!",
+      message: (messages as any).AquariumForm?.updateSuccessMessage || "Aquarium updated successfully!",
       success: true,
-      aquariumId: aquarium.id,
-      aquariumName: aquarium.name,
     };
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -180,11 +186,11 @@ export async function aquariumAddingAction(
     }
 
     // Обрабатываем другие ошибки
-    console.error("Error adding aquarium:", error);
+    console.error("Error updating aquarium:", error);
     return {
       data: null,
       zodErrors: null,
-      message: (messages as any).AquariumForm?.tryAgain || "Failed to add aquarium. Please try again.",
+      message: (messages as any).AquariumForm?.updateTryAgain || "Failed to update aquarium. Please try again.",
     };
   }
 } 

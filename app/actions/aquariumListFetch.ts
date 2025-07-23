@@ -14,9 +14,20 @@ export async function fetchAquariums({ search = "", userId }: { search?: string,
     where,
     orderBy,
     include: {
-      images: true
+      images: true,
+      reminders: true
     }
   });
 
-  return aquariums;
+  // Преобразуем даты в строки для сериализации
+  return aquariums.map(aquarium => ({
+    ...aquarium,
+    startDate: aquarium.startDate ? aquarium.startDate.toISOString() : null,
+    createdAt: aquarium.createdAt.toISOString(),
+    updatedAt: aquarium.updatedAt.toISOString(),
+    reminders: aquarium.reminders.map(r => ({
+      ...r,
+      remindAt: r.remindAt.toISOString(),
+    })),
+  }));
 } 

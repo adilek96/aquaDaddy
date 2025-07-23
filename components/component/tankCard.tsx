@@ -16,23 +16,25 @@ export default function TankCard({
   const [nextServiceDay, setNextServiceDay] = useState("notAssignedText");
   const image = aquarium.image || "/app-logo.svg";
 
-  const nextService = aquarium.nextService
-    ? new Date(aquarium.nextService).toLocaleDateString("ru-RU", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      })
-    : notAssignedText || "не назначена";
+  // Получаем ближайшее напоминание как nextService
+  const nextService =
+    aquarium.reminders && aquarium.reminders.length > 0
+      ? new Date(aquarium.reminders[0].remindAt).toLocaleDateString("ru-RU", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        })
+      : notAssignedText || "не назначена";
 
   useEffect(() => {
-    if (!aquarium.nextService) {
+    if (!aquarium.reminders || aquarium.reminders.length === 0) {
       setNextServiseStyle("bg-white/30");
       setNextServiceDay(notAssignedText || "не назначена");
       return;
     }
 
     const today = new Date();
-    const serviceDate = new Date(aquarium.nextService);
+    const serviceDate = new Date(aquarium.reminders[0].remindAt);
 
     const diffInMs = serviceDate.getTime() - today.getTime();
     const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
@@ -51,12 +53,12 @@ export default function TankCard({
       setNextServiceDay(t("in3Days"));
     } else if (diffInDays > 3) {
       setNextServiseStyle("bg-green-500/30");
-      setNextServiceDay(t(`"inDays" ${diffInDays} "days"`));
+      setNextServiceDay(`${t("inDays")} ${diffInDays} ${t("days")}`);
     } else {
       setNextServiseStyle("bg-white/30");
       setNextServiceDay(t("passed"));
     }
-  }, [aquarium.nextService, notAssignedText]);
+  }, [aquarium.reminders, notAssignedText]);
 
   return (
     <>

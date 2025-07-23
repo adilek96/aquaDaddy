@@ -5,11 +5,16 @@ import LoadingBlock from "@/components/ui/loadingBlock";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import { measurCalcInch } from "@/components/helpers/measurCalcInch";
+import { measurCalcGal } from "@/components/helpers/mesurCalcGal";
 
 export default function UserAquarium({ params }: { params: { id: string } }) {
   const { id } = params;
   const t = useTranslations("AquariumForm");
+  const tDetails = useTranslations("AquariumDetails");
   const [aquarium, setAquarium] = useState<any>(null);
+  const [currentMeasurementSystem, setCurrentMeasurementSystem] =
+    useState<string>("metric");
 
   useEffect(() => {
     const fetchAquarium = async () => {
@@ -18,6 +23,384 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
     };
     fetchAquarium();
   }, [id]);
+
+  // Получаем систему измерения из localStorage
+  useEffect(() => {
+    const measurementSystem = localStorage.getItem("measurement_system");
+    if (measurementSystem) {
+      setCurrentMeasurementSystem(measurementSystem);
+    }
+  }, []);
+
+  // Слушаем изменения системы измерения
+  useEffect(() => {
+    const handleMeasurementChange = (event: CustomEvent) => {
+      setCurrentMeasurementSystem(event.detail);
+    };
+
+    window.addEventListener(
+      "measurementSystemChanged",
+      handleMeasurementChange as EventListener
+    );
+    return () =>
+      window.removeEventListener(
+        "measurementSystemChanged",
+        handleMeasurementChange as EventListener
+      );
+  }, []);
+
+  // Функции для получения единиц измерения
+  const getLengthUnit = () =>
+    currentMeasurementSystem === "imperial" ? " (in)" : " (cm)";
+  const getVolumeUnit = () =>
+    currentMeasurementSystem === "imperial" ? " (gal)" : " (L)";
+
+  // Функции для конвертации значений
+  const convertLength = (value: number | null) => {
+    if (value === null) return null;
+    return measurCalcInch(value, currentMeasurementSystem);
+  };
+
+  const convertVolume = (value: number | null) => {
+    if (value === null) return null;
+    return measurCalcGal(value, currentMeasurementSystem);
+  };
+
+  // Функция для отображения размеров в зависимости от формы
+  const renderDimensions = () => {
+    if (!aquarium) return null;
+
+    const shape = aquarium.shape;
+
+    switch (shape) {
+      case "rectangular":
+        return (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="group">
+              <div className="text-xs uppercase tracking-widest mb-1">
+                {t("length")}
+                {getLengthUnit()}
+              </div>
+              <div className="text-sm font-medium transition-colors">
+                {aquarium.lengthCm
+                  ? `${convertLength(aquarium.lengthCm)?.toFixed(1)}`
+                  : t("notAssigned")}
+              </div>
+            </div>
+            <div className="group">
+              <div className="text-xs uppercase tracking-widest mb-1">
+                {t("width")}
+                {getLengthUnit()}
+              </div>
+              <div className="text-sm font-medium transition-colors">
+                {aquarium.widthCm
+                  ? `${convertLength(aquarium.widthCm)?.toFixed(1)}`
+                  : t("notAssigned")}
+              </div>
+            </div>
+            <div className="group">
+              <div className="text-xs uppercase tracking-widest mb-1">
+                {t("height")}
+                {getLengthUnit()}
+              </div>
+              <div className="text-sm font-medium transition-colors">
+                {aquarium.heightCm
+                  ? `${convertLength(aquarium.heightCm)?.toFixed(1)}`
+                  : t("notAssigned")}
+              </div>
+            </div>
+            <div className="group">
+              <div className="text-xs uppercase tracking-widest mb-1">
+                {t("volume")}
+                {getVolumeUnit()}
+              </div>
+              <div className="text-sm font-medium transition-colors">
+                {aquarium.volumeLiters
+                  ? `${convertVolume(aquarium.volumeLiters)?.toFixed(1)}`
+                  : t("notAssigned")}
+              </div>
+            </div>
+          </div>
+        );
+
+      case "cube":
+        return (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+            <div className="group">
+              <div className="text-xs uppercase tracking-widest mb-1">
+                {t("length")}
+                {getLengthUnit()}
+              </div>
+              <div className="text-sm font-medium transition-colors">
+                {aquarium.lengthCm
+                  ? `${convertLength(aquarium.lengthCm)?.toFixed(1)}`
+                  : t("notAssigned")}
+              </div>
+            </div>
+            <div className="group">
+              <div className="text-xs uppercase tracking-widest mb-1">
+                {t("height")}
+                {getLengthUnit()}
+              </div>
+              <div className="text-sm font-medium transition-colors">
+                {aquarium.heightCm
+                  ? `${convertLength(aquarium.heightCm)?.toFixed(1)}`
+                  : t("notAssigned")}
+              </div>
+            </div>
+            <div className="group">
+              <div className="text-xs uppercase tracking-widest mb-1">
+                {t("volume")}
+                {getVolumeUnit()}
+              </div>
+              <div className="text-sm font-medium transition-colors">
+                {aquarium.volumeLiters
+                  ? `${convertVolume(aquarium.volumeLiters)?.toFixed(1)}`
+                  : t("notAssigned")}
+              </div>
+            </div>
+          </div>
+        );
+
+      case "cylinder":
+        return (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+            <div className="group">
+              <div className="text-xs uppercase tracking-widest mb-1">
+                {t("diameter")}
+                {getLengthUnit()}
+              </div>
+              <div className="text-sm font-medium transition-colors">
+                {aquarium.diameterCm
+                  ? `${convertLength(aquarium.diameterCm)?.toFixed(1)}`
+                  : t("notAssigned")}
+              </div>
+            </div>
+            <div className="group">
+              <div className="text-xs uppercase tracking-widest mb-1">
+                {t("height")}
+                {getLengthUnit()}
+              </div>
+              <div className="text-sm font-medium transition-colors">
+                {aquarium.heightCm
+                  ? `${convertLength(aquarium.heightCm)?.toFixed(1)}`
+                  : t("notAssigned")}
+              </div>
+            </div>
+            <div className="group">
+              <div className="text-xs uppercase tracking-widest mb-1">
+                {t("volume")}
+                {getVolumeUnit()}
+              </div>
+              <div className="text-sm font-medium transition-colors">
+                {aquarium.volumeLiters
+                  ? `${convertVolume(aquarium.volumeLiters)?.toFixed(1)}`
+                  : t("notAssigned")}
+              </div>
+            </div>
+          </div>
+        );
+
+      case "sphere":
+        return (
+          <div className="grid grid-cols-2 gap-8">
+            <div className="group">
+              <div className="text-xs uppercase tracking-widest mb-1">
+                {t("diameter")}
+                {getLengthUnit()}
+              </div>
+              <div className="text-sm font-medium transition-colors">
+                {aquarium.diameterCm
+                  ? `${convertLength(aquarium.diameterCm)?.toFixed(1)}`
+                  : t("notAssigned")}
+              </div>
+            </div>
+            <div className="group">
+              <div className="text-xs uppercase tracking-widest mb-1">
+                {t("volume")}
+                {getVolumeUnit()}
+              </div>
+              <div className="text-sm font-medium transition-colors">
+                {aquarium.volumeLiters
+                  ? `${convertVolume(aquarium.volumeLiters)?.toFixed(1)}`
+                  : t("notAssigned")}
+              </div>
+            </div>
+          </div>
+        );
+
+      case "hemisphere":
+        return (
+          <div className="grid grid-cols-2 gap-8">
+            <div className="group">
+              <div className="text-xs uppercase tracking-widest mb-1">
+                {t("diameter")}
+                {getLengthUnit()}
+              </div>
+              <div className="text-sm font-medium transition-colors">
+                {aquarium.diameterCm
+                  ? `${convertLength(aquarium.diameterCm)?.toFixed(1)}`
+                  : t("notAssigned")}
+              </div>
+            </div>
+            <div className="group">
+              <div className="text-xs uppercase tracking-widest mb-1">
+                {t("volume")}
+                {getVolumeUnit()}
+              </div>
+              <div className="text-sm font-medium transition-colors">
+                {aquarium.volumeLiters
+                  ? `${convertVolume(aquarium.volumeLiters)?.toFixed(1)}`
+                  : t("notAssigned")}
+              </div>
+            </div>
+          </div>
+        );
+
+      case "hexagon":
+        return (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+            <div className="group">
+              <div className="text-xs uppercase tracking-widest mb-1">
+                {t("side")}
+                {getLengthUnit()}
+              </div>
+              <div className="text-sm font-medium transition-colors">
+                {aquarium.sideCm
+                  ? `${convertLength(aquarium.sideCm)?.toFixed(1)}`
+                  : t("notAssigned")}
+              </div>
+            </div>
+            <div className="group">
+              <div className="text-xs uppercase tracking-widest mb-1">
+                {t("height")}
+                {getLengthUnit()}
+              </div>
+              <div className="text-sm font-medium transition-colors">
+                {aquarium.heightCm
+                  ? `${convertLength(aquarium.heightCm)?.toFixed(1)}`
+                  : t("notAssigned")}
+              </div>
+            </div>
+            <div className="group">
+              <div className="text-xs uppercase tracking-widest mb-1">
+                {t("volume")}
+                {getVolumeUnit()}
+              </div>
+              <div className="text-sm font-medium transition-colors">
+                {aquarium.volumeLiters
+                  ? `${convertVolume(aquarium.volumeLiters)?.toFixed(1)}`
+                  : t("notAssigned")}
+              </div>
+            </div>
+          </div>
+        );
+
+      case "bow":
+        return (
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+            <div className="group">
+              <div className="text-xs uppercase tracking-widest mb-1">
+                {t("width")}
+                {getLengthUnit()}
+              </div>
+              <div className="text-sm font-medium transition-colors">
+                {aquarium.widthCm
+                  ? `${convertLength(aquarium.widthCm)?.toFixed(1)}`
+                  : t("notAssigned")}
+              </div>
+            </div>
+            <div className="group">
+              <div className="text-xs uppercase tracking-widest mb-1">
+                {t("height")}
+                {getLengthUnit()}
+              </div>
+              <div className="text-sm font-medium transition-colors">
+                {aquarium.heightCm
+                  ? `${convertLength(aquarium.heightCm)?.toFixed(1)}`
+                  : t("notAssigned")}
+              </div>
+            </div>
+            <div className="group">
+              <div className="text-xs uppercase tracking-widest mb-1">
+                {t("depth")}
+                {getLengthUnit()}
+              </div>
+              <div className="text-sm font-medium transition-colors">
+                {aquarium.depthCm
+                  ? `${convertLength(aquarium.depthCm)?.toFixed(1)}`
+                  : t("notAssigned")}
+              </div>
+            </div>
+            <div className="group">
+              <div className="text-xs uppercase tracking-widest mb-1">
+                {t("bowK")}
+              </div>
+              <div className="text-sm font-medium transition-colors">
+                {aquarium.k ? `${aquarium.k}` : "0.9"}
+              </div>
+            </div>
+            <div className="group">
+              <div className="text-xs uppercase tracking-widest mb-1">
+                {t("volume")}
+                {getVolumeUnit()}
+              </div>
+              <div className="text-sm font-medium transition-colors">
+                {aquarium.volumeLiters
+                  ? `${convertVolume(aquarium.volumeLiters)?.toFixed(1)}`
+                  : t("notAssigned")}
+              </div>
+            </div>
+          </div>
+        );
+
+      default:
+        return (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="group">
+              <div className="text-xs uppercase tracking-widest mb-1">
+                Length{getLengthUnit()}
+              </div>
+              <div className="text-sm font-medium transition-colors">
+                {aquarium.lengthCm
+                  ? `${convertLength(aquarium.lengthCm)?.toFixed(1)}`
+                  : t("notAssigned")}
+              </div>
+            </div>
+            <div className="group">
+              <div className="text-xs uppercase tracking-widest mb-1">
+                Width{getLengthUnit()}
+              </div>
+              <div className="text-sm font-medium transition-colors">
+                {aquarium.widthCm
+                  ? `${convertLength(aquarium.widthCm)?.toFixed(1)}`
+                  : t("notAssigned")}
+              </div>
+            </div>
+            <div className="group">
+              <div className="text-xs uppercase tracking-widest mb-1">
+                Height{getLengthUnit()}
+              </div>
+              <div className="text-sm font-medium transition-colors">
+                {aquarium.heightCm
+                  ? `${convertLength(aquarium.heightCm)?.toFixed(1)}`
+                  : t("notAssigned")}
+              </div>
+            </div>
+            <div className="group">
+              <div className="text-xs uppercase tracking-widest mb-1">
+                Volume{getVolumeUnit()}
+              </div>
+              <div className="text-sm font-medium transition-colors">
+                {aquarium.volumeLiters
+                  ? `${convertVolume(aquarium.volumeLiters)?.toFixed(1)}`
+                  : t("notAssigned")}
+              </div>
+            </div>
+          </div>
+        );
+    }
+  };
 
   return (
     <>
@@ -38,227 +421,193 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
             <div className="inline-block h-8 w-40 rounded bg-muted animate-pulse" />
           )}
         </h2>
-
-        <Link href={`myTanks/edit/${id}`}>
-          <Button variant={"ghost"} className="mr-5 bg-red-500">
-            <EditIcon />
-          </Button>
-        </Link>
       </div>
       {/* Подробная информация об аквариуме */}
       {!aquarium ? (
         <LoadingBlock translate={t("loading")} />
       ) : (
-        <div className="max-w-3xl mx-auto my-8">
-          <div className="bg-white dark:bg-black/40 rounded-xl shadow-lg p-6 flex flex-col gap-6">
-            {/* Картинки */}
-            {aquarium.images && aquarium.images.length > 0 && (
-              <div className="flex flex-wrap gap-4">
-                {aquarium.images.map((img: any, idx: number) => (
-                  <img
-                    key={img.id || idx}
-                    src={img.url}
-                    alt={aquarium.name}
-                    className="rounded-lg w-40 h-32 object-cover border"
-                  />
-                ))}
+        <div className="max-w-7xl mx-auto px-6 py-8">
+          {/* Main Grid */}
+          <div className="grid grid-cols-12 gap-8">
+            {/* Left Column - Primary Info */}
+            <div className="col-span-12 lg:col-span-8 space-y-12">
+              {/* Description */}
+              <div>
+                <h2 className="text-xs md:text-sm lg:text-xl w-full font-bebas  uppercase leading-none  tracking-wide  mb-6 border-b  pb-2 font-bold inline-flex justify-between">
+                  {tDetails("description")}
+                  <span>
+                    <Button
+                      variant={"ghost"}
+                      className="mr-5 bg-red-500 "
+                      title={tDetails("editAquarium")}
+                    >
+                      <EditIcon className="text-white" />
+                    </Button>
+                  </span>
+                </h2>
+                <p className=" leading-relaxed">
+                  {aquarium.description || t("noDescription")}
+                </p>
               </div>
-            )}
 
-            {/* Основная информация */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Dimensions Grid */}
               <div>
-                <span className="font-semibold">{t("description")}:</span>
-                <div className="text-muted-foreground">
-                  {aquarium.description || (
-                    <span className="italic opacity-60">
-                      {t("noDescription") || "Нет описания"}
-                    </span>
-                  )}
+                <h2 className="text-xs md:text-sm lg:text-xl w-full font-bebas  uppercase leading-none  tracking-wide  mb-6 border-b  pb-2 font-bold inline-flex justify-between">
+                  {tDetails("specifications")}
+                  <span>
+                    <Button
+                      variant={"ghost"}
+                      className="mr-5 bg-red-500 "
+                      title={tDetails("editAquarium")}
+                    >
+                      <EditIcon className="text-white" />
+                    </Button>
+                  </span>
+                </h2>
+                {renderDimensions()}
+              </div>
+
+              {/* Content */}
+              <div>
+                <h2 className="text-xs md:text-sm lg:text-xl w-full font-bebas  uppercase leading-none  tracking-wide  mb-6 border-b  pb-2 font-bold inline-flex justify-between">
+                  {tDetails("content")}
+                  <span>
+                    <Button
+                      variant={"ghost"}
+                      className="mr-5 bg-red-500 "
+                      title={tDetails("editAquarium")}
+                    >
+                      <EditIcon className="text-white" />
+                    </Button>
+                  </span>
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div className="group">
+                    <div className="text-xs  uppercase tracking-widest  mb-1">
+                      {t("inhabitants")}
+                    </div>
+                    <div className="text-sm font-medium  transition-colors">
+                      {aquarium.inhabitants || t("notAssigned")}
+                    </div>
+                  </div>
+                  <div className="group">
+                    <div className="text-xs  uppercase tracking-widest  mb-1">
+                      {t("waterParams")}
+                    </div>
+                    <div className="text-sm font-medium  transition-colors">
+                      {aquarium.waterParameters || t("notAssigned")}
+                    </div>
+                  </div>
+                  <div className="group">
+                    <div className="text-xs  uppercase tracking-widest  mb-1">
+                      {t("reminders")}
+                    </div>
+                    <div className="text-sm font-medium  transition-colors">
+                      {aquarium.reminders || t("notAssigned")}
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              {/* Timeline */}
               <div>
-                <span className="font-semibold">{t("type")}:</span>
-                <div className="text-muted-foreground">
-                  {t(aquarium.type?.toLowerCase())}
-                </div>
-              </div>
-              <div>
-                <span className="font-semibold">{t("shape")}:</span>
-                <div className="text-muted-foreground">{t(aquarium.shape)}</div>
-              </div>
-              <div>
-                <span className="font-semibold">{t("startDate")}:</span>
-                <div className="text-muted-foreground">
-                  {aquarium.startDate ? (
-                    new Date(aquarium.startDate).toLocaleDateString()
-                  ) : (
-                    <span className="italic opacity-60">
-                      {t("notAssigned")}
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div>
-                <span className="font-semibold">{t("length")}:</span>
-                <div className="text-muted-foreground">
-                  {aquarium.lengthCm ?? (
-                    <span className="italic opacity-60">
-                      {t("notAssigned")}
-                    </span>
-                  )}{" "}
-                  см
-                </div>
-              </div>
-              <div>
-                <span className="font-semibold">{t("width")}:</span>
-                <div className="text-muted-foreground">
-                  {aquarium.widthCm ?? (
-                    <span className="italic opacity-60">
-                      {t("notAssigned")}
-                    </span>
-                  )}{" "}
-                  см
-                </div>
-              </div>
-              <div>
-                <span className="font-semibold">{t("height")}:</span>
-                <div className="text-muted-foreground">
-                  {aquarium.heightCm ?? (
-                    <span className="italic opacity-60">
-                      {t("notAssigned")}
-                    </span>
-                  )}{" "}
-                  см
-                </div>
-              </div>
-              <div>
-                <span className="font-semibold">{t("volume")}:</span>
-                <div className="text-muted-foreground">
-                  {aquarium.volumeLiters ?? (
-                    <span className="italic opacity-60">
-                      {t("notAssigned")}
-                    </span>
-                  )}{" "}
-                  л
-                </div>
-              </div>
-              <div>
-                <span className="font-semibold">
-                  {t("createdAt") || "Создан"}:
-                </span>
-                <div className="text-muted-foreground">
-                  {aquarium.createdAt
-                    ? new Date(aquarium.createdAt).toLocaleString()
-                    : "-"}
-                </div>
-              </div>
-              <div>
-                <span className="font-semibold">
-                  {t("updatedAt") || "Обновлен"}:
-                </span>
-                <div className="text-muted-foreground">
-                  {aquarium.updatedAt
-                    ? new Date(aquarium.updatedAt).toLocaleString()
-                    : "-"}
-                </div>
-              </div>
-              <div>
-                <span className="font-semibold">
-                  {t("isPublic") || "Публичный"}:
-                </span>
-                <div className="text-muted-foreground">
-                  {aquarium.isPublic ? t("yes") || "Да" : t("no") || "Нет"}
+                <h2 className="text-xs md:text-sm lg:text-xl w-full font-bebas  uppercase leading-none  tracking-wide  mb-6 border-b  pb-2 font-bold inline-flex justify-between">
+                  {tDetails("timeline")}
+                  <span>
+                    <Button
+                      variant={"ghost"}
+                      className="mr-5 bg-red-500 "
+                      title={tDetails("editAquarium")}
+                    >
+                      <EditIcon className="text-white" />
+                    </Button>
+                  </span>
+                </h2>
+                <div className="space-y-6">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-2 h-2 bg-gray-200 rounded-full"></div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium text-gray-500">
+                          {tDetails("startDate")}
+                        </span>
+                        <span className="text-xs font-mono text-gray-400">
+                          {aquarium.startDate
+                            ? new Date(aquarium.startDate).toLocaleDateString()
+                            : t("notAssigned")}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Секция: Обитатели */}
-            <div className="mt-8">
-              <span className="font-semibold text-lg">
-                {t("inhabitants") || "Обитатели"}:
-              </span>
-              {aquarium.inhabitants && aquarium.inhabitants.length > 0 ? (
-                <ul className="list-disc ml-6 mt-2">
-                  {aquarium.inhabitants.map((inh: any, idx: number) => (
-                    <li key={inh.id || idx} className="mb-1">
-                      <span className="font-semibold">{inh.species}</span> —{" "}
-                      {inh.count} шт.
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="italic opacity-60 mt-2">{t("notAssigned")}</div>
-              )}
-            </div>
-
-            {/* Секция: Параметры воды */}
-            <div className="mt-8">
-              <span className="font-semibold text-lg">
-                {t("waterParams") || "Параметры воды"}:
-              </span>
-              {aquarium.waterParams ? (
-                <div className="grid grid-cols-2 gap-2 mt-2">
-                  <div>
-                    pH:{" "}
-                    <span className="text-muted-foreground">
-                      {aquarium.waterParams.pH ?? t("notAssigned")}
-                    </span>
-                  </div>
-                  <div>
-                    {t("temperature") || "Температура"}:{" "}
-                    <span className="text-muted-foreground">
-                      {aquarium.waterParams.temperatureC ?? t("notAssigned")}
-                    </span>
-                  </div>
-                  <div>
-                    {t("hardness") || "Жёсткость"}:{" "}
-                    <span className="text-muted-foreground">
-                      {aquarium.waterParams.hardness ?? t("notAssigned")}
-                    </span>
-                  </div>
-                  <div>
-                    {t("nitrates") || "Нитраты"}:{" "}
-                    <span className="text-muted-foreground">
-                      {aquarium.waterParams.nitrates ?? t("notAssigned")}
-                    </span>
-                  </div>
-                  <div>
-                    {t("updatedAt") || "Обновлено"}:{" "}
-                    <span className="text-muted-foreground">
-                      {aquarium.waterParams.lastUpdated
-                        ? new Date(
-                            aquarium.waterParams.lastUpdated
-                          ).toLocaleString()
+            {/* Right Column - Sidebar */}
+            <div className="col-span-12 lg:col-span-4 space-y-12">
+              {/* Quick Stats */}
+              <div className="p-6 rounded-none">
+                <div className="text-xs md:text-sm lg:text-xl w-full font-bebas  uppercase leading-none  tracking-wide  mb-6 border-b  pb-2 font-bold inline-flex justify-between">
+                  {tDetails("overview")}
+                  <span>
+                    <Button
+                      variant={"ghost"}
+                      className="mr-5 bg-red-500 "
+                      title={tDetails("editAquarium")}
+                    >
+                      <EditIcon className="text-white" />
+                    </Button>
+                  </span>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between py-2 border-b  last:border-0">
+                    <span className="text-sm ">{t("type")}</span>
+                    <span className="text-sm font-medium ">
+                      {aquarium.type
+                        ? t(
+                            aquarium.type.toLowerCase() as
+                              | "freshwater"
+                              | "saltwater"
+                              | "paludarium"
+                          )
                         : t("notAssigned")}
                     </span>
                   </div>
+                  <div className="flex items-center justify-between py-2 border-b  last:border-0">
+                    <span className="text-sm ">{t("shape")}</span>
+                    <span className="text-sm font-medium ">
+                      {aquarium.shape ? t(aquarium.shape) : t("notAssigned")}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between py-2 border-b  last:border-0">
+                    <span className="text-sm ">{tDetails("public")}</span>
+                    <span className="text-sm font-medium ">
+                      {aquarium.isPublic ? t("yes") : t("no")}
+                    </span>
+                  </div>
                 </div>
-              ) : (
-                <div className="italic opacity-60 mt-2">{t("notAssigned")}</div>
-              )}
-            </div>
+              </div>
 
-            {/* Секция: Напоминания */}
-            <div className="mt-8">
-              <span className="font-semibold text-lg">
-                {t("reminders") || "Напоминания"}:
-              </span>
-              {aquarium.reminders && aquarium.reminders.length > 0 ? (
-                <ul className="list-disc ml-6 mt-2">
-                  {aquarium.reminders.map((rem: any, idx: number) => (
-                    <li key={rem.id || idx} className="mb-1">
-                      <span className="font-semibold">{rem.title}</span> —{" "}
-                      {rem.remindAt
-                        ? new Date(rem.remindAt).toLocaleDateString()
-                        : t("notAssigned")}{" "}
-                      {rem.isCompleted ? `(${t("yes")})` : `(${t("no")})`}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <div className="italic opacity-60 mt-2">{t("notAssigned")}</div>
-              )}
+              {/* Maintenance */}
+              <div>
+                <div className="text-xs md:text-sm lg:text-xl font-bebas  uppercase leading-none  tracking-wide  mb-6 border-b  pb-2 font-bold">
+                  {tDetails("maintenance")}
+                </div>
+                <div className="space-y-4">
+                  <div className="p-4 border  ">
+                    <div className="text-xs  uppercase tracking-widest  mb-2">
+                      {tDetails("nextService")}
+                    </div>
+                    <div className="text-sm ">
+                      {aquarium.reminders && aquarium.reminders.length > 0
+                        ? new Date(
+                            aquarium.reminders[0].remindAt
+                          ).toLocaleDateString()
+                        : tDetails("noScheduledMaintenance")}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -272,8 +621,8 @@ const EditIcon = (props: React.SVGProps<SVGSVGElement>) => {
     <svg
       {...props}
       xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
+      width="14"
+      height="14"
       viewBox="0 0 24 25"
       fill="none"
       stroke="currentColor"

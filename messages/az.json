@@ -144,7 +144,32 @@
       "temperature": "Temperatur",
       "hardness": "Şərti dərindlik",
       "nitrates": "Nitratlar",
-      "loading": "Yüklənir..."
+      "loading": "Yüklənir...",
+      "successModalTitle": "Akvarium uğurla əlavə edildi!",
+      "successModalDescription": "Yeni akvariumunuz uğurla yaradıldı",
+      "successModalAquariumName": "Akvarium adı",
+      "successModalMessage": "İndi redaktə linkinə keçərək akvarium haqqında əlavə məlumat əlavə edə bilərsiniz və ya akvarium siyahınıza qayıda bilərsiniz.",
+      "successModalEditButton": "Akvariumu redaktə et",
+      "successModalBackToList": "Siyahıya qayıt",
+      "updateSuccessMessage": "Akvarium uğurla yeniləndi!",
+      "updateTryAgain": "Akvariumu yeniləmək alınmadı. Yenidən cəhd edin.",
+      "notFound": "Akvarium tapılmadı və ya onu redaktə etmək üçün icazəniz yoxdur",
+      "updateButton": "Akvariumu yenilə",
+      "updatingButton": "Yenilənir..."
+    },
+    "AquariumDetails": {
+      "description": "Təsvir",
+      "specifications": "Spesifikasiyalar",
+      "content": "Məzmun",
+      "timeline": "Zaman xətti",
+      "overview": "Ümumi baxış",
+      "maintenance": "Xidmət",
+      "startDate": "Başlama tarixi",
+      "nextService": "Növbəti xidmət",
+      "noScheduledMaintenance": "Planlaşdırılmış xidmət yoxdur",
+      "public": "İctimai",
+      "private": "Şəxsi",
+      "editAquarium": "Akvariumu redaktə et"
     },
     "MyTanks": {
       "title": "Mənim akvariumlarım",

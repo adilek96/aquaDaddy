@@ -1,5 +1,6 @@
 import Image from "next/image";
 import UserCard from "@/components/component/userCard";
+import SuccessModal from "@/components/component/successModal";
 
 export default function MyTanksLayout({
   children,
@@ -29,6 +30,7 @@ export default function MyTanksLayout({
           </div>
         </div>
       </div>
+      <SuccessModal />
     </>
   );
 }

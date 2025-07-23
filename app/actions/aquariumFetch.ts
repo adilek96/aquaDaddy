@@ -6,7 +6,7 @@ export async function fetchUserAquarium({  tankId }: {   tankId: string }) {
   
  
 
-  const aquariums = await prisma.aquarium.findUnique({
+  const aquarium = await prisma.aquarium.findUnique({
     where,
     include: {
       images: true,
@@ -19,5 +19,28 @@ export async function fetchUserAquarium({  tankId }: {   tankId: string }) {
     }
   });
 
-  return aquariums;
+  // Преобразуем даты в строки для сериализации
+  if (aquarium) {
+    return {
+      ...aquarium,
+      startDate: aquarium.startDate ? aquarium.startDate.toISOString() : null,
+      createdAt: aquarium.createdAt.toISOString(),
+      updatedAt: aquarium.updatedAt.toISOString(),
+      // Обрабатываем связанные модели с датами
+      waterParams: aquarium.waterParams ? {
+        ...aquarium.waterParams,
+        lastUpdated: aquarium.waterParams.lastUpdated.toISOString(),
+      } : null,
+      maintenance: aquarium.maintenance.map(m => ({
+        ...m,
+        performedAt: m.performedAt.toISOString(),
+      })),
+      reminders: aquarium.reminders.map(r => ({
+        ...r,
+        remindAt: r.remindAt.toISOString(),
+      })),
+    };
+  }
+
+  return aquarium;
 } 
