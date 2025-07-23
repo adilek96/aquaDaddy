@@ -121,7 +121,30 @@
       "depth": "Dərinlik",
       "bowK": "Forma əmsalı (k)",
       "side": "Tərəf",
-      "diameter": "Diametr"
+      "diameter": "Diametr",
+      "nextService": "Növbəti xidmət tarixi:",
+      "today": "Bugün",
+      "tomorrow": "Yarım",
+      "afterTomorrow": "Sabah",
+      "in3Days": "3 gün",
+      "inDays": "",
+      "days": "gün sonra",
+      "passed": "Xidmət tarixi keçdi",
+      "bow": "Qövs ön",
+      "notAssigned": "təyin edilməyib",
+      "createdAt": "Yaradılıb",
+      "updatedAt": "Yenilənib",
+      "isPublic": "İctimai",
+      "yes": "Bəli",
+      "no": "Xeyr",
+      "noDescription": "Təsvir yoxdur",
+      "inhabitants": "Sakinlər",
+      "waterParams": "Su parametrləri",
+      "reminders": "Xatırlatmalar",
+      "temperature": "Temperatur",
+      "hardness": "Şərti dərindlik",
+      "nitrates": "Nitratlar",
+      "loading": "Yüklənir..."
     },
     "MyTanks": {
       "title": "Mənim akvariumlarım",
@@ -130,6 +153,8 @@
       "sort": "Çeşidlə",
       "sortByName": "Ada görə",
       "sortByNextService": "Növbəti xidmət tarixinə görə",
-      "notAssigned": "təyin edilməyib"
+      "notAssigned": "təyin edilməyib",
+      "noAquariums": "Akvarium yoxdur",
+      "loading": "Yüklənir..."
     }
   }

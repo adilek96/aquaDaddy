@@ -13,6 +13,7 @@ import {
   SelectItem,
 } from "../ui/select";
 import { Input } from "../ui/input";
+import LoadingBlock from "../ui/loadingBlock";
 
 export default function AquariumLists() {
   const t = useTranslations("MyTanks");
@@ -23,11 +24,29 @@ export default function AquariumLists() {
   const [aquariums, setAquariums] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
+  const sortData = (data: any[]) => {
+    const sortedData = [...data].sort((a, b) => {
+      if (sort === "nextService") {
+        return (
+          new Date(a.nextService).getTime() - new Date(b.nextService).getTime()
+        );
+      }
+
+      if (sort === "name") {
+        return a.name.localeCompare(b.name);
+      }
+
+      return 0;
+    });
+
+    setAquariums(sortedData);
+  };
+
   useEffect(() => {
     if (!userId) return;
     setLoading(true);
     fetchAquariums({ search, userId }).then((data) => {
-      setAquariums(data);
+      sortData(data);
       setLoading(false);
     });
   }, [search, sort, userId]);
@@ -58,8 +77,8 @@ export default function AquariumLists() {
       </div>
       <div className="flex flex-wrap justify-evenly my-10">
         {loading ? (
-          <div>Загрузка...</div>
-        ) : (
+          <LoadingBlock translate={t("loading")} />
+        ) : aquariums.length > 0 ? (
           aquariums.map((aquarium, index) => (
             <TankCard
               aquarium={aquarium}
@@ -67,6 +86,10 @@ export default function AquariumLists() {
               notAssignedText={t("notAssigned")}
             />
           ))
+        ) : (
+          <div className="text-2xl font-bold w-full text-center h-[50vh] flex items-center justify-center">
+            {t("noAquariums")}
+          </div>
         )}
       </div>
     </>

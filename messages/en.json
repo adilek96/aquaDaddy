@@ -119,7 +119,30 @@
       "depth": "Depth",
       "bowK": "Shape coefficient (k)",
       "side": "Side",
-      "diameter": "Diameter"
+      "diameter": "Diameter",
+      "nextService": "Next service date:",
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "afterTomorrow": "After tomorrow",
+      "in3Days": "In 3 days",
+      "inDays": "In",
+      "days": "days",
+      "passed": "Service date passed",
+      "bow": "Bow",
+      "notAssigned": "not assigned",
+      "createdAt": "Created",
+      "updatedAt": "Updated",
+      "isPublic": "Public",
+      "yes": "Yes",
+      "no": "No",
+      "noDescription": "No description",
+      "inhabitants": "Inhabitants",
+      "waterParams": "Water parameters",
+      "reminders": "Reminders",
+      "temperature": "Temperature",
+      "hardness": "Hardness",
+      "nitrates": "Nitrates",
+      "loading": "Loading..."
     },
     "MyTanks": {
       "title": "My aquariums",
@@ -128,6 +151,8 @@
       "sort": "Sort",
       "sortByName": "By name",
       "sortByNextService": "By next service date",
-      "notAssigned": "not assigned"
+      "notAssigned": "not assigned",
+      "noAquariums": "No aquariums",
+      "loading": "Loading..."
     }
   }

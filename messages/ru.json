@@ -120,7 +120,30 @@
       "depth": "Глубина",
       "bowK": "Коэффициент формы (k)",
       "side": "Сторона",
-      "diameter": "Диаметр"
+      "diameter": "Диаметр",
+      "nextService": "Дата следующего обслуживания:",
+      "today": "Сегодня",
+      "tomorrow": "Завтра",
+      "afterTomorrow": "Послезавтра",
+      "in3Days": "Через 3 дня",
+      "inDays": "Через",
+      "days": "cуток",
+      "passed": "Дата обслуживания прошла",
+      "bow": "Выпуклый",
+      "notAssigned": "не назначена",
+      "createdAt": "Создан",
+      "updatedAt": "Обновлен",
+      "isPublic": "Публичный",
+      "yes": "Да",
+      "no": "Нет",
+      "noDescription": "Нет описания",
+      "inhabitants": "Обитатели",
+      "waterParams": "Параметры воды",
+      "reminders": "Напоминания",
+      "temperature": "Температура",
+      "hardness": "Жёсткость",
+      "nitrates": "Нитраты",
+      "loading": "Загрузка..."
     },
     "MyTanks": {
       "title": "Мои аквариумы",
@@ -129,6 +152,8 @@
       "sort": "Сортировка",
       "sortByName": "По названию",
       "sortByNextService": "По дате обслуживания",
-      "notAssigned": "не назначена"
+      "notAssigned": "не назначена",
+      "noAquariums": "Нет аквариумов",
+      "loading": "Загрузка..."
     }
   }
