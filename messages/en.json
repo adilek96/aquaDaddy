@@ -1,4 +1,20 @@
 {
+    "Meta": {
+      "title": "AquaDaddy - Your Aquarium Management Platform",
+      "description": "Discover, manage, and learn about aquariums. Track your aquatic ecosystems, explore species, and connect with fellow aquarists.",
+      "keywords": "aquarium, fish, aquatic life, aquarium management, freshwater, saltwater, paludarium, aquarists, fish keeping",
+      "author": "AquaDaddy Team",
+      "ogTitle": "AquaDaddy - Your Aquarium Management Platform",
+      "ogDescription": "Discover, manage, and learn about aquariums. Track your aquatic ecosystems, explore species, and connect with fellow aquarists.",
+      "ogType": "website",
+      "ogImage": "/screenshots/screenshot-desktop.png",
+      "ogImageAlt": "AquaDaddy - Aquarium Management Platform",
+      "twitterCard": "summary_large_image",
+      "twitterTitle": "AquaDaddy - Your Aquarium Management Platform",
+      "twitterDescription": "Discover, manage, and learn about aquariums. Track your aquatic ecosystems, explore species, and connect with fellow aquarists.",
+      "twitterImage": "/screenshots/screenshot-desktop.png",
+      "twitterImageAlt": "AquaDaddy - Aquarium Management Platform"
+    },
     "HomePage": {
       "discovery-title": "Discovery",
       "aquariums-title": "My aquariums",

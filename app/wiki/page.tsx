@@ -3,6 +3,14 @@ import { Card } from "@/components/ui/card";
 import { BookIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import React from "react";
+import { generateWikiMetadata } from "@/components/helpers/MetaTags";
+import { cookies } from "next/headers";
+
+export async function generateMetadata() {
+  const cookieStore = cookies();
+  const locale = cookieStore.get("NEXT_LOCALE")?.value || "en";
+  return generateWikiMetadata(locale);
+}
 
 export default function Wiki() {
   const t = useTranslations("HomePage");

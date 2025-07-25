@@ -20,7 +20,7 @@ const config = {
     extend: {
       fontFamily : {
         bebas: ['var(--font-bebas)'],
-        
+        montserrat: ['var(--font-montserrat)'],
       },
       colors: {
         border: "hsl(var(--border))",

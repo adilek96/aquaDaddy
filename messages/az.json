@@ -1,4 +1,20 @@
 {
+    "Meta": {
+      "title": "AquaDaddy - Akvarium İdarəetmə Platforması",
+      "description": "Akvariumları kəşf edin, idarə edin və öyrənin. Su ekosistemlərinizi izləyin, növləri araşdırın və həmkarlarınızla əlaqə saxlayın.",
+      "keywords": "akvarium, balıq, su canlıları, akvarium idarəetməsi, şirin su, dəniz suyu, paludarium, akvariumistlər, balıq saxlanması",
+      "author": "AquaDaddy Komandası",
+      "ogTitle": "AquaDaddy - Akvarium İdarəetmə Platforması",
+      "ogDescription": "Akvariumları kəşf edin, idarə edin və öyrənin. Su ekosistemlərinizi izləyin, növləri araşdırın və həmkarlarınızla əlaqə saxlayın.",
+      "ogType": "website",
+      "ogImage": "/screenshots/screenshot-desktop.png",
+      "ogImageAlt": "AquaDaddy - Akvarium İdarəetmə Platforması",
+      "twitterCard": "summary_large_image",
+      "twitterTitle": "AquaDaddy - Akvarium İdarəetmə Platforması",
+      "twitterDescription": "Akvariumları kəşf edin, idarə edin və öyrənin. Su ekosistemlərinizi izləyin, növləri araşdırın və həmkarlarınızla əlaqə saxlayın.",
+      "twitterImage": "/screenshots/screenshot-desktop.png",
+      "twitterImageAlt": "AquaDaddy - Akvarium İdarəetmə Platforması"
+    },
     "HomePage": {
       "discovery-title": "Kəşf et",
       "aquariums-title": "Mənim akvariumlarım",

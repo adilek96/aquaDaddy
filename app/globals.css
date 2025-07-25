@@ -32,6 +32,8 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
+    --font-bebas: "Bebas Neue", sans-serif;
+    --font-montserrat: "Montserrat", sans-serif;
   }
 
   .dark {
@@ -59,6 +61,8 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+    --font-bebas: "Bebas Neue", sans-serif;
+    --font-montserrat: "Montserrat", sans-serif;
   }
 }
 
@@ -70,4 +74,10 @@
     @apply bg-background text-foreground;
   }
  
+  h1,h2,h3,h4,h5,h6 {
+    @apply font-bebas;
+  }
+  p {
+    @apply font-montserrat;
+  }
 }

@@ -76,7 +76,7 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
     switch (shape) {
       case "rectangular":
         return (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             <div className="group">
               <div className="text-xs uppercase tracking-widest mb-1">
                 {t("length")}
@@ -126,7 +126,7 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
 
       case "cube":
         return (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             <div className="group">
               <div className="text-xs uppercase tracking-widest mb-1">
                 {t("length")}
@@ -165,7 +165,7 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
 
       case "cylinder":
         return (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             <div className="group">
               <div className="text-xs uppercase tracking-widest mb-1">
                 {t("diameter")}
@@ -204,7 +204,7 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
 
       case "sphere":
         return (
-          <div className="grid grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
             <div className="group">
               <div className="text-xs uppercase tracking-widest mb-1">
                 {t("diameter")}
@@ -232,7 +232,7 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
 
       case "hemisphere":
         return (
-          <div className="grid grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
             <div className="group">
               <div className="text-xs uppercase tracking-widest mb-1">
                 {t("diameter")}
@@ -260,7 +260,7 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
 
       case "hexagon":
         return (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             <div className="group">
               <div className="text-xs uppercase tracking-widest mb-1">
                 {t("side")}
@@ -299,7 +299,7 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
 
       case "bow":
         return (
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6 lg:gap-8">
             <div className="group">
               <div className="text-xs uppercase tracking-widest mb-1">
                 {t("width")}
@@ -357,7 +357,7 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
 
       default:
         return (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             <div className="group">
               <div className="text-xs uppercase tracking-widest mb-1">
                 Length{getLengthUnit()}
@@ -405,8 +405,8 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
 
   return (
     <>
-      <div className="flex no-wrap justify-between items-center">
-        <h2 className="text-3xl md:text-4xl  font-bold my-10 ml-5 font-bebas  leading-none  tracking-wide   cursor-default inline-flex flex-wrap ">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center px-4 sm:px-6 lg:px-8">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold my-6 sm:my-10 font-bebas leading-none tracking-wide cursor-default inline-flex flex-wrap">
           <span className="relative group transition-all duration-700 text-nowrap">
             <Link
               href={"../myTanks"}
@@ -417,9 +417,9 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
           </span>
           <span className="text-nowrap"> &nbsp; | &nbsp;</span>
           {aquarium ? (
-            <span>{aquarium.name}</span>
+            <span className="text-wrap">{aquarium.name}</span>
           ) : (
-            <div className="inline-block h-8 w-40 rounded bg-muted animate-pulse" />
+            <div className="inline-block h-6 sm:h-8 w-32 sm:w-40 rounded bg-muted animate-pulse" />
           )}
         </h2>
       </div>
@@ -427,38 +427,38 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
       {!aquarium ? (
         <LoadingBlock translate={t("loading")} />
       ) : (
-        <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
           {/* Main Grid */}
-          <div className="grid grid-cols-12 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
             {/* Left Column - Primary Info */}
-            <div className="col-span-12 lg:col-span-8 space-y-12">
+            <div className="lg:col-span-8 space-y-8 sm:space-y-12">
               {/* Description */}
               <div>
-                <h2 className="text-xs md:text-sm lg:text-xl w-full font-bebas  uppercase leading-none  tracking-wide  mb-6 border-b  pb-2 font-bold inline-flex justify-between">
-                  {tDetails("description")}
+                <h2 className="text-sm sm:text-base lg:text-xl w-full font-bebas uppercase leading-none tracking-wide mb-4 sm:mb-6 border-b pb-2 font-bold flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                  <span>{tDetails("description")}</span>
                   <button
                     type="button"
-                    className=" mr-5 p-2 rounded-lg hover:translate-y-0.5 "
+                    className="mt-2 sm:mt-0 sm:mr-5 p-2 rounded-lg hover:translate-y-0.5 transition-transform"
                     title={tDetails("editAquarium")}
                   >
-                    <FaEdit className=" w-5 h-5 " />
+                    <FaEdit className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 </h2>
-                <p className=" leading-relaxed">
+                <p className="text-sm sm:text-base leading-relaxed">
                   {aquarium.description || t("noDescription")}
                 </p>
               </div>
 
               {/* Dimensions Grid */}
               <div>
-                <h2 className="text-xs md:text-sm lg:text-xl w-full font-bebas  uppercase leading-none  tracking-wide  mb-6 border-b  pb-2 font-bold inline-flex justify-between">
-                  {tDetails("specifications")}
+                <h2 className="text-sm sm:text-base lg:text-xl w-full font-bebas uppercase leading-none tracking-wide mb-4 sm:mb-6 border-b pb-2 font-bold flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                  <span>{tDetails("specifications")}</span>
                   <button
                     type="button"
-                    className=" mr-5 p-2 rounded-lg hover:translate-y-0.5 "
+                    className="mt-2 sm:mt-0 sm:mr-5 p-2 rounded-lg hover:translate-y-0.5 transition-transform"
                     title={tDetails("editAquarium")}
                   >
-                    <FaEdit className=" w-5 h-5 " />
+                    <FaEdit className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 </h2>
                 {renderDimensions()}
@@ -466,38 +466,38 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
 
               {/* Content */}
               <div>
-                <h2 className="text-xs md:text-sm lg:text-xl w-full font-bebas  uppercase leading-none  tracking-wide  mb-6 border-b  pb-2 font-bold inline-flex justify-between">
-                  {tDetails("content")}
+                <h2 className="text-sm sm:text-base lg:text-xl w-full font-bebas uppercase leading-none tracking-wide mb-4 sm:mb-6 border-b pb-2 font-bold flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                  <span>{tDetails("content")}</span>
                   <button
                     type="button"
-                    className=" mr-5 p-2 rounded-lg hover:translate-y-0.5 "
+                    className="mt-2 sm:mt-0 sm:mr-5 p-2 rounded-lg hover:translate-y-0.5 transition-transform"
                     title={tDetails("editAquarium")}
                   >
-                    <FaEdit className=" w-5 h-5 " />
+                    <FaEdit className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                   <div className="group">
-                    <div className="text-xs  uppercase tracking-widest  mb-1">
+                    <div className="text-xs uppercase tracking-widest mb-1">
                       {t("inhabitants")}
                     </div>
-                    <div className="text-sm font-medium  transition-colors">
+                    <div className="text-sm font-medium transition-colors">
                       {aquarium.inhabitants || t("notAssigned")}
                     </div>
                   </div>
                   <div className="group">
-                    <div className="text-xs  uppercase tracking-widest  mb-1">
+                    <div className="text-xs uppercase tracking-widest mb-1">
                       {t("waterParams")}
                     </div>
-                    <div className="text-sm font-medium  transition-colors">
+                    <div className="text-sm font-medium transition-colors">
                       {aquarium.waterParameters || t("notAssigned")}
                     </div>
                   </div>
-                  <div className="group">
-                    <div className="text-xs  uppercase tracking-widest  mb-1">
+                  <div className="group sm:col-span-2 lg:col-span-1">
+                    <div className="text-xs uppercase tracking-widest mb-1">
                       {t("reminders")}
                     </div>
-                    <div className="text-sm font-medium  transition-colors">
+                    <div className="text-sm font-medium transition-colors">
                       {aquarium.reminders || t("notAssigned")}
                     </div>
                   </div>
@@ -506,21 +506,21 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
 
               {/* Timeline */}
               <div>
-                <h2 className="text-xs md:text-sm lg:text-xl w-full font-bebas  uppercase leading-none  tracking-wide  mb-6 border-b  pb-2 font-bold inline-flex justify-between">
-                  {tDetails("timeline")}
+                <h2 className="text-sm sm:text-base lg:text-xl w-full font-bebas uppercase leading-none tracking-wide mb-4 sm:mb-6 border-b pb-2 font-bold flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                  <span>{tDetails("timeline")}</span>
                   <button
                     type="button"
-                    className=" mr-5 p-2 rounded-lg hover:translate-y-0.5 "
+                    className="mt-2 sm:mt-0 sm:mr-5 p-2 rounded-lg hover:translate-y-0.5 transition-transform"
                     title={tDetails("editAquarium")}
                   >
-                    <FaEdit className=" w-5 h-5 " />
+                    <FaEdit className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 </h2>
-                <div className="space-y-6">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-2 h-2 bg-gray-200 rounded-full"></div>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
+                <div className="space-y-4 sm:space-y-6">
+                  <div className="flex items-center space-x-3 sm:space-x-4">
+                    <div className="w-2 h-2 bg-gray-200 rounded-full flex-shrink-0"></div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
                         <span className="text-sm font-medium text-gray-500">
                           {tDetails("startDate")}
                         </span>
@@ -537,23 +537,23 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
             </div>
 
             {/* Right Column - Sidebar */}
-            <div className="col-span-12 lg:col-span-4 space-y-12">
+            <div className="lg:col-span-4 space-y-8 sm:space-y-12">
               {/* Quick Stats */}
-              <div className="p-6 rounded-none">
-                <div className="text-xs md:text-sm lg:text-xl w-full font-bebas  uppercase leading-none  tracking-wide  mb-6 border-b  pb-2 font-bold inline-flex justify-between">
-                  {tDetails("overview")}
+              <div className="p-4 sm:p-6 rounded-none border">
+                <div className="text-sm sm:text-base lg:text-xl w-full font-bebas uppercase leading-none tracking-wide mb-4 sm:mb-6 border-b pb-2 font-bold flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                  <span>{tDetails("overview")}</span>
                   <button
                     type="button"
-                    className=" mr-5 p-2 rounded-lg hover:translate-y-0.5 "
+                    className="mt-2 sm:mt-0 sm:mr-5 p-2 rounded-lg hover:translate-y-0.5 transition-transform"
                     title={tDetails("editAquarium")}
                   >
-                    <FaEdit className=" w-5 h-5 " />
+                    <FaEdit className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 </div>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between py-2 border-b  last:border-0">
-                    <span className="text-sm ">{t("type")}</span>
-                    <span className="text-sm font-medium ">
+                <div className="space-y-3 sm:space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2 border-b last:border-0 gap-1 sm:gap-0">
+                    <span className="text-sm">{t("type")}</span>
+                    <span className="text-sm font-medium">
                       {aquarium.type
                         ? t(
                             aquarium.type.toLowerCase() as
@@ -564,15 +564,15 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
                         : t("notAssigned")}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between py-2 border-b  last:border-0">
-                    <span className="text-sm ">{t("shape")}</span>
-                    <span className="text-sm font-medium ">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2 border-b last:border-0 gap-1 sm:gap-0">
+                    <span className="text-sm">{t("shape")}</span>
+                    <span className="text-sm font-medium">
                       {aquarium.shape ? t(aquarium.shape) : t("notAssigned")}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between py-2 border-b  last:border-0">
-                    <span className="text-sm ">{tDetails("public")}</span>
-                    <span className="text-sm font-medium ">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2 border-b last:border-0 gap-1 sm:gap-0">
+                    <span className="text-sm">{tDetails("public")}</span>
+                    <span className="text-sm font-medium">
                       {aquarium.isPublic ? t("yes") : t("no")}
                     </span>
                   </div>
@@ -581,15 +581,15 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
 
               {/* Maintenance */}
               <div>
-                <div className="text-xs md:text-sm lg:text-xl font-bebas  uppercase leading-none  tracking-wide  mb-6 border-b  pb-2 font-bold">
+                <div className="text-sm sm:text-base lg:text-xl font-bebas uppercase leading-none tracking-wide mb-4 sm:mb-6 border-b pb-2 font-bold">
                   {tDetails("maintenance")}
                 </div>
                 <div className="space-y-4">
-                  <div className="p-4 border  ">
-                    <div className="text-xs  uppercase tracking-widest  mb-2">
+                  <div className="p-4 border">
+                    <div className="text-xs uppercase tracking-widest mb-2">
                       {tDetails("nextService")}
                     </div>
-                    <div className="text-sm ">
+                    <div className="text-sm">
                       {aquarium.reminders && aquarium.reminders.length > 0
                         ? new Date(
                             aquarium.reminders[0].remindAt
