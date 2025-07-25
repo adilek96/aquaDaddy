@@ -46,7 +46,7 @@ export default async function RootLayout({
   const messages = await getMessages({ locale });
 
   return (
-    <html suppressHydrationWarning lang={locale}>
+    <html suppressHydrationWarning className="scroll-smooth" lang={locale}>
       <body
         className={`${libre_franklin.className} ${bebas.variable} ${montserrat.className}   `}
       >

@@ -155,7 +155,9 @@
       "updateTryAgain": "Akvariumu yeniləmək alınmadı. Yenidən cəhd edin.",
       "notFound": "Akvarium tapılmadı və ya onu redaktə etmək üçün icazəniz yoxdur",
       "updateButton": "Akvariumu yenilə",
-      "updatingButton": "Yenilənir..."
+      "updatingButton": "Yenilənir...",
+      "editAquarium": "Akvariumu redaktə et"
+  
     },
     "AquariumDetails": {
       "description": "Təsvir",

@@ -151,7 +151,11 @@
       "updateTryAgain": "Не удалось обновить аквариум. Попробуйте еще раз.",
       "notFound": "Аквариум не найден или у вас нет прав для его редактирования",
       "updateButton": "Обновить аквариум",
-      "updatingButton": "Обновление..."
+      "updatingButton": "Обновление...",
+      "editAquarium": "Редактировать аквариум",
+      "freshwater": "Пресноводный",
+      "saltwater": "Морской",
+      "paludarium": "Палюдариум"
     },
     "AquariumDetails": {
       "description": "Описание",
