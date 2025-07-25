@@ -60,7 +60,7 @@ async function generateMetadata(): Promise<Metadata> {
       },
     },
     openGraph: {
-      type: meta.ogType,
+      type: "website" as const,
       locale: locale,
       url: baseUrl,
       title: meta.ogTitle,
@@ -76,7 +76,7 @@ async function generateMetadata(): Promise<Metadata> {
       ],
     },
     twitter: {
-      card: meta.twitterCard,
+      card: "summary_large_image" as const,
       title: meta.twitterTitle,
       description: meta.twitterDescription,
       images: [`${baseUrl}${meta.twitterImage}`],
@@ -93,6 +93,17 @@ async function generateMetadata(): Promise<Metadata> {
     },
     category: "Aquarium Management",
     classification: "Aquarium Software",
+    icons: {
+      icon: [
+        { url: "/favicon.ico" },
+        { url: "/icons/icon-96x96.png", sizes: "96x96", type: "image/png" },
+        { url: "/icons/icon-72x72.png", sizes: "72x72", type: "image/png" },
+      ],
+      apple: [
+        { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
+      ],
+    },
+    manifest: "/manifest.json",
     other: {
       "application-name": "AquaDaddy",
       "apple-mobile-web-app-title": "AquaDaddy",
@@ -102,6 +113,7 @@ async function generateMetadata(): Promise<Metadata> {
       "msapplication-TileColor": "#000000",
       "msapplication-config": "/browserconfig.xml",
       "theme-color": "#000000",
+      "format-detection": "telephone=no",
     },
   };
 }
@@ -119,29 +131,6 @@ export default async function RootLayout({
 
   return (
     <html suppressHydrationWarning className="scroll-smooth" lang={locale}>
-      <head>
-        <link rel="icon" href="/favicon.ico" />
-        <link
-          rel="apple-touch-icon"
-          sizes="180x180"
-          href="/icons/icon-192x192.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="32x32"
-          href="/icons/icon-96x96.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="16x16"
-          href="/icons/icon-72x72.png"
-        />
-        <link rel="manifest" href="/manifest.json" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="format-detection" content="telephone=no" />
-      </head>
       <body
         className={`${libre_franklin.className} ${bebas.variable} ${montserrat.variable}`}
       >

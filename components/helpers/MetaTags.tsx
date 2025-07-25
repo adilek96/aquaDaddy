@@ -28,7 +28,7 @@ export async function generatePageMetadata(
       },
     },
     openGraph: {
-      type: t("ogType"),
+      type: "website" as const,
       locale: locale,
       url: `${baseUrl}/${pageKey}`,
       title: t("ogTitle"),
@@ -44,7 +44,7 @@ export async function generatePageMetadata(
       ],
     },
     twitter: {
-      card: t("twitterCard"),
+      card: "summary_large_image" as const,
       title: t("twitterTitle"),
       description: t("twitterDescription"),
       images: [`${baseUrl}${t("twitterImage")}`],
@@ -78,7 +78,7 @@ export async function generateAquariumMetadata(
     openGraph: {
       title: `${aquariumName} - AquaDaddy`,
       description: `View and manage your ${aquariumName} aquarium. Track water parameters, inhabitants, and maintenance schedule.`,
-      type: "website",
+      type: "website" as const,
       locale: locale,
       url: `${baseUrl}/myTanks/${aquariumName}`,
       siteName: "AquaDaddy",
@@ -92,7 +92,7 @@ export async function generateAquariumMetadata(
       ],
     },
     twitter: {
-      card: "summary_large_image",
+      card: "summary_large_image" as const,
       title: `${aquariumName} - AquaDaddy`,
       description: `View and manage your ${aquariumName} aquarium. Track water parameters, inhabitants, and maintenance schedule.`,
       images: [`${baseUrl}${t("twitterImage")}`],
@@ -112,7 +112,7 @@ export async function generateWikiMetadata(
     openGraph: {
       title: "Aquarium Encyclopedia - AquaDaddy",
       description: "Explore our comprehensive aquarium encyclopedia. Learn about fish species, plants, equipment, and aquarium care.",
-      type: "website",
+      type: "website" as const,
       locale: locale,
       url: `${baseUrl}/wiki`,
       siteName: "AquaDaddy",
@@ -126,7 +126,7 @@ export async function generateWikiMetadata(
       ],
     },
     twitter: {
-      card: "summary_large_image",
+      card: "summary_large_image" as const,
       title: "Aquarium Encyclopedia - AquaDaddy",
       description: "Explore our comprehensive aquarium encyclopedia. Learn about fish species, plants, equipment, and aquarium care.",
       images: [`${baseUrl}${t("twitterImage")}`],
