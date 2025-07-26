@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -999,14 +999,14 @@ export function ContentEditModal({
   const [isLoading, setIsLoading] = useState(false);
 
   // Извлекаем данные из связанных моделей
-  const getInhabitantsText = () => {
+  const getInhabitantsText = useCallback(() => {
     if (!aquarium?.inhabitants || aquarium.inhabitants.length === 0) return "";
     return aquarium.inhabitants
       .map((inhabitant: any) => `${inhabitant.species} (${inhabitant.count})`)
       .join(", ");
-  };
+  }, [aquarium?.inhabitants]);
 
-  const getWaterParamsText = () => {
+  const getWaterParamsText = useCallback(() => {
     if (!aquarium?.waterParams) return "";
     const params = [];
     if (aquarium.waterParams.pH) params.push(`pH: ${aquarium.waterParams.pH}`);
@@ -1017,9 +1017,9 @@ export function ContentEditModal({
     if (aquarium.waterParams.nitrates)
       params.push(`Nitrates: ${aquarium.waterParams.nitrates}`);
     return params.join(", ");
-  };
+  }, [aquarium?.waterParams]);
 
-  const getRemindersText = () => {
+  const getRemindersText = useCallback(() => {
     if (!aquarium?.reminders || aquarium.reminders.length === 0) return "";
     return aquarium.reminders
       .map(
@@ -1029,7 +1029,7 @@ export function ContentEditModal({
           ).toLocaleDateString()})`
       )
       .join(", ");
-  };
+  }, [aquarium?.reminders]);
 
   const [content, setContent] = useState({
     inhabitants: getInhabitantsText(),
@@ -1087,7 +1087,8 @@ export function ContentEditModal({
               className="mt-1"
             />
             <p className="text-xs text-muted-foreground mt-1">
-              Формат: "Вид рыбы (количество), Вид растения (количество)"
+              Формат: &ldquo;Вид рыбы (количество), Вид растения
+              (количество)&rdquo;
             </p>
           </div>
           <div>
@@ -1106,7 +1107,8 @@ export function ContentEditModal({
               className="mt-1"
             />
             <p className="text-xs text-muted-foreground mt-1">
-              Формат: "pH: 7.2, Temperature: 25°C, Hardness: 8, Nitrates: 10"
+              Формат: &ldquo;pH: 7.2, Temperature: 25°C, Hardness: 8, Nitrates:
+              10&rdquo;
             </p>
           </div>
           <div>
