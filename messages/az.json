@@ -172,7 +172,27 @@
       "notFound": "Akvarium tapılmadı və ya onu redaktə etmək üçün icazəniz yoxdur",
       "updateButton": "Akvariumu yenilə",
       "updatingButton": "Yenilənir...",
-      "editAquarium": "Akvariumu redaktə et"
+      "editAquarium": "Akvariumu redaktə et",
+      "editDescription": "Təsviri redaktə et",
+      "editSpecifications": "Spesifikasiyaları redaktə et",
+      "editContent": "Məzmunu redaktə et",
+      "editTimeline": "Zaman xəttini redaktə et",
+      "editOverview": "Ümumi baxışı redaktə et",
+      "save": "Yadda saxla",
+      "saving": "Yadda saxlanılır...",
+      "cancel": "Ləğv et",
+      "volumeInfoSaltBold": "Məlumatlar həcm hesablanması üçün dəniz suyu akvariumu üçün:",
+      "volumeInfoSalt": "Həcm geometrik düsturlarla hesablanır. Dəniz suyunun sıxlığı yalnız kütləyə təsir edir, həcmə təsir etmir.",
+      "volumeInfoFreshwaterBold": "Məlumatlar həcm hesablanması üçün şirin su akvariumu üçün:",
+      "volumeInfoFreshwater": "Həcm geometrik düsturlarla hesablanır. Şirin su akvariumları üçün hesablama standart həcm düsturları əsasında aparılır",
+      "volumeInfoPaludariumBold": "Məlumatlar həcm hesablanması üçün paludarium üçün:",
+      "volumeInfoPaludarium": "Avtomatik hesablama istifadə edildikdə, 0.7 əmsalı tətbiq edilir, çünki paludarium həcminin bir hissəsi yer üzündə və dekorasiyalarla tutulur.",
+      "automatedCalculation": "Avtomatik həcm hesablanması",
+      "volumeCalcInfo": "Həcm hesablanması hesablanan həcmə uyğun deyilsə, avtomatik hesablama söndürün və dəyəri əlavə edin.",
+      "volumeCalcInfoManual": "Dəyəri əlavə edin",
+      "volumeCalcAuto": "Avtomatik hesablanır"
+    
+    
   
     },
     "AquariumDetails": {
@@ -182,12 +202,16 @@
       "timeline": "Zaman xətti",
       "overview": "Ümumi baxış",
       "maintenance": "Xidmət",
+      "editAquarium": "Akvariumu redaktə et",
+      "editDescription": "Təsviri redaktə et",
+      "editSpecifications": "Spesifikasiyaları redaktə et",
+      "editContent": "Məzmunu redaktə et",
+      "editTimeline": "Zaman xəttini redaktə et",
+      "editOverview": "Ümumi baxışı redaktə et",
       "startDate": "Başlama tarixi",
-      "nextService": "Növbəti xidmət",
-      "noScheduledMaintenance": "Planlaşdırılmış xidmət yoxdur",
       "public": "İctimai",
-      "private": "Şəxsi",
-      "editAquarium": "Akvariumu redaktə et"
+      "nextService": "Növbəti xidmət",
+      "noScheduledMaintenance": "Planlaşdırılmış xidmət yoxdur"
     },
     "MyTanks": {
       "title": "Mənim akvariumlarım",
@@ -199,5 +223,8 @@
       "notAssigned": "təyin edilməyib",
       "noAquariums": "Akvarium yoxdur",
       "loading": "Yüklənir..."
-    }
+    },
+    "cancel": "Ləğv et",
+    "save": "Yadda saxla",
+    "saving": "Yadda saxlanılır..."
   }

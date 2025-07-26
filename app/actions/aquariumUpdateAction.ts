@@ -1,196 +1,339 @@
 "use server";
 
-import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
-import { revalidatePath } from "next/cache";
-import { getMessages } from "next-intl/server";
-import { measurCalcInch } from "@/components/helpers/measurCalcInch";
-import { measurCalcGal } from "@/components/helpers/mesurCalcGal";
 
-// Схема валидации для формы обновления аквариума
-const AquariumUpdateSchema = z.object({
-  name: z.string().min(1, "415-14").max(100, "415-15"),
-  type: z.enum(["FRESHWATER", "SALTWATER", "PALUDARIUM"], {
-    required_error: "415-16",
-  }),
-  shape: z.string().min(1, "415-17"),
-  description: z.string().optional(),
-  lengthCm: z.string().transform((val) => val === "" ? null : Number(val)).pipe(z.number().positive("415-18").nullable()),
-  widthCm: z.string().transform((val) => val === "" ? null : Number(val)).pipe(z.number().positive("415-19").nullable()),
-  heightCm: z.string().transform((val) => val === "" ? null : Number(val)).pipe(z.number().positive("415-20").nullable()),
-  volumeLiters: z.string().transform((val) => val === "" ? null : Number(val)).pipe(z.number().positive("415-21").nullable()),
-  startDate: z.string().optional().or(z.literal("")),
-  measurementSystem: z.string().optional(),
-  // Дополнительные поля для разных форм аквариума
-  diameterCm: z.string().transform((val) => val === "" ? null : Number(val)).pipe(z.number().positive().nullable()),
-  sideCm: z.string().transform((val) => val === "" ? null : Number(val)).pipe(z.number().positive().nullable()),
-  depthCm: z.string().transform((val) => val === "" ? null : Number(val)).pipe(z.number().positive().nullable()),
-  k: z.string().transform((val) => val === "" ? null : Number(val)).pipe(z.number().positive().nullable()),
-  aquariumId: z.string().min(1, "Aquarium ID is required"),
-});
-
-type FormState = {
-  data: any;
-  zodErrors: Record<string, string[]> | null;
-  message: string | null;
-  success?: boolean;
-};
-
-export async function aquariumUpdateAction(
-  prevState: FormState,
-  formData: FormData
-): Promise<FormState> {
-  // Получаем переводы в начале функции
-  const messages = await getMessages();
- 
+// Обновление описания аквариума
+export async function updateAquariumDescription(tankId: string, description: string) {
   try {
-    // Получаем текущего пользователя
     const session = await auth();
-    
-    if (!session?.user?.id) {
-      return {
-        data: null,
-        zodErrors: null,
-        message: (messages as any).AquariumForm?.loginRequired || "You must be logged in to update an aquarium",
-      };
+    if (!session?.user?.email) {
+      throw new Error("Unauthorized");
     }
 
-    // Парсим и валидируем данные формы
-    const rawData = {
-      name: formData.get("name") || "",
-      type: formData.get("type") || "",
-      shape: formData.get("shape") || "",
-      description: formData.get("description") || "",
-      lengthCm: formData.get("lengthCm") || "",
-      widthCm: formData.get("widthCm") || "",
-      heightCm: formData.get("heightCm") || "",
-      volumeLiters: formData.get("volumeLiters") || "",
-      startDate: formData.get("startDate") || "",
-      measurementSystem: formData.get("measurementSystem") || "",
-      // Дополнительные поля для разных форм
-      diameterCm: formData.get("diameterCm") || "",
-      sideCm: formData.get("sideCm") || "",
-      depthCm: formData.get("depthCm") || "",
-      k: formData.get("k") || "",
-      aquariumId: formData.get("aquariumId") || "",
-    };
-
-    const validatedData = AquariumUpdateSchema.parse(rawData);
-
-    // Проверяем, что аквариум принадлежит пользователю
-    const existingAquarium = await prisma.aquarium.findFirst({
-      where: {
-        id: validatedData.aquariumId,
-        userId: session.user.id,
-      },
+    // Получаем пользователя по email
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email }
     });
 
-    if (!existingAquarium) {
-      return {
-        data: null,
-        zodErrors: null,
-        message: (messages as any).AquariumForm?.notFound || "Aquarium not found or you don't have permission to edit it",
-      };
+    if (!user) {
+      throw new Error("User not found");
     }
 
-    // Конвертируем единицы измерения если используется имперская система
-    const measurementSystem = validatedData.measurementSystem || "metric";
-    let finalLengthCm = validatedData.lengthCm;
-    let finalWidthCm = validatedData.widthCm;
-    let finalHeightCm = validatedData.heightCm;
-    let finalVolumeLiters = validatedData.volumeLiters;
-    let finalDiameterCm = validatedData.diameterCm;
-    let finalSideCm = validatedData.sideCm;
-    let finalDepthCm = validatedData.depthCm;
-    let finalK = validatedData.k;
-
-    if (measurementSystem === "imperial") {
-      // Конвертируем дюймы в сантиметры для хранения в базе данных
-      if (finalLengthCm !== null && finalLengthCm !== undefined) {
-        finalLengthCm = measurCalcInch(finalLengthCm, "imperial");
-      }
-      if (finalWidthCm !== null && finalWidthCm !== undefined) {
-        finalWidthCm = measurCalcInch(finalWidthCm, "imperial");
-      }
-      if (finalHeightCm !== null && finalHeightCm !== undefined) {
-        finalHeightCm = measurCalcInch(finalHeightCm, "imperial");
-      }
-      if (finalDiameterCm !== null && finalDiameterCm !== undefined) {
-        finalDiameterCm = measurCalcInch(finalDiameterCm, "imperial");
-      }
-      if (finalSideCm !== null && finalSideCm !== undefined) {
-        finalSideCm = measurCalcInch(finalSideCm, "imperial");
-      }
-      if (finalDepthCm !== null && finalDepthCm !== undefined) {
-        finalDepthCm = measurCalcInch(finalDepthCm, "imperial");
-      }
-      // Конвертируем галлоны в литры для хранения в базе данных
-      if (finalVolumeLiters !== null && finalVolumeLiters !== undefined) {
-        finalVolumeLiters = finalVolumeLiters * 3.78541;
-      }
-    }
-
-    // Обновляем аквариум в базе данных
     const updatedAquarium = await prisma.aquarium.update({
       where: {
-        id: validatedData.aquariumId,
+        id: tankId,
+        userId: user.id, // Используем ID пользователя, а не email
       },
       data: {
-        name: validatedData.name,
-        type: validatedData.type,
-        shape: validatedData.shape,
-        description: validatedData.description || null,
-        lengthCm: finalLengthCm,
-        widthCm: finalWidthCm,
-        heightCm: finalHeightCm,
-        volumeLiters: finalVolumeLiters,
-        startDate: validatedData.startDate ? new Date(validatedData.startDate) : null,
-        // Дополнительные поля для разных форм
-        diameterCm: finalDiameterCm,
-        sideCm: finalSideCm,
-        depthCm: finalDepthCm,
-        k: finalK,
+        description,
       },
+      include: {
+        waterParams: true,
+        inhabitants: true,
+        reminders: true,
+      }
     });
 
-    // Обновляем кэш страниц
-    revalidatePath("/myTanks");
-    revalidatePath(`/myTanks/${validatedData.aquariumId}`);
-
-    return {
-      data: updatedAquarium,
-      zodErrors: null,
-      message: (messages as any).AquariumForm?.updateSuccessMessage || "Aquarium updated successfully!",
-      success: true,
-    };
+    return { success: true, data: updatedAquarium };
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      // Обрабатываем ошибки валидации
-      console.log("Zod validation errors:", error.errors);
-      const zodErrors: Record<string, string[]> = {};
-      error.errors.forEach((err) => {
-        const field = err.path[0] as string;
-        if (!zodErrors[field]) {
-          zodErrors[field] = [];
-        }
-        zodErrors[field].push(err.message);
-      });
+    console.error("Error updating aquarium description:", error);
+    return { success: false, error: "Failed to update description" };
+  }
+}
 
-      console.log("Processed zod errors:", zodErrors);
-      return {
-        data: null,
-        zodErrors,
-        message: (messages as any).AquariumForm?.fixErrors || "Please fix the errors below",
-      };
+// Обновление спецификаций аквариума
+export async function updateAquariumSpecifications(tankId: string, specifications: {
+  lengthCm?: number;
+  widthCm?: number;
+  heightCm?: number;
+  diameterCm?: number;
+  sideCm?: number;
+  depthCm?: number;
+  volumeLiters?: number;
+  k?: number;
+}) {
+  try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error("Unauthorized");
     }
 
-    // Обрабатываем другие ошибки
-    console.error("Error updating aquarium:", error);
-    return {
-      data: null,
-      zodErrors: null,
-      message: (messages as any).AquariumForm?.updateTryAgain || "Failed to update aquarium. Please try again.",
+    // Получаем пользователя по email
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email }
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const updatedAquarium = await prisma.aquarium.update({
+      where: {
+        id: tankId,
+        userId: user.id, // Используем ID пользователя
+      },
+      data: specifications,
+      include: {
+        waterParams: true,
+        inhabitants: true,
+        reminders: true,
+      }
+    });
+
+    return { success: true, data: updatedAquarium };
+  } catch (error) {
+    console.error("Error updating aquarium specifications:", error);
+    return { success: false, error: "Failed to update specifications" };
+  }
+}
+
+// Обновление контента аквариума
+export async function updateAquariumContent(tankId: string, content: {
+  inhabitants?: string;
+  waterParameters?: string;
+  reminders?: string;
+}) {
+  try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error("Unauthorized");
+    }
+
+    // Получаем пользователя по email
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email }
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Функция для парсинга параметров воды
+    const parseWaterParameters = (waterParamsStr: string) => {
+      const params: any = {};
+      const pairs = waterParamsStr.split(',').map(pair => pair.trim());
+      
+      pairs.forEach(pair => {
+        if (pair.includes(':')) {
+          const [key, value] = pair.split(':').map(s => s.trim());
+          const numValue = parseFloat(value);
+          if (!isNaN(numValue)) {
+            switch (key.toLowerCase()) {
+              case 'ph':
+                params.pH = numValue;
+                break;
+              case 'temperature':
+                params.temperatureC = numValue;
+                break;
+              case 'hardness':
+                params.hardness = numValue;
+                break;
+              case 'nitrates':
+                params.nitrates = numValue;
+                break;
+            }
+          }
+        }
+      });
+      
+      return params;
     };
+
+    // Функция для парсинга обитателей
+    const parseInhabitants = (inhabitantsStr: string) => {
+      const inhabitants: Array<{species: string, count: number}> = [];
+      const pairs = inhabitantsStr.split(',').map(pair => pair.trim());
+      
+      pairs.forEach(pair => {
+        const match = pair.match(/^(.+?)\s*\((\d+)\)$/);
+        if (match) {
+          inhabitants.push({
+            species: match[1].trim(),
+            count: parseInt(match[2])
+          });
+        } else if (pair.trim()) {
+          inhabitants.push({
+            species: pair.trim(),
+            count: 1
+          });
+        }
+      });
+      
+      return inhabitants;
+    };
+
+    // Обновляем аквариум с транзакцией для всех связанных данных
+    const updatedAquarium = await prisma.$transaction(async (tx) => {
+      // Обновляем или создаем параметры воды
+      if (content.waterParameters !== undefined) {
+        const waterParams = parseWaterParameters(content.waterParameters);
+        
+        await tx.waterParameters.upsert({
+          where: { aquariumId: tankId },
+          update: {
+            ...waterParams,
+            lastUpdated: new Date(),
+          },
+          create: {
+            aquariumId: tankId,
+            ...waterParams,
+            lastUpdated: new Date(),
+          },
+        });
+      }
+
+      // Обновляем обитателей
+      if (content.inhabitants !== undefined) {
+        // Удаляем старых обитателей
+        await tx.inhabitant.deleteMany({
+          where: { aquariumId: tankId }
+        });
+
+        // Если есть новые обитатели, создаем записи
+        if (content.inhabitants.trim()) {
+          const inhabitants = parseInhabitants(content.inhabitants);
+          for (const inhabitant of inhabitants) {
+            await tx.inhabitant.create({
+              data: {
+                aquariumId: tankId,
+                species: inhabitant.species,
+                count: inhabitant.count,
+              }
+            });
+          }
+        }
+      }
+
+      // Обновляем напоминания
+      if (content.reminders !== undefined) {
+        // Удаляем старые напоминания
+        await tx.reminder.deleteMany({
+          where: { aquariumId: tankId }
+        });
+
+        // Если есть новые напоминания, создаем запись
+        if (content.reminders.trim()) {
+          await tx.reminder.create({
+            data: {
+              aquariumId: tankId,
+              title: content.reminders,
+              remindAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // Завтра по умолчанию
+              isCompleted: false,
+            }
+          });
+        }
+      }
+
+      // Возвращаем обновленный аквариум с связанными данными
+      return await tx.aquarium.findUnique({
+        where: { id: tankId },
+        include: {
+          waterParams: true,
+          inhabitants: true,
+          reminders: true,
+        }
+      });
+    });
+
+    return { success: true, data: updatedAquarium };
+  } catch (error) {
+    console.error("Error updating aquarium content:", error);
+    return { success: false, error: "Failed to update content" };
+  }
+}
+
+// Обновление временной шкалы аквариума
+export async function updateAquariumTimeline(tankId: string, startDate: string) {
+  try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error("Unauthorized");
+    }
+
+    // Получаем пользователя по email
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email }
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const updatedAquarium = await prisma.aquarium.update({
+      where: {
+        id: tankId,
+        userId: user.id, // Используем ID пользователя, а не email
+      },
+      data: {
+        startDate: new Date(startDate),
+      },
+      include: {
+        waterParams: true,
+        inhabitants: true,
+        reminders: true,
+      }
+    });
+
+    return { success: true, data: updatedAquarium };
+  } catch (error) {
+    console.error("Error updating aquarium timeline:", error);
+    return { success: false, error: "Failed to update timeline" };
+  }
+}
+
+// Обновление обзора аквариума
+export async function updateAquariumOverview(tankId: string, overview: {
+  type?: "FRESHWATER" | "SALTWATER" | "PALUDARIUM";
+  shape?: string;
+  isPublic?: boolean;
+}) {
+  try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error("Unauthorized");
+    }
+
+    // Получаем пользователя по email
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email }
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Подготавливаем данные для обновления, исключая пустые значения
+    const updateData: any = {};
+    
+    if (overview.type) {
+      updateData.type = overview.type;
+    }
+    
+    if (overview.shape && overview.shape !== "") {
+      updateData.shape = overview.shape;
+    }
+    
+    if (typeof overview.isPublic === 'boolean') {
+      updateData.isPublic = overview.isPublic;
+    }
+
+    const updatedAquarium = await prisma.aquarium.update({
+      where: {
+        id: tankId,
+        userId: user.id, // Используем ID пользователя, а не email
+      },
+      data: updateData,
+      include: {
+        waterParams: true,
+        inhabitants: true,
+        reminders: true,
+      }
+    });
+
+    return { success: true, data: updatedAquarium };
+  } catch (error) {
+    console.error("Error updating aquarium overview:", error);
+    return { success: false, error: "Failed to update overview" };
   }
 } 
