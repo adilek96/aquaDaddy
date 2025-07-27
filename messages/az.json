@@ -81,7 +81,8 @@
       "title": "Ayarlar",
       "theme": "Qaranlıq rejimi",
       "animate": "Animasıyanı söndür",
-      "measurement": "Ölçü vahidləri"
+      "measurement": "Ölçü vahidləri",
+      "temp": "Temperatur şkalalsı"
     },
     "Header": {
       "settings": "Ayarlar",
@@ -190,7 +191,9 @@
       "automatedCalculation": "Avtomatik həcm hesablanması",
       "volumeCalcInfo": "Həcm hesablanması hesablanan həcmə uyğun deyilsə, avtomatik hesablama söndürün və dəyəri əlavə edin.",
       "volumeCalcInfoManual": "Dəyəri əlavə edin",
-      "volumeCalcAuto": "Avtomatik hesablanır"
+      "volumeCalcAuto": "Avtomatik hesablanır",
+      "lastUpdatedLabel": "Son dəyişim:",
+      "salinity": "Duzluluq"
     
     
   
@@ -211,7 +214,8 @@
       "startDate": "Başlama tarixi",
       "public": "İctimai",
       "nextService": "Növbəti xidmət",
-      "noScheduledMaintenance": "Planlaşdırılmış xidmət yoxdur"
+      "noScheduledMaintenance": "Planlaşdırılmış xidmət yoxdur",
+      "editWaterParams": "Su parametrlərini redaktə et"
     },
     "MyTanks": {
       "title": "Mənim akvariumlarım",
@@ -226,5 +230,6 @@
     },
     "cancel": "Ləğv et",
     "save": "Yadda saxla",
-    "saving": "Yadda saxlanılır..."
+    "saving": "Yadda saxlanılır...",
+    "lastUpdatedLabel": "Son dəyişim:"
   }

@@ -97,8 +97,18 @@ model WaterParameters {
     aquarium     Aquarium @relation(fields: [aquariumId], references: [id])
     pH           Float?
     temperatureC Float?
-    hardness     Float?
-    nitrates     Float?
+    KH           Float?
+    GH           Float?
+    NH3          Float?
+    NH4          Float?
+    NO2          Float?
+    NO3          Float?
+    PO4          Float?
+    K            Float?
+    Fe           Float?
+    Mg           Float?
+    Ca           Float?
+    salinity     Float?
     lastUpdated  DateTime @default(now())
 }
 
@@ -143,7 +153,18 @@ model WaterLog {
     recordedAt   DateTime
     pH           Float?
     temperatureC Float?
-    nitrates     Float?
+    KH           Float?
+    GH           Float?
+    NH3          Float?
+    NH4          Float?
+    NO2          Float?
+    NO3          Float?
+    PO4          Float?
+    K            Float?
+    Fe           Float?
+    Mg           Float?
+    Ca           Float?
+    salinity     Float?
 }
 
 model Rating {

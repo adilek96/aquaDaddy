@@ -986,8 +986,8 @@ export function SpecificationsEditModal({
   );
 }
 
-// Модальное окно для редактирования контента
-export function ContentEditModal({
+// Модальное окно для редактирования обитателей
+export function InhabitantsEditModal({
   isOpen,
   onClose,
   aquarium,
@@ -996,60 +996,29 @@ export function ContentEditModal({
 }: AquariumEditModalProps) {
   const t = useTranslations("AquariumForm");
   const tDetails = useTranslations("AquariumDetails");
+  const [inhabitants, setInhabitants] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Извлекаем данные из связанных моделей
-  const getInhabitantsText = useCallback(() => {
-    if (!aquarium?.inhabitants || aquarium.inhabitants.length === 0) return "";
-    return aquarium.inhabitants
-      .map((inhabitant: any) => `${inhabitant.species} (${inhabitant.count})`)
-      .join(", ");
-  }, [aquarium?.inhabitants]);
-
-  const getWaterParamsText = useCallback(() => {
-    if (!aquarium?.waterParams) return "";
-    const params = [];
-    if (aquarium.waterParams.pH) params.push(`pH: ${aquarium.waterParams.pH}`);
-    if (aquarium.waterParams.temperatureC)
-      params.push(`Temperature: ${aquarium.waterParams.temperatureC}°C`);
-    if (aquarium.waterParams.hardness)
-      params.push(`Hardness: ${aquarium.waterParams.hardness}`);
-    if (aquarium.waterParams.nitrates)
-      params.push(`Nitrates: ${aquarium.waterParams.nitrates}`);
-    return params.join(", ");
-  }, [aquarium?.waterParams]);
-
-  const getRemindersText = useCallback(() => {
-    if (!aquarium?.reminders || aquarium.reminders.length === 0) return "";
-    return aquarium.reminders
-      .map(
-        (reminder: any) =>
-          `${reminder.title} (${new Date(
-            reminder.remindAt
-          ).toLocaleDateString()})`
-      )
-      .join(", ");
-  }, [aquarium?.reminders]);
-
-  const [content, setContent] = useState({
-    inhabitants: getInhabitantsText(),
-    waterParameters: getWaterParamsText(),
-    reminders: getRemindersText(),
-  });
-
-  // Обновляем состояние при изменении aquarium
   useEffect(() => {
-    setContent({
-      inhabitants: getInhabitantsText(),
-      waterParameters: getWaterParamsText(),
-      reminders: getRemindersText(),
-    });
-  }, [aquarium]);
+    if (isOpen && aquarium) {
+      if (aquarium.inhabitants && aquarium.inhabitants.length > 0) {
+        setInhabitants(
+          aquarium.inhabitants
+            .map(
+              (inhabitant: any) => `${inhabitant.species} (${inhabitant.count})`
+            )
+            .join(", ")
+        );
+      } else {
+        setInhabitants("");
+      }
+    }
+  }, [isOpen, aquarium]);
 
   const handleSave = async () => {
     setIsLoading(true);
     try {
-      await onSave(content);
+      await onSave({ inhabitants });
       onClose();
     } finally {
       setIsLoading(false);
@@ -1063,7 +1032,7 @@ export function ContentEditModal({
       <div className="bg-background rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-bebas uppercase tracking-wide">
-            {tDetails("editContent")}
+            {tDetails("editInhabitants")}
           </h3>
           <button
             onClick={onClose}
@@ -1072,16 +1041,13 @@ export function ContentEditModal({
             <FaTimes className="w-4 h-4" />
           </button>
         </div>
-
         <div className="space-y-4">
           <div>
             <Label htmlFor="inhabitants">{t("inhabitants")}</Label>
             <Textarea
               id="inhabitants"
-              value={content.inhabitants}
-              onChange={(e) =>
-                setContent((prev) => ({ ...prev, inhabitants: e.target.value }))
-              }
+              value={inhabitants}
+              onChange={(e) => setInhabitants(e.target.value)}
               placeholder={t("inhabitantsPlaceholder")}
               rows={3}
               className="mt-1"
@@ -1091,34 +1057,370 @@ export function ContentEditModal({
               (количество)&rdquo;
             </p>
           </div>
-          <div>
-            <Label htmlFor="waterParameters">{t("waterParams")}</Label>
-            <Textarea
-              id="waterParameters"
-              value={content.waterParameters}
-              onChange={(e) =>
-                setContent((prev) => ({
-                  ...prev,
-                  waterParameters: e.target.value,
-                }))
-              }
-              placeholder={t("waterParamsPlaceholder")}
-              rows={3}
-              className="mt-1"
-            />
-            <p className="text-xs text-muted-foreground mt-1">
-              Формат: &ldquo;pH: 7.2, Temperature: 25°C, Hardness: 8, Nitrates:
-              10&rdquo;
-            </p>
+        </div>
+        <div className="flex justify-end gap-3 mt-6">
+          <Button variant="outline" onClick={onClose} disabled={isLoading}>
+            {t("cancel")}
+          </Button>
+          <Button onClick={handleSave} disabled={isLoading}>
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                {t("saving")}
+              </div>
+            ) : (
+              t("save")
+            )}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Модальное окно для редактирования параметров воды
+export function WaterParamsEditModal({
+  isOpen,
+  onClose,
+  aquarium,
+  onSave,
+  section,
+}: AquariumEditModalProps) {
+  const t = useTranslations("AquariumForm");
+  const tDetails = useTranslations("AquariumDetails");
+  const [params, setParams] = useState({
+    pH: "",
+    temperatureC: "",
+    KH: "",
+    GH: "",
+    NH3: "",
+    NH4: "",
+    NO2: "",
+    NO3: "",
+    PO4: "",
+    K: "",
+    Fe: "",
+    Mg: "",
+    Ca: "",
+    salinity: "",
+  });
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && aquarium) {
+      const wp = aquarium.waterParams || {};
+      setParams({
+        pH: wp.pH?.toString() || "",
+        temperatureC: wp.temperatureC?.toString() || "",
+        KH: wp.KH?.toString() || "",
+        GH: wp.GH?.toString() || "",
+        NH3: wp.NH3?.toString() || "",
+        NH4: wp.NH4?.toString() || "",
+        NO2: wp.NO2?.toString() || "",
+        NO3: wp.NO3?.toString() || "",
+        PO4: wp.PO4?.toString() || "",
+        K: wp.K?.toString() || "",
+        Fe: wp.Fe?.toString() || "",
+        Mg: wp.Mg?.toString() || "",
+        Ca: wp.Ca?.toString() || "",
+        salinity: wp.salinity?.toString() || "",
+      });
+    }
+  }, [isOpen, aquarium]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setParams((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSave = async () => {
+    setIsLoading(true);
+    try {
+      // Преобразуем строки в числа или null
+      const waterParameters: Record<string, number | null> = {};
+      Object.entries(params).forEach(([key, value]) => {
+        waterParameters[key] = value === "" ? null : parseFloat(value);
+      });
+      await onSave({ waterParameters });
+      onClose();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-background rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-bebas uppercase tracking-wide">
+            {tDetails("editWaterParams")}
+          </h3>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-muted rounded-lg transition-colors"
+          >
+            <FaTimes className="w-4 h-4" />
+          </button>
+        </div>
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="pH">pH</Label>
+              <Input
+                name="pH"
+                id="pH"
+                value={params.pH}
+                onChange={handleChange}
+                placeholder="7.2"
+                type="number"
+                step="0.01"
+              />
+            </div>
+            <div>
+              <Label htmlFor="temperatureC">{t("temperature")} (°C)</Label>
+              <Input
+                name="temperatureC"
+                id="temperatureC"
+                value={params.temperatureC}
+                onChange={handleChange}
+                placeholder="25"
+                type="number"
+                step="0.1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="KH">KH</Label>
+              <Input
+                name="KH"
+                id="KH"
+                value={params.KH}
+                onChange={handleChange}
+                placeholder=""
+                type="number"
+                step="0.1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="GH">GH</Label>
+              <Input
+                name="GH"
+                id="GH"
+                value={params.GH}
+                onChange={handleChange}
+                placeholder=""
+                type="number"
+                step="0.1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="NH3">NH3</Label>
+              <Input
+                name="NH3"
+                id="NH3"
+                value={params.NH3}
+                onChange={handleChange}
+                placeholder=""
+                type="number"
+                step="0.01"
+              />
+            </div>
+            <div>
+              <Label htmlFor="NH4">NH4</Label>
+              <Input
+                name="NH4"
+                id="NH4"
+                value={params.NH4}
+                onChange={handleChange}
+                placeholder=""
+                type="number"
+                step="0.01"
+              />
+            </div>
+            <div>
+              <Label htmlFor="NO2">NO2</Label>
+              <Input
+                name="NO2"
+                id="NO2"
+                value={params.NO2}
+                onChange={handleChange}
+                placeholder=""
+                type="number"
+                step="0.01"
+              />
+            </div>
+            <div>
+              <Label htmlFor="NO3">NO3</Label>
+              <Input
+                name="NO3"
+                id="NO3"
+                value={params.NO3}
+                onChange={handleChange}
+                placeholder=""
+                type="number"
+                step="0.01"
+              />
+            </div>
+            <div>
+              <Label htmlFor="PO4">PO4</Label>
+              <Input
+                name="PO4"
+                id="PO4"
+                value={params.PO4}
+                onChange={handleChange}
+                placeholder=""
+                type="number"
+                step="0.01"
+              />
+            </div>
+            <div>
+              <Label htmlFor="K">K</Label>
+              <Input
+                name="K"
+                id="K"
+                value={params.K}
+                onChange={handleChange}
+                placeholder=""
+                type="number"
+                step="0.01"
+              />
+            </div>
+            <div>
+              <Label htmlFor="Fe">Fe</Label>
+              <Input
+                name="Fe"
+                id="Fe"
+                value={params.Fe}
+                onChange={handleChange}
+                placeholder=""
+                type="number"
+                step="0.01"
+              />
+            </div>
+            <div>
+              <Label htmlFor="Mg">Mg</Label>
+              <Input
+                name="Mg"
+                id="Mg"
+                value={params.Mg}
+                onChange={handleChange}
+                placeholder=""
+                type="number"
+                step="0.01"
+              />
+            </div>
+            <div>
+              <Label htmlFor="Ca">Ca</Label>
+              <Input
+                name="Ca"
+                id="Ca"
+                value={params.Ca}
+                onChange={handleChange}
+                placeholder=""
+                type="number"
+                step="0.01"
+              />
+            </div>
+            <div>
+              <Label htmlFor="salinity">{t("salinity")}</Label>
+              <Input
+                name="salinity"
+                id="salinity"
+                value={params.salinity}
+                onChange={handleChange}
+                placeholder=""
+                type="number"
+                step="0.01"
+              />
+            </div>
           </div>
+        </div>
+        <div className="flex justify-end gap-3 mt-6">
+          <Button variant="outline" onClick={onClose} disabled={isLoading}>
+            {t("cancel")}
+          </Button>
+          <Button onClick={handleSave} disabled={isLoading}>
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                {t("saving")}
+              </div>
+            ) : (
+              t("save")
+            )}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Модальное окно для редактирования напоминаний
+export function RemindersEditModal({
+  isOpen,
+  onClose,
+  aquarium,
+  onSave,
+  section,
+}: AquariumEditModalProps) {
+  const t = useTranslations("AquariumForm");
+  const tDetails = useTranslations("AquariumDetails");
+  const [reminders, setReminders] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && aquarium) {
+      if (aquarium.reminders && aquarium.reminders.length > 0) {
+        setReminders(
+          aquarium.reminders
+            .map(
+              (reminder: any) =>
+                `${reminder.title} (${new Date(
+                  reminder.remindAt
+                ).toLocaleDateString()})`
+            )
+            .join(", ")
+        );
+      } else {
+        setReminders("");
+      }
+    }
+  }, [isOpen, aquarium]);
+
+  const handleSave = async () => {
+    setIsLoading(true);
+    try {
+      await onSave({ reminders });
+      onClose();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-background rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-bebas uppercase tracking-wide">
+            {tDetails("editReminders")}
+          </h3>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-muted rounded-lg transition-colors"
+          >
+            <FaTimes className="w-4 h-4" />
+          </button>
+        </div>
+        <div className="space-y-4">
           <div>
             <Label htmlFor="reminders">{t("reminders")}</Label>
             <Textarea
               id="reminders"
-              value={content.reminders}
-              onChange={(e) =>
-                setContent((prev) => ({ ...prev, reminders: e.target.value }))
-              }
+              value={reminders}
+              onChange={(e) => setReminders(e.target.value)}
               placeholder={t("remindersPlaceholder")}
               rows={3}
               className="mt-1"
@@ -1128,7 +1430,6 @@ export function ContentEditModal({
             </p>
           </div>
         </div>
-
         <div className="flex justify-end gap-3 mt-6">
           <Button variant="outline" onClick={onClose} disabled={isLoading}>
             {t("cancel")}

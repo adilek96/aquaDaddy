@@ -88,11 +88,22 @@ export async function updateAquariumSpecifications(tankId: string, specification
   }
 }
 
-// Обновление контента аквариума
-export async function updateAquariumContent(tankId: string, content: {
-  inhabitants?: string;
-  waterParameters?: string;
-  reminders?: string;
+// Обновление параметров воды аквариума
+export async function updateWaterParameters(tankId: string, waterParameters: {
+  pH?: number;
+  temperatureC?: number;
+  KH?: number;
+  GH?: number;
+  NH3?: number;
+  NH4?: number;
+  NO2?: number;
+  NO3?: number;
+  PO4?: number;
+  K?: number;
+  Fe?: number;
+  Mg?: number;
+  Ca?: number;
+  salinity?: number;
 }) {
   try {
     const session = await auth();
@@ -109,36 +120,45 @@ export async function updateAquariumContent(tankId: string, content: {
       throw new Error("User not found");
     }
 
-    // Функция для парсинга параметров воды
-    const parseWaterParameters = (waterParamsStr: string) => {
-      const params: any = {};
-      const pairs = waterParamsStr.split(',').map(pair => pair.trim());
-      
-      pairs.forEach(pair => {
-        if (pair.includes(':')) {
-          const [key, value] = pair.split(':').map(s => s.trim());
-          const numValue = parseFloat(value);
-          if (!isNaN(numValue)) {
-            switch (key.toLowerCase()) {
-              case 'ph':
-                params.pH = numValue;
-                break;
-              case 'temperature':
-                params.temperatureC = numValue;
-                break;
-              case 'hardness':
-                params.hardness = numValue;
-                break;
-              case 'nitrates':
-                params.nitrates = numValue;
-                break;
-            }
-          }
-        }
-      });
-      
-      return params;
-    };
+    const updatedWaterParams = await prisma.waterParameters.upsert({
+      where: { aquariumId: tankId },
+      update: {
+        ...waterParameters,
+        lastUpdated: new Date(),
+      },
+      create: {
+        aquariumId: tankId,
+        ...waterParameters,
+        lastUpdated: new Date(),
+      },
+    });
+
+    return { success: true, data: updatedWaterParams };
+  } catch (error) {
+    console.error("Error updating water parameters:", error);
+    return { success: false, error: "Failed to update water parameters" };
+  }
+}
+
+// Обновление контента аквариума
+export async function updateAquariumContent(tankId: string, content: {
+  inhabitants?: string;
+  reminders?: string;
+}) {
+  try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      throw new Error("Unauthorized");
+    }
+
+    // Получаем пользователя по email
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email }
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
 
     // Функция для парсинга обитателей
     const parseInhabitants = (inhabitantsStr: string) => {
@@ -165,24 +185,6 @@ export async function updateAquariumContent(tankId: string, content: {
 
     // Обновляем аквариум с транзакцией для всех связанных данных
     const updatedAquarium = await prisma.$transaction(async (tx) => {
-      // Обновляем или создаем параметры воды
-      if (content.waterParameters !== undefined) {
-        const waterParams = parseWaterParameters(content.waterParameters);
-        
-        await tx.waterParameters.upsert({
-          where: { aquariumId: tankId },
-          update: {
-            ...waterParams,
-            lastUpdated: new Date(),
-          },
-          create: {
-            aquariumId: tankId,
-            ...waterParams,
-            lastUpdated: new Date(),
-          },
-        });
-      }
-
       // Обновляем обитателей
       if (content.inhabitants !== undefined) {
         // Удаляем старых обитателей

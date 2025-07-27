@@ -79,7 +79,8 @@
       "title": "Settings",
       "theme": "Switch theme",
       "animate": "On/Off animation",
-      "measurement": "Unit of measurement"
+      "measurement": "Unit of measurement",
+      "temp": "Temperature scales"
     },
     "Header": {
       "settings": "Settings",
@@ -159,7 +160,10 @@
       "automatedCalculation": "Automated volume calculation",
       "volumeCalcInfo": "If your volume does not match the calculated one, disable automated calculation and enter the value manually.",
       "volumeCalcInfoManual": "Enter the value manually",
-      "volumeCalcAuto": "Calculated automatically"
+      "volumeCalcAuto": "Calculated automatically",
+      "lastUpdatedLabel": "Last update:",
+      "salinity": "Salinity",
+      "temperature": "Temperature"
     },
     "AquariumDetails": {
       "description": "Description",
@@ -181,8 +185,9 @@
       "loading": "Loading...",
       "noAquarium": "Aquarium not found",
       "noAquariumDescription": "Aquarium not found or you don't have permission to view it",
-      "noAquariumEdit": "You don't have permission to edit this aquarium"
-
+      "noAquariumEdit": "You don't have permission to edit this aquarium",
+      "editWaterParams": "Edit Water Parameters",
+      "lastUpdatedLabel": "Last update:"
     },
     "MyTanks": {
       "title": "My aquariums",

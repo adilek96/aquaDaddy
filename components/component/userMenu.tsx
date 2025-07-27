@@ -26,6 +26,10 @@ export function UserMenu() {
     if (measurementSystem === null) {
       localStorage.setItem("measurement_system", "metric");
     }
+    const tempSystem = localStorage.getItem("temperature_scales");
+    if (tempSystem === null) {
+      localStorage.setItem("temperature_scales", "c");
+    }
   }, []);
 
   if (!session?.user) {
