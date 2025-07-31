@@ -163,7 +163,13 @@
       "volumeCalcAuto": "Calculated automatically",
       "lastUpdatedLabel": "Last update:",
       "salinity": "Salinity",
-      "temperature": "Temperature"
+      "temperature": "Temperature",
+      "lastUpdated": "Last update:",
+      "nextService": "Next service:",
+      "passed": "Passed",
+      "addButton": "Add",
+      "adding": "Adding...",
+      "addingButton": "Add"
     },
     "AquariumDetails": {
       "description": "Description",
