@@ -215,7 +215,15 @@
       "public": "İctimai",
       "nextService": "Növbəti xidmət",
       "noScheduledMaintenance": "Planlaşdırılmış xidmət yoxdur",
-      "editWaterParams": "Su parametrlərini redaktə et"
+      "editWaterParams": "Su parametrlərini redaktə et",
+      "editNextService": "Xidmət tarixini redaktə et",
+      "maintenanceCalendar": "Xidmət Təqvimi",
+      "backToAquarium": "← Akvariumə qayıt",
+      "legend": "Lüğət",
+      "pending": "Gözləyir",
+      "completed": "Tamamlandı",
+      "skipped": "Keçildi",
+      "cancelled": "Ləğv edildi"
     },
     "MyTanks": {
       "title": "Mənim akvariumlarım",

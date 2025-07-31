@@ -193,6 +193,14 @@
       "noAquariumDescription": "Aquarium not found or you don't have permission to view it",
       "noAquariumEdit": "You don't have permission to edit this aquarium",
       "editWaterParams": "Edit Water Parameters",
+      "editNextService": "Edit Service Date",
+      "maintenanceCalendar": "Maintenance Calendar",
+      "backToAquarium": "← Back to Aquarium",
+      "legend": "Legend",
+      "pending": "Pending",
+      "completed": "Completed",
+      "skipped": "Skipped",
+      "cancelled": "Cancelled",
       "lastUpdatedLabel": "Last update:"
     },
     "MyTanks": {

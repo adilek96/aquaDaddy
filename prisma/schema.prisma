@@ -121,12 +121,35 @@ model Inhabitant {
     addedAt    DateTime @default(now())
 }
 
+enum MaintenanceType {
+    WATER_CHANGE // Смена воды
+    GRAVEL_CLEANING // Сифонка грунта
+    GLASS_CLEANING // Чистка стёкол
+    FILTER_CLEANING // Обслуживание фильтра
+    PARAMETER_CHECK // Проверка параметров воды
+    PLANT_CARE // Уход за растениями
+    CORAL_CARE // Уход за кораллами
+    SUPPLEMENTS // Добавление питательных веществ
+    ALGAE_CONTROL // Удаление водорослей
+    OTHER // Другое
+}
+
+enum MaintenanceStatus {
+    PENDING // Ожидает выполнения
+    COMPLETED // Выполнено
+    CANCELLED // Отменено
+    SKIPPED // Пропущено
+}
+
 model Maintenance {
-    id          String   @id @default(cuid())
+    id          String            @id @default(cuid())
     aquariumId  String
-    aquarium    Aquarium @relation(fields: [aquariumId], references: [id])
+    type        MaintenanceType[]
+    aquarium    Aquarium          @relation(fields: [aquariumId], references: [id])
     performedAt DateTime
     description String
+    WaterLog    WaterLog[]
+    status      MaintenanceStatus @default(PENDING)
 }
 
 model Reminder {
@@ -147,24 +170,26 @@ model AquariumImage {
 }
 
 model WaterLog {
-    id           String   @id @default(cuid())
-    aquariumId   String
-    aquarium     Aquarium @relation(fields: [aquariumId], references: [id])
-    recordedAt   DateTime
-    pH           Float?
-    temperatureC Float?
-    KH           Float?
-    GH           Float?
-    NH3          Float?
-    NH4          Float?
-    NO2          Float?
-    NO3          Float?
-    PO4          Float?
-    K            Float?
-    Fe           Float?
-    Mg           Float?
-    Ca           Float?
-    salinity     Float?
+    id            String       @id @default(cuid())
+    aquariumId    String
+    aquarium      Aquarium     @relation(fields: [aquariumId], references: [id])
+    recordedAt    DateTime
+    pH            Float?
+    temperatureC  Float?
+    KH            Float?
+    GH            Float?
+    NH3           Float?
+    NH4           Float?
+    NO2           Float?
+    NO3           Float?
+    PO4           Float?
+    K             Float?
+    Fe            Float?
+    Mg            Float?
+    Ca            Float?
+    salinity      Float?
+    maintenanceId String?
+    Maintenance   Maintenance? @relation(fields: [maintenanceId], references: [id])
 }
 
 model Rating {

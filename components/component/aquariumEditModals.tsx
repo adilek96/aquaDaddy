@@ -1106,7 +1106,9 @@ export function WaterParamsEditModal({
   });
   const [isLoading, setIsLoading] = useState(false);
   // Состояние для шкалы температуры
-  const [temperatureScale, setTemperatureScale] = useState<"celsius" | "fahrenheit">("celsius");
+  const [temperatureScale, setTemperatureScale] = useState<
+    "celsius" | "fahrenheit"
+  >("celsius");
 
   // Получаем шкалу температуры из localStorage
   useEffect(() => {
@@ -1135,7 +1137,10 @@ export function WaterParamsEditModal({
 
     return () => {
       window.removeEventListener("storage", handleStorageChange);
-      window.removeEventListener("temperatureScaleChanged", handleStorageChange);
+      window.removeEventListener(
+        "temperatureScaleChanged",
+        handleStorageChange
+      );
     };
   }, []);
 
@@ -1143,14 +1148,18 @@ export function WaterParamsEditModal({
     if (isOpen && aquarium) {
       const wp = aquarium.waterParams || {};
       let temperatureValue = wp.temperatureC?.toString() || "";
-      
+
       // Если выбраны фаренгейты, конвертируем для отображения
-      if (temperatureScale === "fahrenheit" && temperatureValue && !isNaN(Number(temperatureValue))) {
+      if (
+        temperatureScale === "fahrenheit" &&
+        temperatureValue &&
+        !isNaN(Number(temperatureValue))
+      ) {
         const celsius = Number(temperatureValue);
         const fahrenheit = (celsius * 9) / 5 + 32;
         temperatureValue = fahrenheit.toFixed(1);
       }
-      
+
       setParams({
         pH: wp.pH?.toString() || "",
         temperatureC: temperatureValue,
@@ -1181,7 +1190,11 @@ export function WaterParamsEditModal({
       // Преобразуем строки в числа или null
       const waterParameters: Record<string, number | null> = {};
       Object.entries(params).forEach(([key, value]) => {
-        if (key === "temperatureC" && temperatureScale === "fahrenheit" && value !== "") {
+        if (
+          key === "temperatureC" &&
+          temperatureScale === "fahrenheit" &&
+          value !== ""
+        ) {
           // Если выбраны фаренгейты, конвертируем обратно в цельсии перед сохранением
           const fahrenheit = parseFloat(value);
           const celsius = ((fahrenheit - 32) * 5) / 9;
@@ -1229,7 +1242,8 @@ export function WaterParamsEditModal({
             </div>
             <div>
               <Label htmlFor="temperatureC">
-                {t("temperature")} ({temperatureScale === "fahrenheit" ? "°F" : "°C"})
+                {t("temperature")} (
+                {temperatureScale === "fahrenheit" ? "°F" : "°C"})
               </Label>
               <Input
                 name="temperatureC"

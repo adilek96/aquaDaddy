@@ -735,21 +735,23 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
                   {tDetails("maintenance")}
                 </div>
                 <div className="space-y-4">
-                  <div
-                    className="p-4 border bg-background hover:bg-green-500/40 border-muted rounded-xl shadow-sm transition-colors duration-200 cursor-pointer"
-                    style={{ borderColor: "hsl(var(--border))" }}
-                  >
-                    <div className="text-xs uppercase tracking-widest mb-2">
-                      {tDetails("nextService")}
+                  <Link href={`/myTanks/${id}/maintenance`}>
+                    <div
+                      className="p-4 border bg-background hover:bg-green-500/40 border-muted rounded-xl shadow-sm transition-colors duration-200 cursor-pointer"
+                      style={{ borderColor: "hsl(var(--border))" }}
+                    >
+                      <div className="text-xs uppercase tracking-widest mb-2">
+                        {tDetails("maintenance")}
+                      </div>
+                      <div className="text-sm">
+                        {aquarium.reminders && aquarium.reminders.length > 0
+                          ? new Date(
+                              aquarium.reminders[0].remindAt
+                            ).toLocaleDateString()
+                          : tDetails("noScheduledMaintenance")}
+                      </div>
                     </div>
-                    <div className="text-sm">
-                      {aquarium.reminders && aquarium.reminders.length > 0
-                        ? new Date(
-                            aquarium.reminders[0].remindAt
-                          ).toLocaleDateString()
-                        : tDetails("noScheduledMaintenance")}
-                    </div>
-                  </div>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -1137,18 +1139,20 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
                   {tDetails("maintenance")}
                 </div>
                 <div className="space-y-4">
-                  <div className="p-4 bg-background hover:bg-green-500/40 border-muted rounded-xl shadow-sm transition-colors duration-200 cursor-pointer">
-                    <div className="text-xs uppercase tracking-widest mb-2">
-                      {tDetails("nextService")}
+                  <Link href={`/myTanks/${id}/maintenance`}>
+                    <div className="p-4 bg-background hover:bg-green-500/40 border-muted rounded-xl shadow-sm transition-colors duration-200 cursor-pointer">
+                      <div className="text-xs uppercase tracking-widest mb-2">
+                        {tDetails("maintenance")}
+                      </div>
+                      <div className="text-sm">
+                        {aquarium.reminders && aquarium.reminders.length > 0
+                          ? new Date(
+                              aquarium.reminders[0].remindAt
+                            ).toLocaleDateString()
+                          : tDetails("noScheduledMaintenance")}
+                      </div>
                     </div>
-                    <div className="text-sm">
-                      {aquarium.reminders && aquarium.reminders.length > 0
-                        ? new Date(
-                            aquarium.reminders[0].remindAt
-                          ).toLocaleDateString()
-                        : tDetails("noScheduledMaintenance")}
-                    </div>
-                  </div>
+                  </Link>
                 </div>
               </div>
             </div>

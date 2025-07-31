@@ -217,7 +217,15 @@
       "noAquarium": "Аквариум не найден",
       "noAquariumDescription": "Аквариум не найден или у вас нет прав для его просмотра",
       "noAquariumEdit": "У вас нет прав для редактирования этого аквариума",
-      "editWaterParams": "Редактировать параметры воды"
+      "editWaterParams": "Редактировать параметры воды",
+      "editNextService": "Редактировать дату обслуживания",
+      "maintenanceCalendar": "Календарь обслуживания",
+      "backToAquarium": "← Назад к аквариуму",
+      "legend": "Легенда",
+      "pending": "Ожидает выполнения",
+      "completed": "Выполнено",
+      "skipped": "Пропущено",
+      "cancelled": "Отменено"
     },
     "MyTanks": {
       "title": "Мои аквариумы",
