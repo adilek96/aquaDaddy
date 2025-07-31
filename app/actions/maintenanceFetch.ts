@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
+import { revalidatePath } from "next/cache";
 
 export async function updateOldPendingMaintenance(tankId: string) {
   try {
@@ -138,6 +139,8 @@ export async function createMaintenance(data: {
       throw new Error("Aquarium not found or access denied");
     }
 
+
+
     // Создаем новое обслуживание
     const maintenance = await prisma.maintenance.create({
       data: {
@@ -237,7 +240,7 @@ export async function updateMaintenance(data: {
         }
       });
     }
-
+  
     return { success: true, data: maintenance };
   } catch (error) {
     console.error("Error updating maintenance:", error);

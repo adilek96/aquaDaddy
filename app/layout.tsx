@@ -11,6 +11,10 @@ import { ThemeProvider } from "next-themes";
 import Settings from "@/components/component/settings";
 import { SessionProvider } from "next-auth/react";
 import { cookies } from "next/headers";
+import MaintenanceEditModal from "@/components/component/maintenanceEditModal";
+import MaintenanceAddModal from "@/components/component/maintenanceAddModal";
+import SuccessModal from "@/components/component/successModal";
+import WaterParamsModal from "@/components/component/waterParamsModal";
 
 const libre_franklin = Libre_Franklin({
   subsets: ["latin"],
@@ -154,6 +158,10 @@ export default async function RootLayout({
                   <Bg />
                 </div>
                 <Settings />
+                <MaintenanceEditModal />
+                <MaintenanceAddModal />
+                <SuccessModal />
+                <WaterParamsModal />
               </main>
             </SessionProvider>
           </NextIntlClientProvider>

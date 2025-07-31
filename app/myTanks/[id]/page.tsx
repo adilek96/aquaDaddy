@@ -26,6 +26,7 @@ import {
   TimelineEditModal,
   OverviewEditModal,
 } from "@/components/component/aquariumEditModals";
+import WaterParametersCards from "@/components/component/waterParametersCards";
 import {
   updateAquariumDescription,
   updateAquariumSpecifications,
@@ -937,143 +938,12 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
                       aquarium.waterParams[key] !== undefined &&
                       aquarium.waterParams[key] !== ""
                   ) ? (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 cursor-default">
-                      {Object.entries(aquarium.waterParams)
-                        .filter(
-                          ([key, value]) =>
-                            key !== "aquariumId" &&
-                            key !== "id" &&
-                            key !== "lastUpdated" &&
-                            value !== null &&
-                            value !== undefined &&
-                            value !== ""
-                        )
-                        .map(([key, value]) => {
-                          let label = key;
-                          let icon = (
-                            <FaFlask className="text-muted-foreground w-5 h-5" />
-                          );
-                          let displayValue = String(value);
-                          switch (key) {
-                            case "pH":
-                              label = "pH";
-                              icon = (
-                                <FaTint className="text-blue-500 w-5 h-5" />
-                              );
-                              break;
-                            case "temperatureC":
-                              if (temperatureScale === "fahrenheit") {
-                                // Переводим из цельсия в фаренгейты для отображения
-                                displayValue = `${(
-                                  (Number(value) * 9) / 5 +
-                                  32
-                                ).toFixed(1)}°F`;
-                                label = t("temperature") + " (°F)";
-                              } else {
-                                displayValue = `${value}°C`;
-                                label = t("temperature") + " (°C)";
-                              }
-                              icon = (
-                                <FaThermometerHalf className="text-red-500 w-5 h-5" />
-                              );
-                              break;
-                            case "KH":
-                              label = "KH";
-                              icon = (
-                                <FaAtom className="text-yellow-500 w-5 h-5" />
-                              );
-                              break;
-                            case "GH":
-                              label = "GH";
-                              icon = (
-                                <FaAtom className="text-yellow-700 w-5 h-5" />
-                              );
-                              break;
-                            case "NH3":
-                              label = "NH3";
-                              icon = (
-                                <FaFlask className="text-green-600 w-5 h-5" />
-                              );
-                              break;
-                            case "NH4":
-                              label = "NH4";
-                              icon = (
-                                <FaFlask className="text-green-700 w-5 h-5" />
-                              );
-                              break;
-                            case "NO2":
-                              label = "NO2";
-                              icon = (
-                                <FaFlask className="text-purple-500 w-5 h-5" />
-                              );
-                              break;
-                            case "NO3":
-                              label = "NO3";
-                              icon = (
-                                <FaFlask className="text-purple-700 w-5 h-5" />
-                              );
-                              break;
-                            case "PO4":
-                              label = "PO4";
-                              icon = (
-                                <FaFlask className="text-pink-500 w-5 h-5" />
-                              );
-                              break;
-                            case "K":
-                              label = "K";
-                              icon = (
-                                <FaLeaf className="text-green-500 w-5 h-5" />
-                              );
-                              break;
-                            case "Fe":
-                              label = "Fe";
-                              icon = (
-                                <FaCircle className="text-orange-500 w-5 h-5" />
-                              );
-                              break;
-                            case "Mg":
-                              label = "Mg";
-                              icon = (
-                                <FaCircle className="text-blue-400 w-5 h-5" />
-                              );
-                              break;
-                            case "Ca":
-                              label = "Ca";
-                              icon = (
-                                <FaCircle className="text-gray-400 w-5 h-5" />
-                              );
-                              break;
-                            case "salinity":
-                              label = t("salinity");
-                              icon = (
-                                <FaWater className="text-cyan-500 w-5 h-5" />
-                              );
-                              break;
-                            default:
-                              label = key;
-                              icon = (
-                                <FaFlask className="text-muted-foreground w-5 h-5" />
-                              );
-                          }
-                          return (
-                            <div
-                              key={key}
-                              className="flex flex-col items-center justify-center bg-background hover:bg-green-500/40 border border-muted rounded-xl shadow-sm p-3 min-w-0"
-                            >
-                              <span className="mb-1">{icon}</span>
-                              <span
-                                className="text-xs text-muted-foreground text-center mb-0.5 truncate w-full"
-                                title={label}
-                              >
-                                {label}
-                              </span>
-                              <span className="font-bold text-base text-center break-all">
-                                {displayValue}
-                              </span>
-                            </div>
-                          );
-                        })}
-                    </div>
+                    <WaterParametersCards
+                      parameters={aquarium.waterParams}
+                      showDate={false}
+                      className="cursor-default"
+                      temperatureScale={temperatureScale}
+                    />
                   ) : (
                     t("notAssigned")
                   )}

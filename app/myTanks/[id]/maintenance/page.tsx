@@ -22,7 +22,12 @@ import {
 } from "@/components/ui/select";
 import { ChevronLeft, ChevronRight, Plus, X, RefreshCw } from "lucide-react";
 import Link from "next/link";
-import { WaterParametersForm } from "@/components/component/waterParametersForm";
+
+import LoadingBlock from "@/components/ui/loadingBlock";
+import { useMaintenanceEditStore } from "@/store/maintenanceEditStore";
+import { useMaintenanceAddStore } from "@/store/maintenanceAddStore";
+import { useWaterParamsStore } from "@/store/waterParamsStore";
+import WaterParametersCards from "@/components/component/waterParametersCards";
 
 interface MaintenanceData {
   id: string;
@@ -56,44 +61,13 @@ export default function MaintenancePage({
   const [maintenanceData, setMaintenanceData] = useState<MaintenanceData[]>([]);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(true);
-  const [showAddModal, setShowAddModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedMaintenance, setSelectedMaintenance] =
     useState<MaintenanceData | null>(null);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [showWaterParamsModal, setShowWaterParamsModal] = useState(false);
   const [showStartDateInfo, setShowStartDateInfo] = useState(false);
-  const [newMaintenance, setNewMaintenance] = useState({
-    type: [] as (
-      | "WATER_CHANGE"
-      | "GRAVEL_CLEANING"
-      | "GLASS_CLEANING"
-      | "FILTER_CLEANING"
-      | "PARAMETER_CHECK"
-      | "PLANT_CARE"
-      | "CORAL_CARE"
-      | "SUPPLEMENTS"
-      | "ALGAE_CONTROL"
-      | "OTHER"
-    )[],
-    description: "",
-  });
-  const [editMaintenance, setEditMaintenance] = useState({
-    type: [] as (
-      | "WATER_CHANGE"
-      | "GRAVEL_CLEANING"
-      | "GLASS_CLEANING"
-      | "FILTER_CLEANING"
-      | "PARAMETER_CHECK"
-      | "PLANT_CARE"
-      | "CORAL_CARE"
-      | "SUPPLEMENTS"
-      | "ALGAE_CONTROL"
-      | "OTHER"
-    )[],
-    description: "",
-    status: "PENDING" as "PENDING" | "COMPLETED" | "CANCELLED" | "SKIPPED",
-  });
+  const [temperatureScale, setTemperatureScale] = useState<
+    "celsius" | "fahrenheit"
+  >("celsius");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -123,6 +97,40 @@ export default function MaintenancePage({
     };
     fetchData();
   }, [id]);
+
+  // Получаем шкалу температуры из localStorage
+  useEffect(() => {
+    const scale = localStorage.getItem("temperature_scales");
+    if (scale === "f") {
+      setTemperatureScale("fahrenheit");
+    } else {
+      setTemperatureScale("celsius");
+    }
+  }, []);
+
+  // Слушаем изменения шкалы температуры
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const scale = localStorage.getItem("temperature_scales");
+      if (scale === "f") {
+        setTemperatureScale("fahrenheit");
+      } else {
+        setTemperatureScale("celsius");
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    // Также слушаем кастомные события для изменений в том же окне
+    window.addEventListener("temperatureScaleChanged", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener(
+        "temperatureScaleChanged",
+        handleStorageChange
+      );
+    };
+  }, []);
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
@@ -197,19 +205,22 @@ export default function MaintenancePage({
       | "OTHER"
   ) => {
     const typeLabels: { [key: string]: string } = {
-      WATER_CHANGE: "Смена воды",
-      GRAVEL_CLEANING: "Сифонка грунта",
-      GLASS_CLEANING: "Чистка стёкол",
-      FILTER_CLEANING: "Обслуживание фильтра",
-      PARAMETER_CHECK: "Проверка параметров воды",
-      PLANT_CARE: "Уход за растениями",
-      CORAL_CARE: "Уход за кораллами",
-      SUPPLEMENTS: "Добавление питательных веществ",
-      ALGAE_CONTROL: "Удаление водорослей",
-      OTHER: "Другое",
+      WATER_CHANGE: tDetails("maintenanceTypes.WATER_CHANGE"),
+      GRAVEL_CLEANING: tDetails("maintenanceTypes.GRAVEL_CLEANING"),
+      GLASS_CLEANING: tDetails("maintenanceTypes.GLASS_CLEANING"),
+      FILTER_CLEANING: tDetails("maintenanceTypes.FILTER_CLEANING"),
+      PARAMETER_CHECK: tDetails("maintenanceTypes.PARAMETER_CHECK"),
+      PLANT_CARE: tDetails("maintenanceTypes.PLANT_CARE"),
+      CORAL_CARE: tDetails("maintenanceTypes.CORAL_CARE"),
+      SUPPLEMENTS: tDetails("maintenanceTypes.SUPPLEMENTS"),
+      ALGAE_CONTROL: tDetails("maintenanceTypes.ALGAE_CONTROL"),
+      OTHER: tDetails("maintenanceTypes.OTHER"),
     };
     return typeLabels[type] || type;
   };
+
+  const { openModal: openAddModal } = useMaintenanceAddStore();
+  const { openModal: openWaterParamsModal } = useWaterParamsStore();
 
   const handleDateClick = (date: Date) => {
     const today = new Date();
@@ -223,35 +234,40 @@ export default function MaintenancePage({
     if (maintenanceForDay.length > 0) {
       // Если есть обслуживание, показываем информацию о первом
       setSelectedMaintenance(maintenanceForDay[0]);
+      // Скрываем блок с информацией о дате запуска
+      setShowStartDateInfo(false);
+      setSelectedDate(null);
     } else if (clickedDate >= today) {
       // Если нет обслуживания и дата будущая, показываем форму добавления
       setSelectedDate(date);
-      setShowAddModal(true);
+      openAddModal(date, (newMaintenanceData, selectedDate) =>
+        handleAddMaintenance(newMaintenanceData, selectedDate)
+      );
+      // Скрываем другие блоки
+      setSelectedMaintenance(null);
+      setShowStartDateInfo(false);
     } else if (isStartDate(date)) {
       // Если это дата запуска аквариума, показываем специальную информацию
       setSelectedDate(date);
       setShowStartDateInfo(true);
+      // Скрываем блок с информацией об обслуживании
+      setSelectedMaintenance(null);
     }
   };
 
-  const handleAddMaintenance = async () => {
-    if (!selectedDate || newMaintenance.type.length === 0) {
+  const handleAddMaintenance = async (newMaintenanceData: any, date: Date) => {
+    if (!date || newMaintenanceData.type.length === 0) {
       return;
     }
 
     try {
-      console.log("Sending maintenance data:", {
-        aquariumId: id,
-        type: newMaintenance.type,
-        description: newMaintenance.description,
-        performedAt: selectedDate,
-      });
+      console.log("Sending maintenance data");
 
       const result = await createMaintenance({
         aquariumId: id,
-        type: newMaintenance.type,
-        description: newMaintenance.description,
-        performedAt: selectedDate,
+        type: newMaintenanceData.type,
+        description: newMaintenanceData.description,
+        performedAt: date,
       });
 
       if (result.success && result.data) {
@@ -260,15 +276,14 @@ export default function MaintenancePage({
           id: result.data.id,
           performedAt: new Date(result.data.performedAt),
           status: "PENDING", // Новые записи всегда имеют статус PENDING
-          type: newMaintenance.type, // Используем данные из формы
+          type: newMaintenanceData.type, // Используем данные из формы
           description: result.data.description,
           WaterLog: [],
         };
 
         setMaintenanceData((prev) => [...prev, newMaintenanceItem]);
-        setShowAddModal(false);
         setSelectedDate(null);
-        setNewMaintenance({ type: [], description: "" });
+        setShowStartDateInfo(false);
       } else {
         console.error("Failed to create maintenance:", result.error);
       }
@@ -277,47 +292,14 @@ export default function MaintenancePage({
     }
   };
 
+  const { openModal } = useMaintenanceEditStore();
+
   const handleEditMaintenance = (maintenance: MaintenanceData) => {
-    setSelectedMaintenance(maintenance);
-
-    // Проверяем, можно ли использовать текущий статус для данной даты
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const maintenanceDate = new Date(maintenance.performedAt);
-    maintenanceDate.setHours(0, 0, 0, 0);
-    const isToday = maintenanceDate.getTime() === today.getTime();
-    const isFuture = maintenanceDate > today;
-
-    // Определяем начальный статус в зависимости от даты и текущего статуса
-    let initialStatus = maintenance.status;
-
-    // Для старых записей со статусом SKIPPED оставляем как есть
-    if (!isToday && !isFuture && maintenance.status === "SKIPPED") {
-      initialStatus = "SKIPPED";
-    }
-    // Для сегодняшних записей со статусом PENDING оставляем как есть
-    else if (isToday && maintenance.status === "PENDING") {
-      initialStatus = "PENDING";
-    }
-    // Для будущих записей оставляем текущий статус как есть
-    else if (isFuture) {
-      initialStatus = maintenance.status;
-    }
-    // Для остальных случаев устанавливаем PENDING
-    else {
-      initialStatus = "PENDING";
-    }
-
-    setEditMaintenance({
-      type: maintenance.type,
-      description: maintenance.description,
-      status: initialStatus,
-    });
-    setShowEditModal(true);
+    openModal(maintenance, handleSaveEdit);
   };
 
-  const handleSaveEdit = async () => {
-    if (!selectedMaintenance || editMaintenance.type.length === 0) {
+  const handleSaveEdit = async (editData: any) => {
+    if (!selectedMaintenance || editData.type.length === 0) {
       return;
     }
 
@@ -336,10 +318,7 @@ export default function MaintenancePage({
       // Валидация не нужна
     } else if (isFuture) {
       // Для будущих записей разрешены только PENDING и CANCELLED
-      if (
-        editMaintenance.status !== "PENDING" &&
-        editMaintenance.status !== "CANCELLED"
-      ) {
+      if (editData.status !== "PENDING" && editData.status !== "CANCELLED") {
         console.error(
           "For future records, only PENDING or CANCELLED status is allowed"
         );
@@ -351,10 +330,7 @@ export default function MaintenancePage({
       selectedMaintenance.status === "SKIPPED"
     ) {
       // Для старых записей со статусом SKIPPED разрешены только COMPLETED и CANCELLED
-      if (
-        editMaintenance.status !== "COMPLETED" &&
-        editMaintenance.status !== "CANCELLED"
-      ) {
+      if (editData.status !== "COMPLETED" && editData.status !== "CANCELLED") {
         console.error(
           "For old SKIPPED records, only COMPLETED or CANCELLED status is allowed"
         );
@@ -362,10 +338,7 @@ export default function MaintenancePage({
       }
     } else {
       // Для остальных случаев разрешены только PENDING и CANCELLED
-      if (
-        editMaintenance.status !== "PENDING" &&
-        editMaintenance.status !== "CANCELLED"
-      ) {
+      if (editData.status !== "PENDING" && editData.status !== "CANCELLED") {
         console.error(
           "Only PENDING or CANCELLED status is allowed for this record"
         );
@@ -377,9 +350,9 @@ export default function MaintenancePage({
       const result = await updateMaintenance({
         maintenanceId: selectedMaintenance.id,
         aquariumId: id,
-        type: editMaintenance.type,
-        description: editMaintenance.description,
-        status: editMaintenance.status,
+        type: editData.type,
+        description: editData.description,
+        status: editData.status,
       });
 
       if (result.success && result.data) {
@@ -389,15 +362,28 @@ export default function MaintenancePage({
             item.id === selectedMaintenance.id
               ? {
                   ...item,
-                  type: editMaintenance.type,
-                  description: editMaintenance.description,
-                  status: editMaintenance.status,
+                  type: editData.type,
+                  description: editData.description,
+                  status: editData.status,
                 }
               : item
           )
         );
-        setShowEditModal(false);
-        setSelectedMaintenance(null);
+
+        // Обновляем selectedMaintenance с новыми данными
+        setSelectedMaintenance((prev) =>
+          prev
+            ? {
+                ...prev,
+                type: editData.type,
+                description: editData.description,
+                status: editData.status,
+              }
+            : null
+        );
+
+        setShowStartDateInfo(false);
+        setSelectedDate(null);
       } else {
         console.error("Failed to update maintenance:", result.error);
       }
@@ -409,6 +395,8 @@ export default function MaintenancePage({
   const handleCompleteWithParams = async (waterParameters: any) => {
     if (!selectedMaintenance) return;
 
+    console.log("Completing maintenance with params:", waterParameters);
+
     try {
       const result = await updateMaintenance({
         maintenanceId: selectedMaintenance.id,
@@ -417,17 +405,94 @@ export default function MaintenancePage({
         waterParameters,
       });
 
+      console.log("Update result:", result);
+
       if (result.success && result.data) {
-        // Обновляем локальное состояние
-        setMaintenanceData((prev) =>
-          prev.map((item) =>
-            item.id === selectedMaintenance.id
-              ? { ...item, status: "COMPLETED" }
-              : item
-          )
-        );
-        setShowWaterParamsModal(false);
-        setSelectedMaintenance(null);
+        // Если сервер не вернул WaterLog, загружаем обновленные данные
+        if (!(result.data as any).WaterLog) {
+          console.log(
+            "Server didn't return WaterLog, fetching updated data..."
+          );
+          try {
+            const updatedMaintenanceResult = await fetchMaintenanceData(id);
+            console.log(
+              "Updated maintenance result:",
+              updatedMaintenanceResult
+            );
+            if (
+              updatedMaintenanceResult.success &&
+              updatedMaintenanceResult.data
+            ) {
+              const updatedItem = updatedMaintenanceResult.data.find(
+                (item: any) => item.id === selectedMaintenance.id
+              );
+
+              console.log("Found updated item:", updatedItem);
+
+              if (updatedItem) {
+                // Обновляем локальное состояние с обновленными данными
+                setMaintenanceData((prev) =>
+                  prev.map((item) =>
+                    item.id === selectedMaintenance.id
+                      ? {
+                          ...item,
+                          status: "COMPLETED",
+                          WaterLog: updatedItem.WaterLog || [],
+                        }
+                      : item
+                  )
+                );
+
+                // Обновляем selectedMaintenance с обновленными данными
+                setSelectedMaintenance((prev) =>
+                  prev
+                    ? {
+                        ...prev,
+                        status: "COMPLETED",
+                        WaterLog: updatedItem.WaterLog || [],
+                      }
+                    : null
+                );
+              }
+            }
+          } catch (fetchError) {
+            console.error(
+              "Error fetching updated maintenance data:",
+              fetchError
+            );
+          }
+        } else {
+          // Если сервер вернул WaterLog, используем его
+          console.log(
+            "Server returned WaterLog:",
+            (result.data as any).WaterLog
+          );
+          setMaintenanceData((prev) =>
+            prev.map((item) =>
+              item.id === selectedMaintenance.id
+                ? {
+                    ...item,
+                    status: "COMPLETED",
+                    WaterLog: (result.data as any).WaterLog || [],
+                  }
+                : item
+            )
+          );
+
+          setSelectedMaintenance((prev) =>
+            prev
+              ? {
+                  ...prev,
+                  status: "COMPLETED",
+                  WaterLog: (result.data as any).WaterLog || [],
+                }
+              : null
+          );
+        }
+
+        // Модальное окно закрывается автоматически через стор
+        setShowStartDateInfo(false);
+        setSelectedDate(null);
       } else {
         console.error("Failed to complete maintenance:", result.error);
       }
@@ -455,7 +520,19 @@ export default function MaintenancePage({
               : item
           )
         );
-        setSelectedMaintenance(null);
+
+        // Обновляем selectedMaintenance с новым статусом
+        setSelectedMaintenance((prev) =>
+          prev
+            ? {
+                ...prev,
+                status: "COMPLETED",
+              }
+            : null
+        );
+
+        setShowStartDateInfo(false);
+        setSelectedDate(null);
       } else {
         console.error("Failed to complete maintenance:", result.error);
       }
@@ -612,623 +689,330 @@ export default function MaintenancePage({
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">{tDetails("loading")}</div>
-      </div>
-    );
-  }
-
-  if (!aquarium) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">{tDetails("noAquarium")}</div>
-      </div>
-    );
-  }
-
   const monthNames = [
-    "Январь",
-    "Февраль",
-    "Март",
-    "Апрель",
-    "Май",
-    "Июнь",
-    "Июль",
-    "Август",
-    "Сентябрь",
-    "Октябрь",
-    "Ноябрь",
-    "Декабрь",
-  ];
-
-  const maintenanceTypes = [
-    { value: "WATER_CHANGE", label: "Смена воды" },
-    { value: "GRAVEL_CLEANING", label: "Сифонка грунта" },
-    { value: "GLASS_CLEANING", label: "Чистка стёкол" },
-    { value: "FILTER_CLEANING", label: "Обслуживание фильтра" },
-    { value: "PARAMETER_CHECK", label: "Проверка параметров воды" },
-    { value: "PLANT_CARE", label: "Уход за растениями" },
-    { value: "CORAL_CARE", label: "Уход за кораллами" },
-    { value: "SUPPLEMENTS", label: "Добавление питательных веществ" },
-    { value: "ALGAE_CONTROL", label: "Удаление водорослей" },
-    { value: "OTHER", label: "Другое" },
+    tDetails("months.january"),
+    tDetails("months.february"),
+    tDetails("months.march"),
+    tDetails("months.april"),
+    tDetails("months.may"),
+    tDetails("months.june"),
+    tDetails("months.july"),
+    tDetails("months.august"),
+    tDetails("months.september"),
+    tDetails("months.october"),
+    tDetails("months.november"),
+    tDetails("months.december"),
   ];
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <div className="mb-6">
-        <Link href={`/myTanks/${id}`} className="text-blue-600 hover:underline">
-          {tDetails("backToAquarium")}
-        </Link>
-        <h1 className="text-2xl font-bold mt-2">
-          {tDetails("maintenanceCalendar")}: {aquarium.name}
-        </h1>
-        {aquarium.startDate && (
-          <p className="text-sm text-gray-600 mt-1">
-            Дата запуска:{" "}
-            {new Date(aquarium.startDate).toLocaleDateString("ru-RU")}
-          </p>
-        )}
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>
-              {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+    <>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center px-4 sm:px-6 lg:px-8">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold my-6 sm:my-10 font-bebas leading-none tracking-wide cursor-default inline-flex flex-wrap">
+          <span className="relative group transition-all duration-700 text-nowrap">
+            <Link
+              href={"../myTanks"}
+              className="relative z-10 after:content-[''] after:absolute after:bottom-0 after:right-0 after:left-0 after:h-[3px] after:bg-current after:scale-x-0 after:origin-right after:transition-transform after:duration-500 group-hover:after:scale-x-100"
+            >
+              {t("aquariums-title")}
+            </Link>
+          </span>
+          <span className="text-nowrap"> &nbsp; | &nbsp;</span>
+          {aquarium ? (
+            <span className="relative group transition-all duration-700 text-nowrap">
+              <Link
+                href={"../" + id}
+                className="relative z-10 after:content-[''] after:absolute after:bottom-0 after:right-0 after:left-0 after:h-[3px] after:bg-current after:scale-x-0 after:origin-right after:transition-transform after:duration-500 group-hover:after:scale-x-100"
+              >
+                {aquarium.name}
+              </Link>
             </span>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={goToPreviousMonth}>
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <Button variant="outline" size="sm" onClick={goToNextMonth}>
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleRefreshStatuses}
-                title="Обновить статусы старых записей"
-              >
-                <RefreshCw className="h-4 w-4" />
-              </Button>
-            </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-7 gap-1">
-            {/* Заголовки дней недели */}
-            {["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"].map((day) => (
-              <div
-                key={day}
-                className="h-8 flex items-center justify-center font-medium text-sm"
-              >
-                {day}
+          ) : (
+            <div className="inline-block h-6 sm:h-8 w-32 sm:w-40 rounded bg-muted animate-pulse" />
+          )}
+          <span className="text-nowrap"> &nbsp; | &nbsp;</span>
+          {aquarium ? (
+            <span className="text-wrap">{tDetails("maintenanceCalendar")}</span>
+          ) : (
+            <div className="inline-block h-6 sm:h-8 w-32 sm:w-40 rounded bg-muted animate-pulse" />
+          )}
+        </h2>
+      </div>
+      {isLoading ? (
+        <LoadingBlock translate={t("loading")} />
+      ) : (
+        <div className="flex w-full flex-wrap justify-between">
+          <div className="mb-6 lg:w-[48%] w-full">
+            <div className="flex flex-wrap gap-2 my-4">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <span className="text-sm">{tDetails("pending")}</span>
               </div>
-            ))}
-
-            {/* Календарь */}
-            {renderCalendar()}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Легенда */}
-      <Card className="mt-6">
-        <CardHeader>
-          <CardTitle>{tDetails("legend")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-green-500 rounded"></div>
-              <span className="text-sm">{tDetails("pending")}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-yellow-500 rounded"></div>
-              <span className="text-sm">{tDetails("completed")}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-red-500 rounded"></div>
-              <span className="text-sm">{tDetails("skipped")}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-black rounded"></div>
-              <span className="text-sm">{tDetails("cancelled")}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 border-2 border-purple-500 bg-purple-50 rounded"></div>
-              <span className="text-sm">Дата запуска</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Модальное окно добавления обслуживания */}
-      {showAddModal && selectedDate && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <Card className="w-full max-w-md mx-4">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                Добавить обслуживание
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowAddModal(false)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label>Дата</Label>
-                <Input
-                  value={selectedDate.toLocaleDateString("ru-RU")}
-                  disabled
-                />
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                <span className="text-sm">{tDetails("completed")}</span>
               </div>
-
-              <div>
-                <Label>Тип обслуживания</Label>
-                <Select
-                  onValueChange={(value) => {
-                    const typedValue = value as
-                      | "WATER_CHANGE"
-                      | "GRAVEL_CLEANING"
-                      | "GLASS_CLEANING"
-                      | "FILTER_CLEANING"
-                      | "PARAMETER_CHECK"
-                      | "PLANT_CARE"
-                      | "CORAL_CARE"
-                      | "SUPPLEMENTS"
-                      | "ALGAE_CONTROL"
-                      | "OTHER";
-                    if (!newMaintenance.type.includes(typedValue)) {
-                      setNewMaintenance((prev) => ({
-                        ...prev,
-                        type: [...prev.type, typedValue],
-                      }));
-                    }
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Выберите тип обслуживания" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {maintenanceTypes.map((type) => (
-                      <SelectItem key={type.value} value={type.value}>
-                        {type.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {newMaintenance.type.length > 0 && (
-                  <div className="mt-2 flex flex-wrap gap-1">
-                    {newMaintenance.type.map((type) => (
-                      <div
-                        key={type}
-                        className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs flex items-center gap-1"
-                      >
-                        {maintenanceTypes.find((t) => t.value === type)?.label}
-                        <button
-                          onClick={() =>
-                            setNewMaintenance((prev) => ({
-                              ...prev,
-                              type: prev.type.filter((t) => t !== type),
-                            }))
-                          }
-                          className="text-blue-600 hover:text-blue-800"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 border-2 border-red-500 rounded-full"></div>
+                <span className="text-sm">{tDetails("skipped")}</span>
               </div>
-
-              <div>
-                <Label>Описание</Label>
-                <Textarea
-                  value={newMaintenance.description}
-                  onChange={(e) =>
-                    setNewMaintenance((prev) => ({
-                      ...prev,
-                      description: e.target.value,
-                    }))
-                  }
-                  placeholder="Опишите что нужно сделать..."
-                  rows={3}
-                />
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-black rounded-full"></div>
+                <span className="text-sm">{tDetails("cancelled")}</span>
               </div>
-
-              <div className="flex gap-2">
-                <Button
-                  onClick={handleAddMaintenance}
-                  disabled={newMaintenance.type.length === 0}
-                  className="flex-1"
-                >
-                  Добавить
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowAddModal(false)}
-                  className="flex-1"
-                >
-                  Отмена
-                </Button>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 border-2 border-purple-500 bg-purple-50 rounded"></div>
+                <span className="text-sm">{tDetails("startDateLegend")}</span>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {/* Блок с информацией об обслуживании */}
-      {selectedMaintenance && (
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle className="flex justify-between items-center">
-              <span>Информация об обслуживании</span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSelectedMaintenance(null)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <Label className="font-medium">Дата:</Label>
-                <p>
-                  {selectedMaintenance.performedAt.toLocaleDateString("ru-RU")}
-                </p>
-              </div>
-
-              <div>
-                <Label className="font-medium">Тип обслуживания:</Label>
-                <div className="flex flex-wrap gap-1 mt-1">
-                  {selectedMaintenance.type.map((type) => (
-                    <span
-                      key={type}
-                      className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs"
+            </div>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>
+                    {monthNames[currentDate.getMonth()]}{" "}
+                    {currentDate.getFullYear()}
+                  </span>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={goToPreviousMonth}
                     >
-                      {getMaintenanceTypeLabel(type)}
-                    </span>
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={goToNextMonth}>
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleRefreshStatuses}
+                      title={tDetails("refreshStatuses")}
+                    >
+                      <RefreshCw className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-7 gap-1">
+                  {/* Weekday Headers */}
+                  {[
+                    tDetails("weekdays.monday"),
+                    tDetails("weekdays.tuesday"),
+                    tDetails("weekdays.wednesday"),
+                    tDetails("weekdays.thursday"),
+                    tDetails("weekdays.friday"),
+                    tDetails("weekdays.saturday"),
+                    tDetails("weekdays.sunday"),
+                  ].map((day) => (
+                    <div
+                      key={day}
+                      className="h-8 flex items-center justify-center font-medium text-sm "
+                    >
+                      {day}
+                    </div>
                   ))}
+
+                  {/* Calendar */}
+                  {renderCalendar()}
                 </div>
-              </div>
+              </CardContent>
+            </Card>
+          </div>
 
-              <div>
-                <Label className="font-medium">Статус:</Label>
-                <p
-                  className={`inline-block px-2 py-1 rounded text-xs text-white ${
-                    selectedMaintenance.status === "PENDING"
-                      ? "bg-green-500"
-                      : selectedMaintenance.status === "COMPLETED"
-                      ? "bg-yellow-500"
-                      : selectedMaintenance.status === "SKIPPED"
-                      ? "bg-red-500"
-                      : "bg-black"
-                  }`}
-                >
-                  {selectedMaintenance.status === "PENDING"
-                    ? "Ожидает выполнения"
-                    : selectedMaintenance.status === "COMPLETED"
-                    ? "Выполнено"
-                    : selectedMaintenance.status === "SKIPPED"
-                    ? "Пропущено"
-                    : "Отменено"}
-                </p>
-              </div>
-
-              {selectedMaintenance.description && (
-                <div>
-                  <Label className="font-medium">Описание:</Label>
-                  <p>{selectedMaintenance.description}</p>
-                </div>
-              )}
-
-              <div className="flex gap-2 pt-4">
-                {canEditMaintenance(selectedMaintenance) && (
+          {/* Maintenance Information Block */}
+          {selectedMaintenance && (
+            <Card className="my-6 lg:w-[48%] w-full">
+              <CardHeader>
+                <CardTitle className="flex justify-between items-center">
+                  <span>{tDetails("maintenanceInfo")}</span>
                   <Button
-                    onClick={() => handleEditMaintenance(selectedMaintenance)}
-                    variant="outline"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setSelectedMaintenance(null);
+                      setShowStartDateInfo(false);
+                      setSelectedDate(null);
+                    }}
                   >
-                    Редактировать
+                    <X className="h-4 w-4" />
                   </Button>
-                )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-xs uppercase tracking-widest mb-1 font-semibold">
+                      {tDetails("date")}
+                    </Label>
+                    <p>
+                      {selectedMaintenance.performedAt.toLocaleDateString(
+                        "ru-RU"
+                      )}
+                    </p>
+                  </div>
 
-                {canCompleteMaintenance(selectedMaintenance) && (
-                  <>
-                    {hasParameterCheck(selectedMaintenance) ? (
+                  <div>
+                    <Label className="text-xs uppercase tracking-widest mb-1 font-semibold">
+                      {tDetails("maintenanceType")}
+                    </Label>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {selectedMaintenance.type.map((type) => (
+                        <span
+                          key={type}
+                          className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs"
+                        >
+                          {getMaintenanceTypeLabel(type)}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="text-xs uppercase tracking-widest mb-1 font-semibold">
+                      {tDetails("status")}
+                    </Label>
+                    <div
+                      className={`flex px-2 py-1 rounded text-xs w-fit text-white ${
+                        selectedMaintenance.status === "PENDING"
+                          ? "bg-green-500"
+                          : selectedMaintenance.status === "COMPLETED"
+                          ? "bg-yellow-500"
+                          : selectedMaintenance.status === "SKIPPED"
+                          ? "bg-red-500"
+                          : "bg-black"
+                      }`}
+                    >
+                      {selectedMaintenance.status === "PENDING"
+                        ? tDetails("pending")
+                        : selectedMaintenance.status === "COMPLETED"
+                        ? tDetails("completed")
+                        : selectedMaintenance.status === "SKIPPED"
+                        ? tDetails("skipped")
+                        : tDetails("cancelled")}
+                    </div>
+                  </div>
+
+                  {selectedMaintenance.description && (
+                    <div>
+                      <Label className="text-xs uppercase tracking-widest mb-1 font-semibold">
+                        {tDetails("description")}
+                      </Label>
+                      <p>{selectedMaintenance.description}</p>
+                    </div>
+                  )}
+
+                  {selectedMaintenance.WaterLog &&
+                    selectedMaintenance.WaterLog.length > 0 && (
+                      <div>
+                        <Label className="text-xs uppercase tracking-widest mb-1 font-semibold">
+                          {tDetails("waterParameters")}
+                        </Label>
+                        <div className="text-xs text-gray-500 mb-2">
+                          Debug: {selectedMaintenance.WaterLog.length}{" "}
+                          {tDetails("parameters")}
+                        </div>
+                        <WaterParametersCards
+                          parameters={selectedMaintenance.WaterLog}
+                          showDate={true}
+                          temperatureScale={temperatureScale}
+                        />
+                      </div>
+                    )}
+
+                  <div className="flex gap-2 pt-4">
+                    {canEditMaintenance(selectedMaintenance) && (
                       <Button
-                        onClick={() => setShowWaterParamsModal(true)}
-                        className="bg-green-600 hover:bg-green-700"
+                        onClick={() =>
+                          handleEditMaintenance(selectedMaintenance)
+                        }
+                        variant="outline"
                       >
-                        Завершить с параметрами
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={handleCompleteWithoutParams}
-                        className="bg-green-600 hover:bg-green-700"
-                      >
-                        Завершить
+                        {tDetails("edit")}
                       </Button>
                     )}
-                  </>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
-      {/* Блок с информацией о дате запуска */}
-      {showStartDateInfo && selectedDate && aquarium?.startDate && (
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle className="flex justify-between items-center">
-              <span className="flex items-center gap-2">
-                🚀 Дата запуска аквариума
-              </span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setShowStartDateInfo(false);
-                  setSelectedDate(null);
-                }}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <Label className="font-medium">Дата запуска:</Label>
-                <p className="text-purple-700 font-semibold">
-                  {new Date(aquarium.startDate).toLocaleDateString("ru-RU")}
-                </p>
-              </div>
-
-              <div>
-                <Label className="font-medium">Название аквариума:</Label>
-                <p>{aquarium.name}</p>
-              </div>
-
-              <div className="bg-purple-50 p-4 rounded-lg">
-                <p className="text-sm text-purple-800">
-                  🎉 Это знаменательная дата! В этот день был запущен ваш
-                  аквариум &ldquo;{aquarium.name}&ldquo;. С этого момента
-                  началась история вашего подводного мира.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Модальное окно редактирования обслуживания */}
-      {showEditModal && selectedMaintenance && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <Card className="w-full max-w-md mx-4">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                Редактировать обслуживание
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowEditModal(false)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label>Дата</Label>
-                <Input
-                  value={selectedMaintenance.performedAt.toLocaleDateString(
-                    "ru-RU"
-                  )}
-                  disabled
-                />
-              </div>
-
-              <div>
-                <Label>Тип обслуживания</Label>
-                <Select
-                  onValueChange={(value) => {
-                    const typedValue = value as
-                      | "WATER_CHANGE"
-                      | "GRAVEL_CLEANING"
-                      | "GLASS_CLEANING"
-                      | "FILTER_CLEANING"
-                      | "PARAMETER_CHECK"
-                      | "PLANT_CARE"
-                      | "CORAL_CARE"
-                      | "SUPPLEMENTS"
-                      | "ALGAE_CONTROL"
-                      | "OTHER";
-                    if (!editMaintenance.type.includes(typedValue)) {
-                      setEditMaintenance((prev) => ({
-                        ...prev,
-                        type: [...prev.type, typedValue],
-                      }));
-                    }
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Выберите тип обслуживания" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {maintenanceTypes.map((type) => (
-                      <SelectItem key={type.value} value={type.value}>
-                        {type.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {editMaintenance.type.length > 0 && (
-                  <div className="mt-2 flex flex-wrap gap-1">
-                    {editMaintenance.type.map((type) => (
-                      <div
-                        key={type}
-                        className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs flex items-center gap-1"
-                      >
-                        {maintenanceTypes.find((t) => t.value === type)?.label}
-                        <button
-                          onClick={() =>
-                            setEditMaintenance((prev) => ({
-                              ...prev,
-                              type: prev.type.filter((t) => t !== type),
-                            }))
-                          }
-                          className="text-blue-600 hover:text-blue-800"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </div>
-                    ))}
+                    {canCompleteMaintenance(selectedMaintenance) && (
+                      <>
+                        {hasParameterCheck(selectedMaintenance) ? (
+                          <Button
+                            onClick={() =>
+                              openWaterParamsModal(
+                                handleCompleteWithParams,
+                                tDetails("waterParamsTitle")
+                              )
+                            }
+                            className="bg-green-600 hover:bg-green-700"
+                          >
+                            {tDetails("completeWithParams")}
+                          </Button>
+                        ) : (
+                          <Button
+                            onClick={handleCompleteWithoutParams}
+                            className="bg-green-600 hover:bg-green-700"
+                          >
+                            {tDetails("complete")}
+                          </Button>
+                        )}
+                      </>
+                    )}
                   </div>
-                )}
-              </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
-              <div>
-                <Label>Описание</Label>
-                <Textarea
-                  value={editMaintenance.description}
-                  onChange={(e) =>
-                    setEditMaintenance((prev) => ({
-                      ...prev,
-                      description: e.target.value,
-                    }))
-                  }
-                  placeholder="Опишите что нужно сделать..."
-                  rows={3}
-                />
-              </div>
+          {/* Aquarium Start Date Information Block */}
+          {showStartDateInfo && selectedDate && aquarium?.startDate && (
+            <Card className="my-6 lg:w-[48%] w-full">
+              <CardHeader>
+                <CardTitle className="flex justify-between items-center">
+                  <span className="flex items-center gap-2">
+                    🚀 {tDetails("aquariumStartDate")}
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setShowStartDateInfo(false);
+                      setSelectedDate(null);
+                      setSelectedMaintenance(null);
+                    }}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <Label className="font-medium">
+                      {tDetails("startDateLabel")}
+                    </Label>
+                    <p className="text-purple-700 font-semibold">
+                      {new Date(aquarium.startDate).toLocaleDateString("ru-RU")}
+                    </p>
+                  </div>
 
-              <div>
-                <Label>Статус</Label>
-                <Select
-                  value={editMaintenance.status}
-                  onValueChange={(value) => {
-                    setEditMaintenance((prev) => ({
-                      ...prev,
-                      status: value as
-                        | "PENDING"
-                        | "COMPLETED"
-                        | "CANCELLED"
-                        | "SKIPPED",
-                    }));
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(() => {
-                      // Проверяем, является ли дата обслуживания сегодняшней
-                      const today = new Date();
-                      today.setHours(0, 0, 0, 0);
-                      const maintenanceDate = new Date(
-                        selectedMaintenance.performedAt
-                      );
-                      maintenanceDate.setHours(0, 0, 0, 0);
-                      const isToday =
-                        maintenanceDate.getTime() === today.getTime();
-                      const isFuture = maintenanceDate > today;
+                  <div>
+                    <Label className="font-medium">
+                      {tDetails("aquariumName")}
+                    </Label>
+                    <p>{aquarium.name}</p>
+                  </div>
 
-                      // Для сегодняшних записей со статусом PENDING
-                      if (isToday && selectedMaintenance.status === "PENDING") {
-                        return (
-                          <>
-                            <SelectItem value="PENDING">
-                              Ожидает выполнения
-                            </SelectItem>
-                            <SelectItem value="CANCELLED">Отменено</SelectItem>
-                            <SelectItem value="COMPLETED">Выполнено</SelectItem>
-                            <SelectItem value="SKIPPED">Пропущено</SelectItem>
-                          </>
-                        );
-                      }
-
-                      // Для будущих записей
-                      if (isFuture) {
-                        return (
-                          <>
-                            <SelectItem value="PENDING">
-                              Ожидает выполнения
-                            </SelectItem>
-                            <SelectItem value="CANCELLED">Отменено</SelectItem>
-                          </>
-                        );
-                      }
-
-                      // Для старых записей со статусом SKIPPED
-                      if (
-                        !isToday &&
-                        !isFuture &&
-                        selectedMaintenance.status === "SKIPPED"
-                      ) {
-                        return (
-                          <>
-                            <SelectItem value="COMPLETED">Выполнено</SelectItem>
-                            <SelectItem value="CANCELLED">Отменено</SelectItem>
-                          </>
-                        );
-                      }
-
-                      // Для остальных случаев
-                      return (
-                        <>
-                          <SelectItem value="PENDING">
-                            Ожидает выполнения
-                          </SelectItem>
-                          <SelectItem value="CANCELLED">Отменено</SelectItem>
-                        </>
-                      );
-                    })()}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex gap-2">
-                <Button
-                  onClick={handleSaveEdit}
-                  disabled={editMaintenance.type.length === 0}
-                  className="flex-1"
-                >
-                  Сохранить
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowEditModal(false)}
-                  className="flex-1"
-                >
-                  Отмена
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+                  <div className="bg-purple-50 p-4 rounded-lg">
+                    <p className="text-sm text-purple-800">
+                      {tDetails("startDateMessage")} аквариум &ldquo;
+                      {aquarium.name}&ldquo;. {tDetails("startDateMessageEnd")}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       )}
-
-      {/* Модальное окно параметров воды */}
-      <WaterParametersForm
-        isOpen={showWaterParamsModal}
-        onClose={() => setShowWaterParamsModal(false)}
-        onSave={handleCompleteWithParams}
-        title="Параметры воды при завершении обслуживания"
-      />
-    </div>
+    </>
   );
 }

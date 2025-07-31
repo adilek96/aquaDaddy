@@ -36,7 +36,7 @@ export function WaterParametersForm({
   onClose,
   onSave,
   initialParams,
-  title = "Параметры воды"
+  title = "Параметры воды",
 }: WaterParametersFormProps) {
   const t = useTranslations("AquariumForm");
   const [params, setParams] = useState({
@@ -56,7 +56,9 @@ export function WaterParametersForm({
     salinity: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [temperatureScale, setTemperatureScale] = useState<"celsius" | "fahrenheit">("celsius");
+  const [temperatureScale, setTemperatureScale] = useState<
+    "celsius" | "fahrenheit"
+  >("celsius");
 
   // Получаем шкалу температуры из localStorage
   useEffect(() => {
@@ -84,7 +86,10 @@ export function WaterParametersForm({
 
     return () => {
       window.removeEventListener("storage", handleStorageChange);
-      window.removeEventListener("temperatureScaleChanged", handleStorageChange);
+      window.removeEventListener(
+        "temperatureScaleChanged",
+        handleStorageChange
+      );
     };
   }, []);
 
@@ -143,7 +148,8 @@ export function WaterParametersForm({
           const celsius = ((fahrenheit - 32) * 5) / 9;
           waterParameters[key as keyof WaterParameters] = celsius;
         } else {
-          waterParameters[key as keyof WaterParameters] = value === "" ? null : parseFloat(value);
+          waterParameters[key as keyof WaterParameters] =
+            value === "" ? null : parseFloat(value);
         }
       });
       await onSave(waterParameters);
@@ -158,7 +164,12 @@ export function WaterParametersForm({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div
+      className={`w-full h-full ${
+        isOpen ? "flex" : "hidden"
+      } justify-center items-center fixed top-0 left-0 z-50 backdrop-blur-md transition-all duration-700`}
+      style={{ overflow: "visible" }}
+    >
       <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <CardHeader>
           <CardTitle className="flex justify-between items-center">
@@ -184,7 +195,8 @@ export function WaterParametersForm({
             </div>
             <div>
               <Label htmlFor="temperatureC">
-                {t("temperature")} ({temperatureScale === "fahrenheit" ? "°F" : "°C"})
+                {t("temperature")} (
+                {temperatureScale === "fahrenheit" ? "°F" : "°C"})
               </Label>
               <Input
                 name="temperatureC"
@@ -342,7 +354,11 @@ export function WaterParametersForm({
             </div>
           </div>
           <div className="flex gap-2 pt-4">
-            <Button onClick={handleSave} disabled={isLoading} className="flex-1">
+            <Button
+              onClick={handleSave}
+              disabled={isLoading}
+              className="flex-1"
+            >
               {isLoading ? "Сохранение..." : "Сохранить"}
             </Button>
             <Button variant="outline" onClick={onClose} className="flex-1">
@@ -353,4 +369,4 @@ export function WaterParametersForm({
       </Card>
     </div>
   );
-} 
+}
