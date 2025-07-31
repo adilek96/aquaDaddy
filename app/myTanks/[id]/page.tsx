@@ -106,19 +106,26 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
 
   // Слушаем изменения системы измерения
   useEffect(() => {
-    const handleMeasurementChange = (event: CustomEvent) => {
-      setCurrentMeasurementSystem(event.detail);
+    const handleStorageChange = () => {
+      const scale = localStorage.getItem("temperature_scales");
+      if (scale === "f") {
+        setTemperatureScale("fahrenheit");
+      } else {
+        setTemperatureScale("celsius");
+      }
     };
 
-    window.addEventListener(
-      "measurementSystemChanged",
-      handleMeasurementChange as EventListener
-    );
-    return () =>
+    window.addEventListener("storage", handleStorageChange);
+    // Также слушаем кастомные события для изменений в том же окне
+    window.addEventListener("temperatureScaleChanged", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
       window.removeEventListener(
-        "measurementSystemChanged",
-        handleMeasurementChange as EventListener
+        "temperatureScaleChanged",
+        handleStorageChange
       );
+    };
   }, []);
 
   // Функции для получения единиц измерения
@@ -222,22 +229,11 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
     }
   };
 
-  // Переопределяем onSave для WaterParamsEditModal, чтобы пересчитывать температуру
+  // Обработчик сохранения параметров воды
   const handleSaveWaterParams = async (data: any) => {
     setLoadingStates((prev) => ({ ...prev, waterParams: true }));
     try {
-      let waterParamsToSave = { ...data.waterParameters };
-      if (
-        temperatureScale === "fahrenheit" &&
-        waterParamsToSave.temperatureC !== undefined &&
-        waterParamsToSave.temperatureC !== null &&
-        waterParamsToSave.temperatureC !== ""
-      ) {
-        // Переводим из фаренгейтов в цельсии перед отправкой
-        const f = Number(waterParamsToSave.temperatureC);
-        waterParamsToSave.temperatureC = ((f - 32) * 5) / 9;
-      }
-      const result = await updateWaterParameters(id, waterParamsToSave);
+      const result = await updateWaterParameters(id, data.waterParameters);
       if (result.success && result.data) {
         setAquarium((prev: any) => ({
           ...prev,
@@ -739,7 +735,10 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
                   {tDetails("maintenance")}
                 </div>
                 <div className="space-y-4">
-                  <div className="p-4 border">
+                  <div
+                    className="p-4 border bg-background hover:bg-green-500/40 border-muted rounded-xl shadow-sm transition-colors duration-200 cursor-pointer"
+                    style={{ borderColor: "hsl(var(--border))" }}
+                  >
                     <div className="text-xs uppercase tracking-widest mb-2">
                       {tDetails("nextService")}
                     </div>
@@ -1004,7 +1003,7 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
                   )}
                   {/* lastUpdated отдельным блоком */}
                   {aquarium.waterParams && aquarium.waterParams.lastUpdated && (
-                    <div className="mt-2 text-xs text-muted-foreground">
+                    <div className="mt-2 text-xs text-muted-foreground pt-3">
                       <strong>{t("lastUpdatedLabel")} </strong>
                       {new Date(
                         aquarium.waterParams.lastUpdated
@@ -1138,7 +1137,7 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
                   {tDetails("maintenance")}
                 </div>
                 <div className="space-y-4">
-                  <div className="p-4 border">
+                  <div className="p-4 bg-background hover:bg-green-500/40 border-muted rounded-xl shadow-sm transition-colors duration-200 cursor-pointer">
                     <div className="text-xs uppercase tracking-widest mb-2">
                       {tDetails("nextService")}
                     </div>

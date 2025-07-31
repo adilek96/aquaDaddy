@@ -29,6 +29,10 @@ export function UserMenu() {
     const tempSystem = localStorage.getItem("temperature_scales");
     if (tempSystem === null) {
       localStorage.setItem("temperature_scales", "c");
+      // Отправляем событие при установке значения по умолчанию
+      window.dispatchEvent(
+        new CustomEvent("temperatureScaleChanged", { detail: "c" })
+      );
     }
   }, []);
 

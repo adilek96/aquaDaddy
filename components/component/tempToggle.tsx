@@ -24,9 +24,9 @@ export default function TempToggle() {
   const setMeasurementSystem = (system: string) => {
     localStorage.setItem("temperature_scales", system);
     setCurrentSystem(system);
-    // Можно добавить обновление страницы или уведомление других компонентов
+    // Отправляем кастомное событие для уведомления других компонентов
     window.dispatchEvent(
-      new CustomEvent("tempSystemChanged", { detail: system })
+      new CustomEvent("temperatureScaleChanged", { detail: system })
     );
   };
 

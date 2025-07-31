@@ -1105,13 +1105,55 @@ export function WaterParamsEditModal({
     salinity: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  // Состояние для шкалы температуры
+  const [temperatureScale, setTemperatureScale] = useState<"celsius" | "fahrenheit">("celsius");
+
+  // Получаем шкалу температуры из localStorage
+  useEffect(() => {
+    const scale = localStorage.getItem("temperature_scales");
+    if (scale === "f") {
+      setTemperatureScale("fahrenheit");
+    } else {
+      setTemperatureScale("celsius");
+    }
+  }, []);
+
+  // Слушаем изменения системы измерения
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const scale = localStorage.getItem("temperature_scales");
+      if (scale === "f") {
+        setTemperatureScale("fahrenheit");
+      } else {
+        setTemperatureScale("celsius");
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    // Также слушаем кастомные события для изменений в том же окне
+    window.addEventListener("temperatureScaleChanged", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("temperatureScaleChanged", handleStorageChange);
+    };
+  }, []);
 
   useEffect(() => {
     if (isOpen && aquarium) {
       const wp = aquarium.waterParams || {};
+      let temperatureValue = wp.temperatureC?.toString() || "";
+      
+      // Если выбраны фаренгейты, конвертируем для отображения
+      if (temperatureScale === "fahrenheit" && temperatureValue && !isNaN(Number(temperatureValue))) {
+        const celsius = Number(temperatureValue);
+        const fahrenheit = (celsius * 9) / 5 + 32;
+        temperatureValue = fahrenheit.toFixed(1);
+      }
+      
       setParams({
         pH: wp.pH?.toString() || "",
-        temperatureC: wp.temperatureC?.toString() || "",
+        temperatureC: temperatureValue,
         KH: wp.KH?.toString() || "",
         GH: wp.GH?.toString() || "",
         NH3: wp.NH3?.toString() || "",
@@ -1126,7 +1168,7 @@ export function WaterParamsEditModal({
         salinity: wp.salinity?.toString() || "",
       });
     }
-  }, [isOpen, aquarium]);
+  }, [isOpen, aquarium, temperatureScale]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -1139,7 +1181,14 @@ export function WaterParamsEditModal({
       // Преобразуем строки в числа или null
       const waterParameters: Record<string, number | null> = {};
       Object.entries(params).forEach(([key, value]) => {
-        waterParameters[key] = value === "" ? null : parseFloat(value);
+        if (key === "temperatureC" && temperatureScale === "fahrenheit" && value !== "") {
+          // Если выбраны фаренгейты, конвертируем обратно в цельсии перед сохранением
+          const fahrenheit = parseFloat(value);
+          const celsius = ((fahrenheit - 32) * 5) / 9;
+          waterParameters[key] = celsius;
+        } else {
+          waterParameters[key] = value === "" ? null : parseFloat(value);
+        }
       });
       await onSave({ waterParameters });
       onClose();
@@ -1179,13 +1228,15 @@ export function WaterParamsEditModal({
               />
             </div>
             <div>
-              <Label htmlFor="temperatureC">{t("temperature")} (°C)</Label>
+              <Label htmlFor="temperatureC">
+                {t("temperature")} ({temperatureScale === "fahrenheit" ? "°F" : "°C"})
+              </Label>
               <Input
                 name="temperatureC"
                 id="temperatureC"
                 value={params.temperatureC}
                 onChange={handleChange}
-                placeholder="25"
+                placeholder={temperatureScale === "fahrenheit" ? "77" : "25"}
                 type="number"
                 step="0.1"
               />
