@@ -169,7 +169,13 @@
       "passed": "Passed",
       "addButton": "Add",
       "adding": "Adding...",
-      "addingButton": "Add"
+      "addingButton": "Add",
+      "afterTomorrow": "After tomorrow",
+      "tomorrow": "Tomorrow",
+      "today": "Today",
+      "in3Days": "In 3 days",
+      "inDays": "In",
+      "days": "days"
     },
     "AquariumDetails": {
       "description": "Description",

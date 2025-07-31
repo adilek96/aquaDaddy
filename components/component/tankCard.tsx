@@ -12,53 +12,73 @@ export default function TankCard({
   notAssignedText?: string;
 }) {
   const t = useTranslations("AquariumForm");
-  const [nextServiseStyle, setNextServiseStyle] = useState("bg-white/30");
+  const [nextServiceStyle, setNextServiceStyle] = useState(
+    "bg-maintenance-default/30"
+  );
   const [nextServiceDay, setNextServiceDay] = useState("notAssignedText");
   const image = aquarium.image || "/app-logo.svg";
 
-  // Получаем ближайшее напоминание как nextService
-  const nextService =
-    aquarium.reminders && aquarium.reminders.length > 0
-      ? new Date(aquarium.reminders[0].remindAt).toLocaleDateString("ru-RU", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        })
-      : notAssignedText || "не назначена";
+  // Получаем ближайшее PENDING обслуживание
+  const getNextPendingMaintenance = () => {
+    if (!aquarium.maintenance || aquarium.maintenance.length === 0) {
+      return null;
+    }
+
+    // Фильтруем только PENDING записи и сортируем по дате
+    const pendingMaintenance = aquarium.maintenance
+      .filter((item: any) => item.status === "PENDING")
+      .sort(
+        (a: any, b: any) =>
+          new Date(a.performedAt).getTime() - new Date(b.performedAt).getTime()
+      );
+
+    return pendingMaintenance.length > 0 ? pendingMaintenance[0] : null;
+  };
+
+  const nextPendingMaintenance = getNextPendingMaintenance();
+
+  // Получаем дату следующего обслуживания
+  const nextService = nextPendingMaintenance
+    ? new Date(nextPendingMaintenance.performedAt).toLocaleDateString("ru-RU", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
+    : notAssignedText || "не назначена";
 
   useEffect(() => {
-    if (!aquarium.reminders || aquarium.reminders.length === 0) {
-      setNextServiseStyle("bg-white/30");
+    if (!nextPendingMaintenance) {
+      setNextServiceStyle("bg-maintenance-default/30");
       setNextServiceDay(notAssignedText || "не назначена");
       return;
     }
 
     const today = new Date();
-    const serviceDate = new Date(aquarium.reminders[0].remindAt);
+    const serviceDate = new Date(nextPendingMaintenance.performedAt);
 
     const diffInMs = serviceDate.getTime() - today.getTime();
     const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
 
     if (diffInDays === 0) {
-      setNextServiseStyle("bg-red-500/30");
+      setNextServiceStyle("bg-maintenance-today/30");
       setNextServiceDay(t("today"));
     } else if (diffInDays === 1) {
-      setNextServiseStyle("bg-yellow-400/30");
+      setNextServiceStyle("bg-maintenance-tomorrow/30");
       setNextServiceDay(t("tomorrow"));
     } else if (diffInDays === 2) {
-      setNextServiseStyle("bg-yellow-400/30");
+      setNextServiceStyle("bg-maintenance-tomorrow/30");
       setNextServiceDay(t("afterTomorrow"));
     } else if (diffInDays === 3) {
-      setNextServiseStyle("bg-yellow-400/30");
+      setNextServiceStyle("bg-maintenance-tomorrow/30");
       setNextServiceDay(t("in3Days"));
     } else if (diffInDays > 3) {
-      setNextServiseStyle("bg-green-500/30");
+      setNextServiceStyle("bg-maintenance-upcoming/30");
       setNextServiceDay(`${t("inDays")} ${diffInDays} ${t("days")}`);
     } else {
-      setNextServiseStyle("bg-white/30");
+      setNextServiceStyle("bg-maintenance-passed/30");
       setNextServiceDay(t("passed"));
     }
-  }, [aquarium.reminders, notAssignedText]);
+  }, [nextPendingMaintenance, notAssignedText, t]);
 
   return (
     <>
@@ -73,7 +93,7 @@ export default function TankCard({
             <div className="p-4 ">
               <h3 className="font-semibold mb-2 ">{aquarium.name}</h3>
               <p
-                className={`text-sm  ${nextServiseStyle} px-2 py-1 rounded-sm inline-flex flex-col w-full`}
+                className={`text-sm ${nextServiceStyle} px-2 py-1 rounded-sm inline-flex flex-col w-full`}
               >
                 <span className="font-bold">{t("nextService")}</span>
                 <span>{nextService}</span>

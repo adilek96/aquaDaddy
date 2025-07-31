@@ -15,7 +15,8 @@ export async function fetchAquariums({ search = "", userId }: { search?: string,
     orderBy,
     include: {
       images: true,
-      reminders: true
+      reminders: true,
+      maintenance: true
     }
   });
 
@@ -28,6 +29,10 @@ export async function fetchAquariums({ search = "", userId }: { search?: string,
     reminders: aquarium.reminders.map(r => ({
       ...r,
       remindAt: r.remindAt.toISOString(),
+    })),
+    maintenance: aquarium.maintenance.map(m => ({
+      ...m,
+      performedAt: m.performedAt.toISOString(),
     })),
   }));
 } 

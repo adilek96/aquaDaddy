@@ -35,6 +35,94 @@ import {
   updateWaterParameters,
 } from "@/app/actions/aquariumUpdateAction";
 
+// Компонент для отображения карточки обслуживания
+const MaintenanceCard = ({
+  aquarium,
+  tDetails,
+}: {
+  aquarium: any;
+  tDetails: any;
+}) => {
+  const [maintenanceStyle, setMaintenanceStyle] = useState(
+    "bg-maintenance-default/30"
+  );
+  const [maintenanceDay, setMaintenanceDay] = useState("");
+
+  // Получаем ближайшее PENDING обслуживание
+  const getNextPendingMaintenance = () => {
+    if (!aquarium.maintenance || aquarium.maintenance.length === 0) {
+      return null;
+    }
+
+    // Фильтруем только PENDING записи и сортируем по дате
+    const pendingMaintenance = aquarium.maintenance
+      .filter((item: any) => item.status === "PENDING")
+      .sort(
+        (a: any, b: any) =>
+          new Date(a.performedAt).getTime() - new Date(b.performedAt).getTime()
+      );
+
+    return pendingMaintenance.length > 0 ? pendingMaintenance[0] : null;
+  };
+
+  const nextPendingMaintenance = getNextPendingMaintenance();
+
+  useEffect(() => {
+    if (!nextPendingMaintenance) {
+      setMaintenanceStyle("bg-maintenance-default/30");
+      setMaintenanceDay(tDetails("noScheduledMaintenance"));
+      return;
+    }
+
+    const today = new Date();
+    const serviceDate = new Date(nextPendingMaintenance.performedAt);
+
+    const diffInMs = serviceDate.getTime() - today.getTime();
+    const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+
+    if (diffInDays === 0) {
+      setMaintenanceStyle("bg-maintenance-today/30");
+      setMaintenanceDay("Сегодня");
+    } else if (diffInDays === 1) {
+      setMaintenanceStyle("bg-maintenance-tomorrow/30");
+      setMaintenanceDay("Завтра");
+    } else if (diffInDays === 2) {
+      setMaintenanceStyle("bg-maintenance-tomorrow/30");
+      setMaintenanceDay("Послезавтра");
+    } else if (diffInDays === 3) {
+      setMaintenanceStyle("bg-maintenance-tomorrow/30");
+      setMaintenanceDay("Через 3 дня");
+    } else if (diffInDays > 3) {
+      setMaintenanceStyle("bg-maintenance-upcoming/30");
+      setMaintenanceDay(`Через ${diffInDays} дней`);
+    } else {
+      setMaintenanceStyle("bg-maintenance-passed/30");
+      setMaintenanceDay("Просрочено");
+    }
+  }, [nextPendingMaintenance, tDetails]);
+
+  return (
+    <div
+      className={`p-4 border ${maintenanceStyle} hover:bg-green-500/40 border-muted rounded-xl shadow-sm transition-colors duration-200 cursor-pointer`}
+      style={{ borderColor: "hsl(var(--border))" }}
+    >
+      <div className="text-xs uppercase tracking-widest mb-2">
+        {tDetails("maintenance")}
+      </div>
+      <div className="text-sm">
+        {nextPendingMaintenance
+          ? new Date(nextPendingMaintenance.performedAt).toLocaleDateString()
+          : tDetails("noScheduledMaintenance")}
+      </div>
+      {maintenanceDay && (
+        <div className="text-xs text-muted-foreground mt-1">
+          {maintenanceDay}
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default function UserAquarium({ params }: { params: { id: string } }) {
   const { id } = params;
   const t = useTranslations("AquariumForm");
@@ -736,21 +824,7 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
                 </div>
                 <div className="space-y-4">
                   <Link href={`/myTanks/${id}/maintenance`}>
-                    <div
-                      className="p-4 border bg-background hover:bg-green-500/40 border-muted rounded-xl shadow-sm transition-colors duration-200 cursor-pointer"
-                      style={{ borderColor: "hsl(var(--border))" }}
-                    >
-                      <div className="text-xs uppercase tracking-widest mb-2">
-                        {tDetails("maintenance")}
-                      </div>
-                      <div className="text-sm">
-                        {aquarium.reminders && aquarium.reminders.length > 0
-                          ? new Date(
-                              aquarium.reminders[0].remindAt
-                            ).toLocaleDateString()
-                          : tDetails("noScheduledMaintenance")}
-                      </div>
-                    </div>
+                    <MaintenanceCard aquarium={aquarium} tDetails={tDetails} />
                   </Link>
                 </div>
               </div>
@@ -1140,18 +1214,7 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
                 </div>
                 <div className="space-y-4">
                   <Link href={`/myTanks/${id}/maintenance`}>
-                    <div className="p-4 bg-background hover:bg-green-500/40 border-muted rounded-xl shadow-sm transition-colors duration-200 cursor-pointer">
-                      <div className="text-xs uppercase tracking-widest mb-2">
-                        {tDetails("maintenance")}
-                      </div>
-                      <div className="text-sm">
-                        {aquarium.reminders && aquarium.reminders.length > 0
-                          ? new Date(
-                              aquarium.reminders[0].remindAt
-                            ).toLocaleDateString()
-                          : tDetails("noScheduledMaintenance")}
-                      </div>
-                    </div>
+                    <MaintenanceCard aquarium={aquarium} tDetails={tDetails} />
                   </Link>
                 </div>
               </div>

@@ -56,7 +56,13 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        
+        maintenance: {
+          today: "hsl(var(--maintenance-today))",
+          tomorrow: "hsl(var(--maintenance-tomorrow))",
+          upcoming: "hsl(var(--maintenance-upcoming))",
+          default: "hsl(var(--maintenance-default))",
+          passed: "hsl(var(--maintenance-passed))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

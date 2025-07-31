@@ -34,6 +34,11 @@
     --chart-5: 27 87% 67%;
     --font-bebas: "Bebas Neue", sans-serif;
     --font-montserrat: "Montserrat", sans-serif;
+    --maintenance-today: 0 84% 60%;
+    --maintenance-tomorrow: 45 93% 47%;
+    --maintenance-upcoming: 142 76% 36%;
+    --maintenance-default: 0 0% 100%;
+    --maintenance-passed: 0 0% 100%;
   }
 
   .dark {
@@ -63,6 +68,11 @@
     --chart-5: 340 75% 55%;
     --font-bebas: "Bebas Neue", sans-serif;
     --font-montserrat: "Montserrat", sans-serif;
+    --maintenance-today: 0 84% 60%;
+    --maintenance-tomorrow: 45 93% 47%;
+    --maintenance-upcoming: 142 76% 36%;
+    --maintenance-default: 0 0% 0%;
+    --maintenance-passed: 0 0% 0%;
   }
 }
 
