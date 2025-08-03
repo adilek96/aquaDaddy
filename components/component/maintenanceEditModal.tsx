@@ -75,7 +75,7 @@ export default function MaintenanceEditModal() {
       } justify-center items-center fixed top-0 left-0 z-50 backdrop-blur-md transition-all duration-700`}
       style={{ overflow: "visible" }}
     >
-      <Card className="w-full max-w-md mx-4">
+      <Card className="w-[98%] min-w-[300px] max-w-md mx-auto bg-[#01EBFF]/5  dark:bg-black/50  backdrop-blur-3xl border border-muted z-50 mt-20">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             {tDetails("editMaintenance")}

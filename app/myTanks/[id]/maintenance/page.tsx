@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "@/components/ui/motion";
 import { fetchUserAquarium } from "@/app/actions/aquariumFetch";
 import {
   fetchMaintenanceData,

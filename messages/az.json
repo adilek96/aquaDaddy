@@ -159,6 +159,7 @@
       "inhabitants": "Sakinlər",
       "waterParams": "Su parametrləri",
       "reminders": "Xatırlatmalar",
+      "remindersDescription": "Texniki xidmət xatırlatmaları",
       "temperature": "Temperatur",
       "hardness": "Şərti dərindlik",
       "nitrates": "Nitratlar",
@@ -194,7 +195,8 @@
       "volumeCalcInfoManual": "Dəyəri əlavə edin",
       "volumeCalcAuto": "Avtomatik hesablanır",
       "lastUpdatedLabel": "Son dəyişim:",
-      "salinity": "Duzluluq"
+      "salinity": "Duzluluq",
+      "inhabitantsFormat": "Format: \"Balıq növü (miqdarı), Bitki növü (miqdarı)\""
     
     
   
@@ -210,6 +212,8 @@
       "editDescription": "Təsviri redaktə et",
       "editSpecifications": "Spesifikasiyaları redaktə et",
       "editContent": "Məzmunu redaktə et",
+      "editInhabitants": "Sakinləri redaktə et",
+      "editReminders": "Xatırlatmaları redaktə et",
       "editTimeline": "Zaman xəttini redaktə et",
       "editOverview": "Ümumi baxışı redaktə et",
       "startDate": "Başlama tarixi",

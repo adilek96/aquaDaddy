@@ -3,7 +3,7 @@ import { aquariumAddingAction } from "@/app/actions/aquariumAddingAction";
 import React, { useEffect, useState } from "react";
 import { useFormState } from "react-dom";
 import { useTranslations } from "next-intl";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "@/components/ui/motion";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { ZodErrors } from "../helpers/ZodErrors";

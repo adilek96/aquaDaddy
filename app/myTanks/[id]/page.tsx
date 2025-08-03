@@ -17,15 +17,7 @@ import {
   FaCircle,
   FaAtom,
 } from "react-icons/fa";
-import {
-  DescriptionEditModal,
-  SpecificationsEditModal,
-  InhabitantsEditModal,
-  WaterParamsEditModal,
-  RemindersEditModal,
-  TimelineEditModal,
-  OverviewEditModal,
-} from "@/components/component/aquariumEditModals";
+import { useAquariumEditStore } from "@/store/aquariumEditStore";
 import WaterParametersCards from "@/components/component/waterParametersCards";
 import {
   updateAquariumDescription,
@@ -133,16 +125,16 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
   const [currentMeasurementSystem, setCurrentMeasurementSystem] =
     useState<string>("metric");
 
-  // Состояния для модальных окон
-  const [modalStates, setModalStates] = useState({
-    description: false,
-    specifications: false,
-    inhabitants: false,
-    waterParams: false,
-    reminders: false,
-    timeline: false,
-    overview: false,
-  });
+  // Используем store для модальных окон
+  const {
+    openDescriptionModal,
+    openSpecificationsModal,
+    openInhabitantsModal,
+    openWaterParamsModal,
+    openRemindersModal,
+    openTimelineModal,
+    openOverviewModal,
+  } = useAquariumEditStore();
 
   // Состояния загрузки для каждой секции
   const [loadingStates, setLoadingStates] = useState({
@@ -235,19 +227,6 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
   };
 
   // Функции для управления модальными окнами
-  const openModal = (modalName: keyof typeof modalStates) => {
-    setModalStates((prev: typeof modalStates) => ({
-      ...prev,
-      [modalName]: true,
-    }));
-  };
-
-  const closeModal = (modalName: keyof typeof modalStates) => {
-    setModalStates((prev: typeof modalStates) => ({
-      ...prev,
-      [modalName]: false,
-    }));
-  };
 
   // Функции для сохранения данных
   const handleSaveDescription = async (data: any) => {
@@ -778,7 +757,9 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
                   <button
                     type="button"
                     id="editAquariumOverview"
-                    onClick={() => openModal("overview")}
+                    onClick={() =>
+                      openOverviewModal(aquarium, handleSaveOverview)
+                    }
                     disabled={loadingStates.overview}
                     className="mt-2 sm:mt-0 sm:mr-5 p-2 rounded-lg hover:translate-y-0.5 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
                     title={tDetails("editAquarium")}
@@ -841,7 +822,9 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
                   <button
                     type="button"
                     id="editAquariumDescription"
-                    onClick={() => openModal("description")}
+                    onClick={() =>
+                      openDescriptionModal(aquarium, handleSaveDescription)
+                    }
                     disabled={loadingStates.description}
                     className="mt-2 sm:mt-0 sm:mr-5 p-2 rounded-lg hover:translate-y-0.5 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
                     title={tDetails("editAquarium")}
@@ -865,7 +848,12 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
                   <button
                     type="button"
                     id="editAquariumSpecifications"
-                    onClick={() => openModal("specifications")}
+                    onClick={() =>
+                      openSpecificationsModal(
+                        aquarium,
+                        handleSaveSpecifications
+                      )
+                    }
                     disabled={loadingStates.specifications}
                     className="mt-2 sm:mt-0 sm:mr-5 p-2 rounded-lg hover:translate-y-0.5 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
                     title={tDetails("editAquarium")}
@@ -887,7 +875,9 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
                   <button
                     type="button"
                     id="editAquariumInhabitants"
-                    onClick={() => openModal("inhabitants")}
+                    onClick={() =>
+                      openInhabitantsModal(aquarium, handleSaveInhabitants)
+                    }
                     disabled={loadingStates.inhabitants}
                     className="mt-2 sm:mt-0 sm:mr-5 p-2 rounded-lg hover:translate-y-0.5 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
                     title={tDetails("editAquarium")}
@@ -916,7 +906,9 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
                   <button
                     type="button"
                     id="editAquariumWaterParams"
-                    onClick={() => openModal("waterParams")}
+                    onClick={() =>
+                      openWaterParamsModal(aquarium, handleSaveWaterParams)
+                    }
                     disabled={loadingStates.waterParams}
                     className="mt-2 sm:mt-0 sm:mr-5 p-2 rounded-lg hover:translate-y-0.5 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
                     title={tDetails("editAquarium")}
@@ -965,7 +957,9 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
                   <button
                     type="button"
                     id="editAquariumReminders"
-                    onClick={() => openModal("reminders")}
+                    onClick={() =>
+                      openRemindersModal(aquarium, handleSaveReminders)
+                    }
                     disabled={loadingStates.reminders}
                     className="mt-2 sm:mt-0 sm:mr-5 p-2 rounded-lg hover:translate-y-0.5 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
                     title={tDetails("editAquarium")}
@@ -996,7 +990,9 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
                   <button
                     type="button"
                     id="editAquariumTimeline"
-                    onClick={() => openModal("timeline")}
+                    onClick={() =>
+                      openTimelineModal(aquarium, handleSaveTimeline)
+                    }
                     disabled={loadingStates.timeline}
                     className="mt-2 sm:mt-0 sm:mr-5 p-2 rounded-lg hover:translate-y-0.5 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
                     title={tDetails("editAquarium")}
@@ -1037,7 +1033,9 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
                   <button
                     type="button"
                     id="editAquariumOverview"
-                    onClick={() => openModal("overview")}
+                    onClick={() =>
+                      openOverviewModal(aquarium, handleSaveOverview)
+                    }
                     disabled={loadingStates.overview}
                     className="mt-2 sm:mt-0 sm:mr-5 p-2 rounded-lg hover:translate-y-0.5 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
                     title={tDetails("editAquarium")}
@@ -1093,57 +1091,6 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
           </div>
         </div>
       )}
-
-      {/* Модальные окна */}
-      <DescriptionEditModal
-        isOpen={modalStates.description}
-        onClose={() => closeModal("description")}
-        aquarium={aquarium}
-        onSave={handleSaveDescription}
-        section="description"
-      />
-      <SpecificationsEditModal
-        isOpen={modalStates.specifications}
-        onClose={() => closeModal("specifications")}
-        aquarium={aquarium}
-        onSave={handleSaveSpecifications}
-        section="specifications"
-      />
-      <InhabitantsEditModal
-        isOpen={modalStates.inhabitants}
-        onClose={() => closeModal("inhabitants")}
-        aquarium={aquarium}
-        onSave={handleSaveInhabitants}
-        section="inhabitants"
-      />
-      <WaterParamsEditModal
-        isOpen={modalStates.waterParams}
-        onClose={() => closeModal("waterParams")}
-        aquarium={aquarium}
-        onSave={handleSaveWaterParams}
-        section="waterParams"
-      />
-      <RemindersEditModal
-        isOpen={modalStates.reminders}
-        onClose={() => closeModal("reminders")}
-        aquarium={aquarium}
-        onSave={handleSaveReminders}
-        section="reminders"
-      />
-      <TimelineEditModal
-        isOpen={modalStates.timeline}
-        onClose={() => closeModal("timeline")}
-        aquarium={aquarium}
-        onSave={handleSaveTimeline}
-        section="timeline"
-      />
-      <OverviewEditModal
-        isOpen={modalStates.overview}
-        onClose={() => closeModal("overview")}
-        aquarium={aquarium}
-        onSave={handleSaveOverview}
-        section="overview"
-      />
     </>
   );
 }

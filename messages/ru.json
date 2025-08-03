@@ -155,6 +155,7 @@
       "inhabitants": "Обитатели",
       "waterParams": "Параметры воды",
       "reminders": "Напоминания",
+      "remindersDescription": "Напоминания о техническом обслуживании",
       "temperature": "Температура",
       "hardness": "Жёсткость",
       "nitrates": "Нитраты",
@@ -193,7 +194,8 @@
       "volumeCalcInfoManual": "Введите объем вручную",
       "volumeCalcAuto": "Рассчитывается автоматически",
       "lastUpdatedLabel": "Последнее обновление:",
-      "salinity": "Cоленость"
+      "salinity": "Cоленость",
+      "inhabitantsFormat": "Формат: \"Вид рыбы (количество), Вид растения (количество)\""
       
     
     },
@@ -208,6 +210,8 @@
       "editDescription": "Редактировать описание",
       "editSpecifications": "Редактировать спецификации",
       "editContent": "Редактировать содержимое",
+      "editInhabitants": "Редактировать обитателей",
+      "editReminders": "Редактировать напоминания",
       "editTimeline": "Редактировать временную шкалу",
       "editOverview": "Редактировать обзор",
       "startDate": "Дата начала",

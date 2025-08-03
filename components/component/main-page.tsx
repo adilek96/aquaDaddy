@@ -9,7 +9,7 @@ import Link from "next/link";
 import { JSX, SVGProps } from "react";
 import { getTranslations } from "next-intl/server";
 import CardFilling from "./cardFilling";
-import { motion } from "framer-motion";
+import { motion } from "@/components/ui/motion";
 
 export async function MainPage() {
   const t = await getTranslations("HomePage");

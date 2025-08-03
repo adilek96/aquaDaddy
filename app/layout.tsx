@@ -15,6 +15,13 @@ import MaintenanceEditModal from "@/components/component/maintenanceEditModal";
 import MaintenanceAddModal from "@/components/component/maintenanceAddModal";
 import SuccessModal from "@/components/component/successModal";
 import WaterParamsModal from "@/components/component/waterParamsModal";
+import AquariumDescriptionModal from "@/components/component/aquariumDescriptionModal";
+import AquariumSpecificationsModal from "@/components/component/aquariumSpecificationsModal";
+import AquariumInhabitantsModal from "@/components/component/aquariumInhabitantsModal";
+import AquariumWaterParamsModal from "@/components/component/aquariumWaterParamsModal";
+import AquariumRemindersModal from "@/components/component/aquariumRemindersModal";
+import AquariumTimelineModal from "@/components/component/aquariumTimelineModal";
+import AquariumOverviewModal from "@/components/component/aquariumOverviewModal";
 
 const libre_franklin = Libre_Franklin({
   subsets: ["latin"],
@@ -162,6 +169,13 @@ export default async function RootLayout({
                 <MaintenanceAddModal />
                 <SuccessModal />
                 <WaterParamsModal />
+                <AquariumDescriptionModal />
+                <AquariumSpecificationsModal />
+                <AquariumInhabitantsModal />
+                <AquariumWaterParamsModal />
+                <AquariumRemindersModal />
+                <AquariumTimelineModal />
+                <AquariumOverviewModal />
               </main>
             </SessionProvider>
           </NextIntlClientProvider>

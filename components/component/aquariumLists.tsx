@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { fetchAquariums } from "@/app/actions/aquariumListFetch";
 import { useTranslations } from "next-intl";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "@/components/ui/motion";
 import TankCard from "./tankCard";
 import { useSession } from "next-auth/react";
 import {
