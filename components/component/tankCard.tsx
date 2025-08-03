@@ -84,36 +84,36 @@ export default function TankCard({
   return (
     <>
       <motion.div
-        whileHover={{ 
+        whileHover={{
           scale: 1.02,
-          transition: { duration: 0.2 }
+          transition: { duration: 0.2 },
         }}
         whileTap={{ scale: 0.98 }}
       >
         <Card className="w-[300px] rounded-t-xl mb-10 cursor-pointer shadow-lg bg-white/50 dark:bg-black/50  hover:bg-green-300/50 dark:hover:bg-green-700/20 transition-all duration-300 hover:translate-y-1">
-        <Link href={`/myTanks/${aquarium.id}`}>
-          <CardContent className="p-0 cursor-pointer">
-            <img
-              src={image}
-              alt={aquarium.name}
-              className="w-full rounded-t-xl h-40 object-cover"
-            />
-            <div className="p-4 ">
-              <h3 className="font-semibold mb-2 ">{aquarium.name}</h3>
-              <p
-                className={`text-sm ${nextServiceStyle} px-2 py-1 rounded-sm inline-flex flex-col w-full`}
-              >
-                <span className="font-bold">{t("nextService")}</span>
-                <span>{nextService}</span>
-                {nextServiceDay !== notAssignedText && (
-                  <span>{nextServiceDay}</span>
-                )}
-              </p>
-            </div>
-          </CardContent>
-        </Link>
-      </Card>
-        </motion.div>
+          <Link href={`/myTanks/${aquarium.id}`}>
+            <CardContent className="p-0 cursor-pointer">
+              <img
+                src={image}
+                alt={aquarium.name}
+                className="w-full rounded-t-xl h-40 object-cover"
+              />
+              <div className="p-4 ">
+                <h3 className="font-semibold mb-2 ">{aquarium.name}</h3>
+                <p
+                  className={`text-sm ${nextServiceStyle} px-2 py-1 rounded-sm inline-flex flex-col w-full`}
+                >
+                  <span className="font-bold">{t("nextService")}</span>
+                  <span>{nextService}</span>
+                  {nextServiceDay !== notAssignedText && (
+                    <span>{nextServiceDay}</span>
+                  )}
+                </p>
+              </div>
+            </CardContent>
+          </Link>
+        </Card>
+      </motion.div>
     </>
   );
 }

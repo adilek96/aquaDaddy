@@ -8,7 +8,6 @@ import { useSession } from "next-auth/react";
 import { Select, SelectTrigger, SelectContent, SelectItem } from "../ui/select";
 import { Input } from "../ui/input";
 import LoadingBlock from "../ui/loadingBlock";
-
 import { useSearchParams } from "next/navigation";
 import { useSettingStore } from "@/store/modalsStore";
 
@@ -24,15 +23,59 @@ export default function AquariumLists() {
   const [loading, setLoading] = useState(false);
 
   const sortData = (data: any[]) => {
-    const sortedData = [...data].sort((a, b) => {
-      if (sort === "nextService") {
-        return (
-          new Date(a.nextService).getTime() - new Date(b.nextService).getTime()
+    // Удаляем дубликаты по ID
+    const uniqueData = data.filter(
+      (aquarium, index, self) =>
+        index === self.findIndex((a) => a.id === aquarium.id)
+    );
+
+    // Добавляем информацию о ближайшем обслуживании к каждому аквариуму
+    const aquariumsWithNextService = uniqueData.map((aquarium) => {
+      // Используем ту же логику, что и в tankCard.tsx
+      const pendingMaintenance = aquarium.maintenance
+        ?.filter((item: any) => item.status === "PENDING")
+        .sort(
+          (a: any, b: any) =>
+            new Date(a.performedAt).getTime() -
+            new Date(b.performedAt).getTime()
         );
+
+      const upcoming =
+        pendingMaintenance && pendingMaintenance.length > 0
+          ? pendingMaintenance[0]
+          : null;
+
+      return {
+        ...aquarium,
+        nextServiceDate: upcoming ? new Date(upcoming.performedAt) : null,
+        nextServiceFormatted: upcoming
+          ? new Date(upcoming.performedAt).toLocaleDateString("ru-RU", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })
+          : null,
+      };
+    });
+
+    // Сортируем по дате обслуживания
+    const sortedData = [...aquariumsWithNextService].sort((a, b) => {
+      if (sort === "nextService") {
+        // Если у обоих нет обслуживания, сортируем по имени
+        if (!a.nextServiceDate && !b.nextServiceDate) {
+          return a.name.localeCompare(b.name);
+        }
+
+        // Если у одного нет обслуживания, он идет в конец
+        if (!a.nextServiceDate) return 1;
+        if (!b.nextServiceDate) return -1;
+
+        // Сортируем по дате обслуживания
+        return a.nextServiceDate.getTime() - b.nextServiceDate.getTime();
       }
 
       if (sort === "name") {
-        return a.name.localeCompare(b.name);
+        return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
       }
 
       return 0;
