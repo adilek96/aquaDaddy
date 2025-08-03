@@ -39,6 +39,10 @@ export async function fetchUserAquarium({  tankId }: {   tankId: string }) {
         ...r,
         remindAt: r.remindAt.toISOString(),
       })),
+      images: aquarium.images.map(img => ({
+        ...img,
+        uploadedAt: img.uploadedAt.toISOString(),
+      })),
     };
   }
 

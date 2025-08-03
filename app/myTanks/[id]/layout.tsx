@@ -5,12 +5,12 @@ import { cookies } from "next/headers";
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const cookieStore = cookies();
   const locale = cookieStore.get("NEXT_LOCALE")?.value || "en";
-  
+
   try {
     // Получаем данные аквариума для мета-тегов
     const aquarium = await fetchUserAquarium({ tankId: params.id });
     const aquariumName = aquarium?.name || "Aquarium";
-    
+
     return generateAquariumMetadata(aquariumName, locale);
   } catch (error) {
     // Если не удалось получить данные аквариума, используем базовые мета-данные
@@ -23,5 +23,5 @@ export default function AquariumLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
-} 
+  return <div className=" w-full h-full   mx-auto">{children}</div>;
+}

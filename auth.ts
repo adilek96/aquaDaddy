@@ -24,13 +24,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id as string  ; // <- записываем ID в токен
+        token.id = user.id as string; // <- записываем ID в токен
+        token.country = user.country;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user && token?.id) {
         session.user.id = token.id as string;
+        session.user.country = token.country;
       }
       return session;
     }

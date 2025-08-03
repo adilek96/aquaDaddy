@@ -22,6 +22,7 @@ import AquariumWaterParamsModal from "@/components/component/aquariumWaterParams
 import AquariumRemindersModal from "@/components/component/aquariumRemindersModal";
 import AquariumTimelineModal from "@/components/component/aquariumTimelineModal";
 import AquariumOverviewModal from "@/components/component/aquariumOverviewModal";
+import ImageFullscreenModal from "@/components/component/imageFullscreenModal";
 
 const libre_franklin = Libre_Franklin({
   subsets: ["latin"],
@@ -176,6 +177,7 @@ export default async function RootLayout({
                 <AquariumRemindersModal />
                 <AquariumTimelineModal />
                 <AquariumOverviewModal />
+                <ImageFullscreenModal />
               </main>
             </SessionProvider>
           </NextIntlClientProvider>

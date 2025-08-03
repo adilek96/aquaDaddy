@@ -19,10 +19,10 @@ export default function MyTanksLayout({
           />
         </div>
         <div className="w-full h-fit  flex flex-row flex-wrap">
-          <div className="md:w-[30%] w-full h-fit flex justify-center">
-            {/* <UserCard data={response.data} /> */}
-          </div>
-          <div className="md:w-[70%] w-full h-full flex justify-center  mx-auto">
+          {/* <div className=" w-full h-fit flex justify-center">
+            <UserCard />
+          </div> */}
+          <div className=" w-full h-full flex justify-center  mx-auto">
             <div className="w-[95%] h-fit border border-mutted bg-white/60 dark:bg-black/60 my-12 px-5 rounded-xl">
               {children}
             </div>

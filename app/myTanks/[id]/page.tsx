@@ -19,6 +19,8 @@ import {
   updateWaterParameters,
 } from "@/app/actions/aquariumUpdateAction";
 import { motion } from "motion/react";
+import ImageUploader from "@/components/component/imageUploader";
+import ImageSlider from "@/components/component/imageSlider";
 
 // Компонент для отображения карточки обслуживания
 const MaintenanceCard = ({
@@ -1024,6 +1026,30 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
                   </div>
                 </div>
               </div>
+
+              {/* Images */}
+              <div>
+                <h2 className="text-sm sm:text-base lg:text-xl w-full font-bebas uppercase leading-none tracking-wide mb-4 sm:mb-6 border-b pb-2 font-bold">
+                  <span>{tDetails("images")}</span>
+                </h2>
+
+                {/* Image Slider */}
+                <div className="mb-8">
+                  <ImageSlider images={aquarium.images || []} />
+                </div>
+
+                {/* Image Uploader */}
+                <ImageUploader
+                  aquariumId={id}
+                  images={aquarium.images || []}
+                  onImagesUpdate={(newImages) => {
+                    setAquarium((prev: any) => ({
+                      ...prev,
+                      images: newImages,
+                    }));
+                  }}
+                />
+              </div>
             </div>
 
             {/* Right Column - Sidebar */}
@@ -1077,6 +1103,19 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
                   </div>
                 </div>
               </div>
+
+              {/* Sidebar Image Slider */}
+              {aquarium.images && aquarium.images.length > 0 && (
+                <div>
+                  <div className="text-sm sm:text-base lg:text-xl font-bebas uppercase leading-none tracking-wide mb-4 sm:mb-6 border-b pb-2 font-bold">
+                    {tDetails("gallery")}
+                  </div>
+                  <ImageSlider
+                    images={aquarium.images}
+                    className="aspect-square"
+                  />
+                </div>
+              )}
 
               {/* Maintenance */}
               <div>

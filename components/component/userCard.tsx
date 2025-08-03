@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import React from "react";
 import { Card } from "../ui/card";
@@ -5,6 +6,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { UserIcon } from "@/public/user";
 import { GlobeIcon } from "@/public/globe";
 import { Fish, Flower, Shell, Waves } from "lucide-react";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
 
 const collectionsIcons = [
   { name: "Plants", count: 25, icon: Flower },
@@ -15,55 +18,62 @@ const collectionsIcons = [
   { name: "Corals", count: 15, icon: Waves },
 ];
 
-export default function UserCard({
-  locale,
-  data,
-}: {
-  locale: string;
-  data: any;
-}) {
+export default function UserCard() {
+  const { data: session } = useSession();
+
+  if (!session?.user) {
+    return null; // или показать загрузку
+  }
+
   return (
     <>
-      <Card className="md:w-[350px] w-[95%] h-fit mb-10 pb-10 border border-mutted  rounded-2xl backdrop-blur-3xl relative flex justify-center bg-white/60 dark:bg-black/60">
+      <Card className=" w-[100%] h-fit mb-5 pb-10 border border-mutted  rounded-b-2xl backdrop-blur-3xl relative flex justify-center bg-white/60 dark:bg-black/60">
         <div className="w-[130px] h-[130px] absolute -top-12 flex items-center justify-center backdrop-blur-3xl rounded-full bg-[#00EBFF]/20">
           <Avatar className="w-[120px] h-[120px] flex items-center justify-center">
-            {/* {url !== null ? (
-              <AvatarImage src={String(url)} alt="Profile picture" />
+            {session?.user.image !== null ? (
+              <Image
+                src={String(session.user.image)}
+                alt="Profile picture"
+                fill={true}
+                loading="lazy"
+              />
             ) : (
               <UserIcon />
-            )} */}
+            )}
 
             <AvatarFallback>JP</AvatarFallback>
           </Avatar>
           <div className="absolute bottom-0 right-0 w-8 h-8 rounded-full overflow-hidden border-2 border-background">
-            {data.country === null ? (
+            {!session?.user.country ? (
               <div className="w-full h-full  flex justify-center items-center bg-primary text-primary-foreground">
                 <GlobeIcon className="h-5 w-5" />
               </div>
             ) : (
               <img
-                src={`https://flagcdn.com/w40/${data.country.toLowerCase()}.png`}
-                alt={`Flag of ${data.country}`}
+                src={`https://flagcdn.com/w40/${session?.user.country.toLowerCase()}.png`}
+                alt={`Flag of ${session?.user.country}`}
                 className="w-full h-full object-cover"
               />
             )}
           </div>
         </div>
         <div className="mt-[100px] w-full flex flex-col  items-center">
-          <h2 className="text-xl font-semibold mb-2">{data.username}</h2>
+          <h2 className="text-xl font-semibold mb-2">
+            {session?.user.name || "User"}
+          </h2>
           <p className="text-muted-foreground mb-4">
             <span>
               <Link
-                href={`/${locale}/myTanks`}
+                href={`/myTanks`}
                 className="hover:text-green-300/50 dark:hover:text-green-300/80 transition-all duration-300 "
               >
-                {data.aquariums.length} Aquariums
+                0 Aquariums
               </Link>
             </span>
             <span> | </span>
             <span>
               <Link
-                href={`/${locale}/myTanks/published`}
+                href={`/myTanks/published`}
                 className="hover:text-green-300/50 dark:hover:text-green-300/80 transition-all duration-300 "
               >
                 2 Published
@@ -73,7 +83,7 @@ export default function UserCard({
 
           <div className="flex flex-col items-center">
             <Link
-              href={`/${locale}/myTanks/collections`}
+              href={`/myTanks/collections`}
               className="hover:text-green-300/50 dark:hover:text-green-300/80 transition-all duration-300 "
             >
               <h3 className="text-lg font-semibold mb-2">Collections</h3>
