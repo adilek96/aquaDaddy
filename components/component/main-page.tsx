@@ -1,3 +1,4 @@
+"use client";
 import {
   Card,
   CardHeader,
@@ -7,12 +8,12 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import { JSX, SVGProps } from "react";
-import { getTranslations } from "next-intl/server";
 import CardFilling from "./cardFilling";
-import { motion } from "@/components/ui/motion";
+import { motion } from "motion/react";
+import { useTranslations } from "next-intl";
 
-export async function MainPage() {
-  const t = await getTranslations("HomePage");
+export function MainPage() {
+  const t = useTranslations("HomePage");
 
   return (
     <div className="flex justify-center items-center h-[100vh] w-[100vw]  ">

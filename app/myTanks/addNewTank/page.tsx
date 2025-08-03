@@ -1,13 +1,20 @@
+"use client";
 import AquariumAddingForm from "@/components/component/aquariumAddingForm";
 import Link from "next/link";
 import React from "react";
-import { getTranslations } from "next-intl/server";
+import { motion } from "motion/react";
+import { useTranslations } from "next-intl";
 
-export default async function AddNewTank() {
-  const t = await getTranslations("AquariumForm");
+export default function AddNewTank() {
+  const t = useTranslations("AquariumForm");
   return (
     <>
-      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold my-10 ml-5 font-bebas  leading-none  tracking-wide   cursor-default inline-flex flex-wrap ">
+      <motion.h2
+        className="text-2xl sm:text-3xl md:text-4xl font-bold my-6 sm:my-10 font-bebas leading-none tracking-wide cursor-default inline-flex flex-wrap"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.8, delay: 0.1 }}
+      >
         <span className="relative group transition-all duration-700 text-nowrap">
           <Link
             href={"/myTanks"}
@@ -19,11 +26,16 @@ export default async function AddNewTank() {
         </span>
 
         <span>{t("title")}</span>
-      </h2>
+      </motion.h2>
 
-      <h3 className="text-lg md:text-xl lg:text-2xl font-bold my-10 ml-5 font-bebas  leading-none  tracking-wide   cursor-default ">
+      <motion.h3
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.8, delay: 0.1 }}
+        className="text-lg md:text-xl lg:text-2xl font-bold my-10 ml-5 font-bebas  leading-none  tracking-wide   cursor-default "
+      >
         {t("subtitle")}
-      </h3>
+      </motion.h3>
       <AquariumAddingForm />
     </>
   );

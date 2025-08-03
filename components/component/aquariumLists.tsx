@@ -2,16 +2,10 @@
 import { useEffect, useState } from "react";
 import { fetchAquariums } from "@/app/actions/aquariumListFetch";
 import { useTranslations } from "next-intl";
-import { motion, AnimatePresence } from "@/components/ui/motion";
+import { motion, AnimatePresence } from "motion/react";
 import TankCard from "./tankCard";
 import { useSession } from "next-auth/react";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "../ui/select";
+import { Select, SelectTrigger, SelectContent, SelectItem } from "../ui/select";
 import { Input } from "../ui/input";
 import LoadingBlock from "../ui/loadingBlock";
 

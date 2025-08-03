@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "../ui/card";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { motion } from "@/components/ui/motion";
+import { motion } from "motion/react";
 
 export default function TankCard({
   aquarium,

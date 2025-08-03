@@ -1,6 +1,6 @@
 "use client";
 import { fetchUserAquarium } from "@/app/actions/aquariumFetch";
-import { Button } from "@/components/ui/button";
+
 import LoadingBlock from "@/components/ui/loadingBlock";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -8,15 +8,6 @@ import React, { useEffect, useState } from "react";
 import { measurCalcInch } from "@/components/helpers/measurCalcInch";
 import { measurCalcGal } from "@/components/helpers/mesurCalcGal";
 import { FaEdit } from "react-icons/fa";
-import {
-  FaTint,
-  FaThermometerHalf,
-  FaFlask,
-  FaWater,
-  FaLeaf,
-  FaCircle,
-  FaAtom,
-} from "react-icons/fa";
 import { useAquariumEditStore } from "@/store/aquariumEditStore";
 import WaterParametersCards from "@/components/component/waterParametersCards";
 import {
@@ -27,6 +18,7 @@ import {
   updateAquariumOverview,
   updateWaterParameters,
 } from "@/app/actions/aquariumUpdateAction";
+import { motion } from "motion/react";
 
 // Компонент для отображения карточки обслуживания
 const MaintenanceCard = ({
@@ -722,8 +714,18 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center px-4 sm:px-6 lg:px-8">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold my-6 sm:my-10 font-bebas leading-none tracking-wide cursor-default inline-flex flex-wrap">
+      <motion.div
+        className="flex flex-col sm:flex-row sm:justify-between sm:items-center px-4 sm:px-6 lg:px-8"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        <motion.h2
+          className="text-2xl sm:text-3xl md:text-4xl font-bold my-6 sm:my-10 font-bebas leading-none tracking-wide cursor-default inline-flex flex-wrap"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.1 }}
+        >
           <span className="relative group transition-all duration-700 text-nowrap">
             <Link
               href={"/myTanks"}
@@ -739,8 +741,8 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
           ) : (
             <div className="inline-block h-6 sm:h-8 w-32 sm:w-40 rounded bg-muted animate-pulse" />
           )}
-        </h2>
-      </div>
+        </motion.h2>
+      </motion.div>
       {/* Подробная информация об аквариуме */}
       {isLoading ? (
         <LoadingBlock translate={t("loading")} />
