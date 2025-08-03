@@ -7,7 +7,7 @@ export default async function AddNewTank() {
   const t = await getTranslations("AquariumForm");
   return (
     <>
-      <h2 className="text-3xl md:text-4xl  font-bold my-10 ml-5 font-bebas  leading-none  tracking-wide   cursor-default inline-flex flex-wrap ">
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold my-10 ml-5 font-bebas  leading-none  tracking-wide   cursor-default inline-flex flex-wrap ">
         <span className="relative group transition-all duration-700 text-nowrap">
           <Link
             href={"../myTanks"}

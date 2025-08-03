@@ -10,7 +10,7 @@ export default async function MyTanks() {
   return (
     <>
       <div className="flex no-wrap justify-between items-center">
-        <h2 className="text-3xl md:text-4xl  font-bold my-10 ml-5 font-bebas  leading-none  tracking-wide   cursor-default inline-flex flex-wrap ">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl  font-bold my-10 ml-5 font-bebas  leading-none  tracking-wide   cursor-default inline-flex flex-wrap ">
           {t("title")}
         </h2>
 

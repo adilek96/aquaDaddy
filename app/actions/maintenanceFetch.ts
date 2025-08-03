@@ -34,13 +34,14 @@ export async function updateOldPendingMaintenance(tankId: string) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Обновляем все PENDING записи, которые старше сегодняшнего дня
+    // Обновляем все PENDING записи, которые строго старше сегодняшнего дня
+    // (не включая сегодняшний день)
     const updatedMaintenance = await prisma.maintenance.updateMany({
       where: {
         aquariumId: tankId,
         status: "PENDING",
         performedAt: {
-          lt: today
+          lt: today // строго меньше сегодняшнего дня
         }
       },
       data: {

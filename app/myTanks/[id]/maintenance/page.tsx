@@ -65,6 +65,7 @@ export default function MaintenancePage({
   const [selectedMaintenance, setSelectedMaintenance] =
     useState<MaintenanceData | null>(null);
   const [showStartDateInfo, setShowStartDateInfo] = useState(false);
+  const [clickedDate, setClickedDate] = useState<Date | null>(null);
   const [temperatureScale, setTemperatureScale] = useState<
     "celsius" | "fahrenheit"
   >("celsius");
@@ -228,6 +229,9 @@ export default function MaintenancePage({
     const clickedDate = new Date(date);
     clickedDate.setHours(0, 0, 0, 0);
 
+    // Сохраняем выбранную дату для визуального выделения
+    setClickedDate(date);
+
     // Проверяем, есть ли обслуживание на эту дату
     const maintenanceForDay = getMaintenanceForDate(date);
 
@@ -284,6 +288,7 @@ export default function MaintenancePage({
         setMaintenanceData((prev) => [...prev, newMaintenanceItem]);
         setSelectedDate(null);
         setShowStartDateInfo(false);
+        setClickedDate(null);
       } else {
         console.error("Failed to create maintenance:", result.error);
       }
@@ -493,6 +498,7 @@ export default function MaintenancePage({
         // Модальное окно закрывается автоматически через стор
         setShowStartDateInfo(false);
         setSelectedDate(null);
+        setClickedDate(null);
       } else {
         console.error("Failed to complete maintenance:", result.error);
       }
@@ -608,6 +614,8 @@ export default function MaintenancePage({
       const isFuture = date >= new Date(new Date().setHours(0, 0, 0, 0));
       const hasMaintenance = maintenanceForDay.length > 0;
       const isAquariumStartDate = isStartDate(date);
+      const isClickedDate =
+        clickedDate && clickedDate.toDateString() === date.toDateString();
 
       days.push(
         <div
@@ -616,7 +624,7 @@ export default function MaintenancePage({
             isToday ? "bg-blue-100" : ""
           } ${isFuture && !hasMaintenance ? "hover:bg-green-50" : ""} ${
             isAquariumStartDate ? "border-2 border-purple-500 bg-purple-50" : ""
-          }`}
+          } ${isClickedDate ? "ring-2 ring-blue-500 ring-offset-2" : ""}`}
           onClick={() => handleDateClick(date)}
         >
           <div
@@ -833,6 +841,7 @@ export default function MaintenancePage({
                       setSelectedMaintenance(null);
                       setShowStartDateInfo(false);
                       setSelectedDate(null);
+                      setClickedDate(null);
                     }}
                   >
                     <X className="h-4 w-4" />
@@ -977,6 +986,7 @@ export default function MaintenancePage({
                       setShowStartDateInfo(false);
                       setSelectedDate(null);
                       setSelectedMaintenance(null);
+                      setClickedDate(null);
                     }}
                   >
                     <X className="h-4 w-4" />
