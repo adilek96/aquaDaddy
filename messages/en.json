@@ -62,7 +62,8 @@
       "415-18": "Length must be positive",
       "415-19": "Width must be positive",
       "415-20": "Height must be positive",
-      "415-21": "Volume must be positive"
+      "415-21": "Volume must be positive",
+      "415-22": "Start date must be in the past"
     },
     "ValidErrors":{
       "415-6" : "Ops! Something went wrong. Please try again.",
@@ -115,6 +116,7 @@
       "rectangular": "Rectangular",
       "cube": "Cube",
       "bowFront": "Bow Front",
+      "bow": "Bow Front",
       "hexagon": "Hexagon",
       "cylinder": "Cylinder",
       "sphere": "Sphere",
@@ -178,7 +180,6 @@
       "days": "days"
     },
     "AquariumDetails": {
-      "description": "Description",
       "specifications": "Specifications",
       "content": "Content",
       "timeline": "Timeline",

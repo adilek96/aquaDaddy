@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
+import { motion, AnimatePresence } from "framer-motion";
 import { fetchUserAquarium } from "@/app/actions/aquariumFetch";
 import {
   fetchMaintenanceData,
@@ -618,8 +619,20 @@ export default function MaintenancePage({
         clickedDate && clickedDate.toDateString() === date.toDateString();
 
       days.push(
-        <div
+        <motion.div
           key={day}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{
+            duration: 0.2,
+            delay: day * 0.01,
+            ease: "easeOut",
+          }}
+          whileHover={{
+            scale: 1.02,
+            transition: { duration: 0.1 },
+          }}
+          whileTap={{ scale: 0.98 }}
           className={`h-16 border border-gray-200 p-1 relative cursor-pointer transition-colors ${
             isToday ? "bg-blue-100" : ""
           } ${isFuture && !hasMaintenance ? "hover:bg-green-50" : ""} ${
@@ -654,7 +667,7 @@ export default function MaintenancePage({
               </div>
             )}
           </div>
-        </div>
+        </motion.div>
       );
     }
 
@@ -728,8 +741,18 @@ export default function MaintenancePage({
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center px-4 sm:px-6 lg:px-8">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold my-6 sm:my-10 font-bebas leading-none tracking-wide cursor-default inline-flex flex-wrap">
+      <motion.div
+        className="flex flex-col sm:flex-row sm:justify-between sm:items-center px-4 sm:px-6 lg:px-8"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        <motion.h2
+          className="text-2xl sm:text-3xl md:text-4xl font-bold my-6 sm:my-10 font-bebas leading-none tracking-wide cursor-default inline-flex flex-wrap"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.1 }}
+        >
           <span className="relative group transition-all duration-700 text-nowrap">
             <Link
               href={"/myTanks"}
@@ -759,35 +782,60 @@ export default function MaintenancePage({
           ) : (
             <div className="inline-block h-6 sm:h-8 w-32 sm:w-40 rounded bg-muted animate-pulse" />
           )}
-        </h2>
-      </div>
+        </motion.h2>
+      </motion.div>
       {isLoading ? (
         <LoadingBlock translate={t("loading")} />
       ) : (
         <div className="flex w-full flex-wrap justify-between">
           <div className="mb-6 lg:w-[48%] w-full">
-            <div className="flex flex-wrap gap-2 my-4">
-              <div className="flex items-center gap-2">
+            <motion.div
+              className="flex flex-wrap gap-2 my-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <motion.div
+                className="flex items-center gap-2"
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.2 }}
+              >
                 <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                 <span className="text-sm">{tDetails("pending")}</span>
-              </div>
-              <div className="flex items-center gap-2">
+              </motion.div>
+              <motion.div
+                className="flex items-center gap-2"
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.2 }}
+              >
                 <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
                 <span className="text-sm">{tDetails("completed")}</span>
-              </div>
-              <div className="flex items-center gap-2">
+              </motion.div>
+              <motion.div
+                className="flex items-center gap-2"
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.2 }}
+              >
                 <div className="w-3 h-3 border-2 border-red-500 rounded-full"></div>
                 <span className="text-sm">{tDetails("skipped")}</span>
-              </div>
-              <div className="flex items-center gap-2">
+              </motion.div>
+              <motion.div
+                className="flex items-center gap-2"
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.2 }}
+              >
                 <div className="w-3 h-3 bg-black rounded-full"></div>
                 <span className="text-sm">{tDetails("cancelled")}</span>
-              </div>
-              <div className="flex items-center gap-2">
+              </motion.div>
+              <motion.div
+                className="flex items-center gap-2"
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.2 }}
+              >
                 <div className="w-3 h-3 border-2 border-purple-500 bg-purple-50 rounded"></div>
                 <span className="text-sm">{tDetails("startDateLegend")}</span>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
@@ -796,24 +844,43 @@ export default function MaintenancePage({
                     {currentDate.getFullYear()}
                   </span>
                   <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={goToPreviousMonth}
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
-                      <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={goToNextMonth}>
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleRefreshStatuses}
-                      title={tDetails("refreshStatuses")}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={goToPreviousMonth}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                    </motion.div>
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
-                      <RefreshCw className="h-4 w-4" />
-                    </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={goToNextMonth}
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </motion.div>
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleRefreshStatuses}
+                        title={tDetails("refreshStatuses")}
+                      >
+                        <RefreshCw className="h-4 w-4" />
+                      </Button>
+                    </motion.div>
                   </div>
                 </CardTitle>
               </CardHeader>
@@ -845,198 +912,258 @@ export default function MaintenancePage({
           </div>
 
           {/* Maintenance Information Block */}
-          {selectedMaintenance && (
-            <Card className="my-6 lg:w-[48%] w-full">
-              <CardHeader>
-                <CardTitle className="flex justify-between items-center">
-                  <span>{tDetails("maintenanceInfo")}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setSelectedMaintenance(null);
-                      setShowStartDateInfo(false);
-                      setSelectedDate(null);
-                      setClickedDate(null);
-                    }}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <Label className="text-xs uppercase tracking-widest mb-1 font-semibold">
-                      {tDetails("date")}
-                    </Label>
-                    <p>
-                      {selectedMaintenance.performedAt.toLocaleDateString(
-                        "ru-RU"
-                      )}
-                    </p>
-                  </div>
-
-                  <div>
-                    <Label className="text-xs uppercase tracking-widest mb-1 font-semibold">
-                      {tDetails("maintenanceType")}
-                    </Label>
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {selectedMaintenance.type.map((type) => (
-                        <span
-                          key={type}
-                          className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs"
+          <AnimatePresence>
+            {selectedMaintenance && (
+              <motion.div
+                initial={{ opacity: 0, x: 50, scale: 0.95 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, x: 50, scale: 0.95 }}
+                transition={{
+                  duration: 0.3,
+                  ease: "easeOut",
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 30,
+                }}
+                className="my-6 lg:w-[48%] w-full"
+              >
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex justify-between items-center">
+                      <span>{tDetails("maintenanceInfo")}</span>
+                      <motion.div
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                      >
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedMaintenance(null);
+                            setShowStartDateInfo(false);
+                            setSelectedDate(null);
+                            setClickedDate(null);
+                          }}
                         >
-                          {getMaintenanceTypeLabel(type)}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label className="text-xs uppercase tracking-widest mb-1 font-semibold">
-                      {tDetails("status")}
-                    </Label>
-                    <div
-                      className={`flex px-2 py-1 rounded text-xs w-fit text-white ${
-                        selectedMaintenance.status === "PENDING"
-                          ? "bg-green-500"
-                          : selectedMaintenance.status === "COMPLETED"
-                          ? "bg-yellow-500"
-                          : selectedMaintenance.status === "SKIPPED"
-                          ? "bg-red-500"
-                          : "bg-black"
-                      }`}
-                    >
-                      {selectedMaintenance.status === "PENDING"
-                        ? tDetails("pending")
-                        : selectedMaintenance.status === "COMPLETED"
-                        ? tDetails("completed")
-                        : selectedMaintenance.status === "SKIPPED"
-                        ? tDetails("skipped")
-                        : tDetails("cancelled")}
-                    </div>
-                  </div>
-
-                  {selectedMaintenance.description && (
-                    <div>
-                      <Label className="text-xs uppercase tracking-widest mb-1 font-semibold">
-                        {tDetails("description")}
-                      </Label>
-                      <p>{selectedMaintenance.description}</p>
-                    </div>
-                  )}
-
-                  {selectedMaintenance.WaterLog &&
-                    selectedMaintenance.WaterLog.length > 0 && (
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </motion.div>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
                       <div>
                         <Label className="text-xs uppercase tracking-widest mb-1 font-semibold">
-                          {tDetails("waterParameters")}
+                          {tDetails("date")}
                         </Label>
-                        <div className="text-xs text-gray-500 mb-2">
-                          Debug: {selectedMaintenance.WaterLog.length}{" "}
-                          {tDetails("parameters")}
-                        </div>
-                        <WaterParametersCards
-                          parameters={selectedMaintenance.WaterLog}
-                          showDate={true}
-                          temperatureScale={temperatureScale}
-                        />
+                        <p>
+                          {selectedMaintenance.performedAt.toLocaleDateString(
+                            "ru-RU"
+                          )}
+                        </p>
                       </div>
-                    )}
 
-                  <div className="flex gap-2 pt-4">
-                    {canEditMaintenance(selectedMaintenance) && (
-                      <Button
-                        onClick={() =>
-                          handleEditMaintenance(selectedMaintenance)
-                        }
-                        variant="outline"
-                      >
-                        {tDetails("edit")}
-                      </Button>
-                    )}
+                      <div>
+                        <Label className="text-xs uppercase tracking-widest mb-1 font-semibold">
+                          {tDetails("maintenanceType")}
+                        </Label>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {selectedMaintenance.type.map((type) => (
+                            <span
+                              key={type}
+                              className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs"
+                            >
+                              {getMaintenanceTypeLabel(type)}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
 
-                    {canCompleteMaintenance(selectedMaintenance) && (
-                      <>
-                        {hasParameterCheck(selectedMaintenance) ? (
-                          <Button
-                            onClick={() =>
-                              openWaterParamsModal(
-                                handleCompleteWithParams,
-                                tDetails("waterParamsTitle")
-                              )
-                            }
-                            className="bg-green-600 hover:bg-green-700"
-                          >
-                            {tDetails("completeWithParams")}
-                          </Button>
-                        ) : (
-                          <Button
-                            onClick={handleCompleteWithoutParams}
-                            className="bg-green-600 hover:bg-green-700"
-                          >
-                            {tDetails("complete")}
-                          </Button>
+                      <div>
+                        <Label className="text-xs uppercase tracking-widest mb-1 font-semibold">
+                          {tDetails("status")}
+                        </Label>
+                        <div
+                          className={`flex px-2 py-1 rounded text-xs w-fit text-white ${
+                            selectedMaintenance.status === "PENDING"
+                              ? "bg-green-500"
+                              : selectedMaintenance.status === "COMPLETED"
+                              ? "bg-yellow-500"
+                              : selectedMaintenance.status === "SKIPPED"
+                              ? "bg-red-500"
+                              : "bg-black"
+                          }`}
+                        >
+                          {selectedMaintenance.status === "PENDING"
+                            ? tDetails("pending")
+                            : selectedMaintenance.status === "COMPLETED"
+                            ? tDetails("completed")
+                            : selectedMaintenance.status === "SKIPPED"
+                            ? tDetails("skipped")
+                            : tDetails("cancelled")}
+                        </div>
+                      </div>
+
+                      {selectedMaintenance.description && (
+                        <div>
+                          <Label className="text-xs uppercase tracking-widest mb-1 font-semibold">
+                            {tDetails("description")}
+                          </Label>
+                          <p>{selectedMaintenance.description}</p>
+                        </div>
+                      )}
+
+                      {selectedMaintenance.WaterLog &&
+                        selectedMaintenance.WaterLog.length > 0 && (
+                          <div>
+                            <Label className="text-xs uppercase tracking-widest mb-1 font-semibold">
+                              {tDetails("waterParameters")}
+                            </Label>
+                            <div className="text-xs text-gray-500 mb-2">
+                              Debug: {selectedMaintenance.WaterLog.length}{" "}
+                              {tDetails("parameters")}
+                            </div>
+                            <WaterParametersCards
+                              parameters={selectedMaintenance.WaterLog}
+                              showDate={true}
+                              temperatureScale={temperatureScale}
+                            />
+                          </div>
                         )}
-                      </>
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+
+                      <div className="flex gap-2 pt-4">
+                        {canEditMaintenance(selectedMaintenance) && (
+                          <motion.div
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                          >
+                            <Button
+                              onClick={() =>
+                                handleEditMaintenance(selectedMaintenance)
+                              }
+                              variant="outline"
+                            >
+                              {tDetails("edit")}
+                            </Button>
+                          </motion.div>
+                        )}
+
+                        {canCompleteMaintenance(selectedMaintenance) && (
+                          <>
+                            {hasParameterCheck(selectedMaintenance) ? (
+                              <motion.div
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                              >
+                                <Button
+                                  onClick={() =>
+                                    openWaterParamsModal(
+                                      handleCompleteWithParams,
+                                      tDetails("waterParamsTitle")
+                                    )
+                                  }
+                                  className="bg-green-600 hover:bg-green-700"
+                                >
+                                  {tDetails("completeWithParams")}
+                                </Button>
+                              </motion.div>
+                            ) : (
+                              <motion.div
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                              >
+                                <Button
+                                  onClick={handleCompleteWithoutParams}
+                                  className="bg-green-600 hover:bg-green-700"
+                                >
+                                  {tDetails("complete")}
+                                </Button>
+                              </motion.div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Aquarium Start Date Information Block */}
-          {showStartDateInfo && selectedDate && aquarium?.startDate && (
-            <Card className="my-6 lg:w-[48%] w-full">
-              <CardHeader>
-                <CardTitle className="flex justify-between items-center">
-                  <span className="flex items-center gap-2">
-                    🚀 {tDetails("aquariumStartDate")}
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setShowStartDateInfo(false);
-                      setSelectedDate(null);
-                      setSelectedMaintenance(null);
-                      setClickedDate(null);
-                    }}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <Label className="font-medium">
-                      {tDetails("startDateLabel")}
-                    </Label>
-                    <p className="text-purple-700 font-semibold">
-                      {new Date(aquarium.startDate).toLocaleDateString("ru-RU")}
-                    </p>
-                  </div>
+          <AnimatePresence>
+            {showStartDateInfo && selectedDate && aquarium?.startDate && (
+              <motion.div
+                initial={{ opacity: 0, x: 50, scale: 0.95 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, x: 50, scale: 0.95 }}
+                transition={{
+                  duration: 0.3,
+                  ease: "easeOut",
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 30,
+                }}
+                className="my-6 lg:w-[48%] w-full"
+              >
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex justify-between items-center">
+                      <span className="flex items-center gap-2">
+                        🚀 {tDetails("aquariumStartDate")}
+                      </span>
+                      <motion.div
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                      >
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setShowStartDateInfo(false);
+                            setSelectedDate(null);
+                            setSelectedMaintenance(null);
+                            setClickedDate(null);
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </motion.div>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div>
+                        <Label className="font-medium">
+                          {tDetails("startDateLabel")}
+                        </Label>
+                        <p className="text-purple-700 font-semibold">
+                          {new Date(aquarium.startDate).toLocaleDateString(
+                            "ru-RU"
+                          )}
+                        </p>
+                      </div>
 
-                  <div>
-                    <Label className="font-medium">
-                      {tDetails("aquariumName")}
-                    </Label>
-                    <p>{aquarium.name}</p>
-                  </div>
+                      <div>
+                        <Label className="font-medium">
+                          {tDetails("aquariumName")}
+                        </Label>
+                        <p>{aquarium.name}</p>
+                      </div>
 
-                  <div className="bg-purple-50 p-4 rounded-lg">
-                    <p className="text-sm text-purple-800">
-                      {tDetails("startDateMessage")} аквариум &ldquo;
-                      {aquarium.name}&ldquo;. {tDetails("startDateMessageEnd")}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                      <div className="bg-purple-50 p-4 rounded-lg">
+                        <p className="text-sm text-purple-800">
+                          {tDetails("startDateMessage")} аквариум &ldquo;
+                          {aquarium.name}&ldquo;.{" "}
+                          {tDetails("startDateMessageEnd")}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       )}
     </>

@@ -3,6 +3,7 @@ import { aquariumAddingAction } from "@/app/actions/aquariumAddingAction";
 import React, { useEffect, useState } from "react";
 import { useFormState } from "react-dom";
 import { useTranslations } from "next-intl";
+import { motion, AnimatePresence } from "framer-motion";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { ZodErrors } from "../helpers/ZodErrors";
@@ -310,12 +311,25 @@ export default function AquariumAddingForm() {
     currentMeasurementSystem === "imperial" ? " (gal)" : " (L)";
 
   return (
-    <form
+    <motion.form
       className="flex flex-col gap-4 my-10 md:mx-10"
       action={handleFormAction}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
     >
-      <div className="flex flex-row flex-wrap gap-4">
-        <div className="space-y-2 w-full md:w-1/2">
+      <motion.div
+        className="flex flex-row flex-wrap gap-4"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+      >
+        <motion.div
+          className="space-y-2 w-full md:w-1/2"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+        >
           <Label htmlFor="name">{t("tankName")}</Label>
           <Input
             id="name"
@@ -325,9 +339,14 @@ export default function AquariumAddingForm() {
             className="md:h-12 md:text-lg md:p-4 lg:h-14 lg:text-xl lg:p-5"
           />
           <ZodErrors error={formState?.zodErrors?.name || []} />
-        </div>
+        </motion.div>
 
-        <div className="space-y-2">
+        <motion.div
+          className="space-y-2"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4, delay: 0.25 }}
+        >
           <Label htmlFor="type">{t("type")}</Label>
           <Select name="type" required>
             <SelectTrigger className="w-full">
@@ -340,9 +359,14 @@ export default function AquariumAddingForm() {
             </SelectContent>
           </Select>
           <ZodErrors error={formState?.zodErrors?.type || []} />
-        </div>
+        </motion.div>
 
-        <div className="space-y-2">
+        <motion.div
+          className="space-y-2"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4, delay: 0.3 }}
+        >
           <Label htmlFor="shape">{t("shape")}</Label>
           <Select
             name="shape"
@@ -356,7 +380,7 @@ export default function AquariumAddingForm() {
             <SelectContent>
               <SelectItem value="rectangular">{t("rectangular")}</SelectItem>
               <SelectItem value="cube">{t("cube")}</SelectItem>
-              <SelectItem value="bow">{t("bowFront")}</SelectItem>
+              <SelectItem value="bow">{t("bow")}</SelectItem>
               <SelectItem value="hexagon">{t("hexagon")}</SelectItem>
               <SelectItem value="cylinder">{t("cylinder")}</SelectItem>
               <SelectItem value="sphere">{t("sphere")}</SelectItem>
@@ -364,9 +388,14 @@ export default function AquariumAddingForm() {
             </SelectContent>
           </Select>
           <ZodErrors error={formState?.zodErrors?.shape || []} />
-        </div>
-      </div>
-      <div className="space-y-2">
+        </motion.div>
+      </motion.div>
+      <motion.div
+        className="space-y-2"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.3 }}
+      >
         <Label htmlFor="description">{t("description")}</Label>
         <Textarea
           id="description"
@@ -376,23 +405,39 @@ export default function AquariumAddingForm() {
           className="md:h-12 md:text-lg md:p-4 lg:h-14 lg:text-xl lg:p-5"
         />
         <ZodErrors error={formState?.zodErrors?.description || []} />
-      </div>
+      </motion.div>
 
-      <div className="space-y-2 w-full md:w-1/4">
+      <motion.div
+        className="space-y-2 w-full md:w-1/4"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.4 }}
+      >
         <Label htmlFor="startDate">{t("startDate")}</Label>
         <Input
           id="startDate"
           name="startDate"
           type="date"
+          max={new Date().toISOString().split("T")[0]}
           placeholder={t("startDatePlaceholder")}
-          className="md:h-12 md:text-lg md:p-4 lg:h-14 lg:text-xl lg:p-5"
+          className="md:h-12 md:text-lg md:p-4 lg:h-14 lg:text-xl lg:p-5 w-[230px]"
         />
         <ZodErrors error={formState?.zodErrors?.startDate || []} />
-      </div>
+      </motion.div>
 
-      <div className="flex flex-row flex-wrap gap-4">
+      <motion.div
+        className="flex flex-row flex-wrap gap-4"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.5 }}
+      >
         {shape === "cylinder" && (
-          <div className="grid grid-cols-2 gap-2">
+          <motion.div
+            className="grid grid-cols-2 gap-2"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
             <div className="space-y-2">
               <Label htmlFor="diameterCm">
                 {t("diameter")}
@@ -431,7 +476,7 @@ export default function AquariumAddingForm() {
               />
               <ZodErrors error={formState?.zodErrors?.heightCm || []} />
             </div>
-          </div>
+          </motion.div>
         )}
 
         {shape === "sphere" && (
@@ -720,8 +765,13 @@ export default function AquariumAddingForm() {
           />
           <ZodErrors error={formState?.zodErrors?.volumeLiters || []} />
         </div>
-      </div>
-      <div className="flex w-full flex-col mt-5 justify-center">
+      </motion.div>
+      <motion.div
+        className="flex w-full flex-col mt-5 justify-center"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.6 }}
+      >
         {formState?.message && (
           <div
             className={`text-sm mb-2 ${
@@ -740,7 +790,7 @@ export default function AquariumAddingForm() {
           text={t("addButton")}
           loadingText={t("addingButton")}
         />
-      </div>
-    </form>
+      </motion.div>
+    </motion.form>
   );
 }

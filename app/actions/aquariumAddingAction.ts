@@ -20,7 +20,12 @@ const AquariumSchema = z.object({
   widthCm: z.string().transform((val) => val === "" ? null : Number(val)).pipe(z.number().positive("415-19").nullable()),
   heightCm: z.string().transform((val) => val === "" ? null : Number(val)).pipe(z.number().positive("415-20").nullable()),
   volumeLiters: z.string().transform((val) => val === "" ? null : Number(val)).pipe(z.number().positive("415-21").nullable()),
-  startDate: z.string().optional().or(z.literal("")),
+  startDate: z.string().optional().or(z.literal("")).refine((val) => {
+    if (!val) return true; // если пустая строка или undefined — валидно
+    const date = new Date(val);
+    const now = new Date();
+    return !isNaN(date.getTime()) && date <= now;
+  }, "415-22"),
   measurementSystem: z.string().optional(),
   // Дополнительные поля для разных форм аквариума
   diameterCm: z.string().transform((val) => val === "" ? null : Number(val)).pipe(z.number().positive().nullable()),

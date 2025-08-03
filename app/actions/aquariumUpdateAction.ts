@@ -1,5 +1,6 @@
 "use server";
 
+import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 
@@ -247,7 +248,19 @@ export async function updateAquariumContent(tankId: string, content: {
 
 // Обновление временной шкалы аквариума
 export async function updateAquariumTimeline(tankId: string, startDate: string) {
+  const startDateSchema = z.object({
+    startDate: z.string().optional().or(z.literal("")).refine((val: string | undefined) => {
+      if (!val) return true; // если пустая строка или undefined — валидно
+      const date = new Date(val);
+      const now = new Date();
+      return !isNaN(date.getTime()) && date <= now;
+    }, "415-22"),
+  });
+
   try {
+    // Валидируем входные данные
+    const validatedData = startDateSchema.parse({ startDate });
+
     const session = await auth();
     if (!session?.user?.email) {
       throw new Error("Unauthorized");
@@ -268,7 +281,7 @@ export async function updateAquariumTimeline(tankId: string, startDate: string) 
         userId: user.id, // Используем ID пользователя, а не email
       },
       data: {
-        startDate: new Date(startDate),
+        startDate: validatedData.startDate ? new Date(validatedData.startDate) : null,
       },
       include: {
         waterParams: true,
@@ -278,7 +291,16 @@ export async function updateAquariumTimeline(tankId: string, startDate: string) 
     });
 
     return { success: true, data: updatedAquarium };
-  } catch (error) {
+  } catch (error: unknown) {
+    if (error instanceof z.ZodError) {
+      console.error("Zod validation errors:", error.errors);
+      return { 
+        success: false, 
+        error: "Invalid date format or date is in the future",
+        zodErrors: error.errors 
+      };
+    }
+    
     console.error("Error updating aquarium timeline:", error);
     return { success: false, error: "Failed to update timeline" };
   }

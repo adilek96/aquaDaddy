@@ -15,6 +15,7 @@ import {
 import { FaTimes } from "react-icons/fa";
 
 import { measurCalcGal } from "@/components/helpers/mesurCalcGal";
+import { ZodErrors } from "../helpers/ZodErrors";
 
 interface AquariumEditModalProps {
   isOpen: boolean;
@@ -1576,6 +1577,7 @@ export function TimelineEditModal({
             <Input
               id="startDate"
               type="date"
+              max={new Date().toISOString().split("T")[0]}
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
               className="mt-1"
@@ -1691,7 +1693,7 @@ export function OverviewEditModal({
               <SelectContent>
                 <SelectItem value="rectangular">{t("rectangular")}</SelectItem>
                 <SelectItem value="cube">{t("cube")}</SelectItem>
-                <SelectItem value="bow">{t("bowFront")}</SelectItem>
+                <SelectItem value="bow">{t("bow")}</SelectItem>
                 <SelectItem value="hexagon">{t("hexagon")}</SelectItem>
                 <SelectItem value="cylinder">{t("cylinder")}</SelectItem>
                 <SelectItem value="sphere">{t("sphere")}</SelectItem>

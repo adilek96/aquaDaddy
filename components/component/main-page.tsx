@@ -9,6 +9,7 @@ import Link from "next/link";
 import { JSX, SVGProps } from "react";
 import { getTranslations } from "next-intl/server";
 import CardFilling from "./cardFilling";
+import { motion } from "framer-motion";
 
 export async function MainPage() {
   const t = await getTranslations("HomePage");
@@ -16,53 +17,88 @@ export async function MainPage() {
   return (
     <div className="flex justify-center items-center h-[100vh] w-[100vw]  ">
       <div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 grid-flow-row-dense md:grid-cols-3 gap-8 p-4 sm:p-6 md:p-8  ">
-          <Card className="bg-[#00EBFF]/5 dark:bg-black/50  dark:hover:bg-green-700/70  backdrop-blur-md text-secondary-foreground hover:bg-green-300/50  transition-all duration-300   hover:text-secondary-foregroundcol-span-1 sm:col-span-1 md:col-span-3  border border-muted   hover:-translate-y-1   ">
-            <CardHeader>
-              <CardTitle>{t("aquariums-title")}</CardTitle>
-              <CardDescription>
-                Explore and manage your aquatic ecosystems.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <FishIcon className="h-6 w-6" />
-                  <span className="text-2xl font-bold">12</span>
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 grid-flow-row-dense md:grid-cols-3 gap-8 p-4 sm:p-6 md:p-8"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            whileHover={{
+              scale: 1.02,
+              transition: { duration: 0.2 },
+            }}
+          >
+            <Card className="bg-[#00EBFF]/5 dark:bg-black/50  dark:hover:bg-green-700/70  backdrop-blur-md text-secondary-foreground hover:bg-green-300/50  transition-all duration-300   hover:text-secondary-foregroundcol-span-1 sm:col-span-1 md:col-span-3  border border-muted   hover:-translate-y-1   ">
+              <CardHeader>
+                <CardTitle>{t("aquariums-title")}</CardTitle>
+                <CardDescription>
+                  Explore and manage your aquatic ecosystems.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <FishIcon className="h-6 w-6" />
+                    <span className="text-2xl font-bold">12</span>
+                  </div>
+                  <Link
+                    href={`/myTanks`}
+                    className="text-sm underline"
+                    prefetch={false}
+                  >
+                    View Aquariums
+                  </Link>
                 </div>
-                <Link
-                  href={`/myTanks`}
-                  className="text-sm underline"
-                  prefetch={false}
-                >
-                  View Aquariums
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-          <Card className="bg-[#00EBFF]/5 dark:bg-black/50  dark:hover:bg-green-700/70  backdrop-blur-md h-full text-secondary-foreground hover:bg-green-300/60  transition-all duration-300 col-span-1 sm:col-span-2  md:col-span-2 border border-mutted  hover:translate-y-1 hover:-translate-x-1 ">
-            <CardFilling
-              title={t("wiki-title")}
-              description={t("wiki-description")}
-              icon={<BookIcon className="h-6 w-6" />}
-              link={`/wiki`}
-              count={250}
-              linkText={t("wiki-link")}
-            />
-          </Card>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            whileHover={{
+              scale: 1.02,
+              transition: { duration: 0.2 },
+            }}
+          >
+            <Card className="bg-[#00EBFF]/5 dark:bg-black/50  dark:hover:bg-green-700/70  backdrop-blur-md h-full text-secondary-foreground hover:bg-green-300/60  transition-all duration-300 col-span-1 sm:col-span-2  md:col-span-2 border border-mutted  hover:translate-y-1 hover:-translate-x-1 ">
+              <CardFilling
+                title={t("wiki-title")}
+                description={t("wiki-description")}
+                icon={<BookIcon className="h-6 w-6" />}
+                link={`/wiki`}
+                count={250}
+                linkText={t("wiki-link")}
+              />
+            </Card>
+          </motion.div>
 
-          <Card className="bg-[#00EBFF]/5 dark:bg-black/50  dark:hover:bg-green-700/70  backdrop-blur-md  h-full text-secondary-foreground hover:bg-green-300/60 transition-all duration-300 col-span-1 sm:col-span-1 md:col-span-1 row-start-2 sm:row-start-1 md:row-start-1 border border-mutted   hover:translate-y-1 hover:translate-x-1 ">
-            <CardFilling
-              title={t("discovery-title")}
-              description={t("discovery-description")}
-              icon={<CompassIcon className="h-6 w-6" />}
-              link={`#`}
-              count={1000}
-              linkText={t("discovery-link")}
-            />
-          </Card>
-        </div>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            whileHover={{
+              scale: 1.02,
+              transition: { duration: 0.2 },
+            }}
+          >
+            <Card className="bg-[#00EBFF]/5 dark:bg-black/50  dark:hover:bg-green-700/70  backdrop-blur-md  h-full text-secondary-foreground hover:bg-green-300/60 transition-all duration-300 col-span-1 sm:col-span-1 md:col-span-1 row-start-2 sm:row-start-1 md:row-start-1 border border-mutted   hover:translate-y-1 hover:translate-x-1 ">
+              <CardFilling
+                title={t("discovery-title")}
+                description={t("discovery-description")}
+                icon={<CompassIcon className="h-6 w-6" />}
+                link={`#`}
+                count={1000}
+                linkText={t("discovery-link")}
+              />
+            </Card>
+          </motion.div>
+        </motion.div>
       </div>
     </div>
   );

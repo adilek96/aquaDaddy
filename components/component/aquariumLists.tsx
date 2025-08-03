@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { fetchAquariums } from "@/app/actions/aquariumListFetch";
 import { useTranslations } from "next-intl";
+import { motion, AnimatePresence } from "framer-motion";
 import TankCard from "./tankCard";
 import { useSession } from "next-auth/react";
 import {
@@ -78,45 +79,86 @@ export default function AquariumLists() {
 
   return (
     <>
-      <div className="flex flex-wrap justify-center md:justify-end items-center gap-4  ">
-        <div className="flex flex-row items-center gap-4 ">
-          <Input
-            type="text"
-            placeholder={t("searchPlaceholder")}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="border rounded-md px-3 py-2 md:w-64 md:h-12 md:text-lg md:p-4 lg:h-14 lg:text-xl lg:p-5"
-          />
-          <Select value={sort} onValueChange={setSort}>
-            <SelectTrigger className="border rounded-md px-3 py-2 md:h-12 md:text-lg md:p-4 lg:h-14 lg:text-xl lg:p-5 flex items-center justify-center">
-              <SortIcon className="w-5 h-5" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="nextService">
-                {t("sortByNextService")}
-              </SelectItem>
-              <SelectItem value="name">{t("sortByName")}</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      <div className="flex flex-wrap justify-evenly my-10">
+      <motion.div
+        className="flex flex-wrap justify-center md:justify-end items-center gap-4"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        <motion.div
+          className="flex flex-row items-center gap-4"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Input
+              type="text"
+              placeholder={t("searchPlaceholder")}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="border rounded-md px-3 py-2 md:w-64 md:h-12 md:text-lg md:p-4 lg:h-14 lg:text-xl lg:p-5"
+            />
+          </motion.div>
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Select value={sort} onValueChange={setSort}>
+              <SelectTrigger className="border rounded-md px-3 py-2 md:h-12 md:text-lg md:p-4 lg:h-14 lg:text-xl lg:p-5 flex items-center justify-center">
+                <SortIcon className="w-5 h-5" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="nextService">
+                  {t("sortByNextService")}
+                </SelectItem>
+                <SelectItem value="name">{t("sortByName")}</SelectItem>
+              </SelectContent>
+            </Select>
+          </motion.div>
+        </motion.div>
+      </motion.div>
+      <motion.div
+        className="flex flex-wrap justify-evenly my-10"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+      >
         {loading ? (
           <LoadingBlock translate={t("loading")} />
         ) : aquariums.length > 0 ? (
-          aquariums.map((aquarium, index) => (
-            <TankCard
-              aquarium={aquarium}
-              key={aquarium.id || index}
-              notAssignedText={t("notAssigned")}
-            />
-          ))
+          <AnimatePresence>
+            {aquariums.map((aquarium, index) => (
+              <motion.div
+                key={aquarium.id || index}
+                initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -30, scale: 0.9 }}
+                transition={{
+                  duration: 0.4,
+                  delay: index * 0.1,
+                  ease: "easeOut",
+                }}
+                whileHover={{
+                  y: -5,
+                  transition: { duration: 0.2 },
+                }}
+              >
+                <TankCard
+                  aquarium={aquarium}
+                  notAssignedText={t("notAssigned")}
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
         ) : (
-          <div className="text-2xl font-bold w-full text-center h-[50vh] flex items-center justify-center">
+          <motion.div
+            className="text-2xl font-bold w-full text-center h-[50vh] flex items-center justify-center"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
             {t("noAquariums")}
-          </div>
+          </motion.div>
         )}
-      </div>
+      </motion.div>
     </>
   );
 }

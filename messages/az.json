@@ -64,7 +64,8 @@
       "415-18": "Uzunluq müsbət olmalıdır",
       "415-19": "En müsbət olmalıdır",
       "415-20": "Hündürlük müsbət olmalıdır",
-      "415-21": "Həcm müsbət olmalıdır"
+      "415-21": "Həcm müsbət olmalıdır",
+      "415-22": "Başlama tarixi gələcək tarix ola bilməz"
     },
     "ValidErrors":{
       "415-6" : "Ops! Xəta baş verdi. Yenidən cəhd edin.",
@@ -228,7 +229,6 @@
       "date": "Tarix:",
       "maintenanceType": "Xidmət Növü:",
       "status": "Status:",
-      "description": "Təsvir:",
       "waterParameters": "Su Parametrləri:",
       "edit": "Redaktə et",
       "completeWithParams": "Parametrlərlə Tamamla",
