@@ -30,9 +30,15 @@ export async function updateOldPendingMaintenance(tankId: string) {
       throw new Error("Aquarium not found or access denied");
     }
 
-    // Получаем текущую дату (начало дня)
+    // Получаем текущую дату (начало дня) в UTC
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    today.setUTCHours(0, 0, 0, 0);
+
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    console.log("Today (UTC):", today.toISOString());
+    console.log("Yesterday (UTC):", yesterday.toISOString());
 
     // Обновляем все PENDING записи, которые строго старше сегодняшнего дня
     // (не включая сегодняшний день)
@@ -41,7 +47,7 @@ export async function updateOldPendingMaintenance(tankId: string) {
         aquariumId: tankId,
         status: "PENDING",
         performedAt: {
-          lt: today // строго меньше сегодняшнего дня
+          lt: yesterday // строго меньше сегодняшнего дня (не включая сегодня)
         }
       },
       data: {
@@ -85,6 +91,7 @@ export async function fetchMaintenanceData(tankId: string) {
     }
 
     // Сначала обновляем старые PENDING записи на SKIPPED
+    // (только записи строго старше сегодняшнего дня)
     await updateOldPendingMaintenance(tankId);
 
     // Загружаем данные обслуживания

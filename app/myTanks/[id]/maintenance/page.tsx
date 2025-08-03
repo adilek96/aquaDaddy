@@ -675,9 +675,17 @@ export default function MaintenancePage({
 
   const handleRefreshStatuses = async () => {
     try {
+      console.log("Starting refresh of old pending maintenance...");
+
       // Обновляем старые PENDING записи на SKIPPED
       const updateResult = await updateOldPendingMaintenance(id);
+      console.log("Update result:", updateResult);
+
       if (updateResult.success) {
+        console.log(
+          `Updated ${updateResult.updatedCount} old pending records to SKIPPED`
+        );
+
         // Перезагружаем данные обслуживания
         const maintenanceResult = await fetchMaintenanceData(id);
         if (maintenanceResult.success && maintenanceResult.data) {
@@ -690,7 +698,13 @@ export default function MaintenancePage({
             WaterLog: item.WaterLog,
           }));
           setMaintenanceData(formattedData);
+          console.log("Maintenance data refreshed successfully");
         }
+      } else {
+        console.error(
+          "Failed to update old pending maintenance:",
+          updateResult.error
+        );
       }
     } catch (error) {
       console.error("Error refreshing statuses:", error);
@@ -718,13 +732,14 @@ export default function MaintenancePage({
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold my-6 sm:my-10 font-bebas leading-none tracking-wide cursor-default inline-flex flex-wrap">
           <span className="relative group transition-all duration-700 text-nowrap">
             <Link
-              href={"../myTanks"}
+              href={"/myTanks"}
               className="relative z-10 after:content-[''] after:absolute after:bottom-0 after:right-0 after:left-0 after:h-[3px] after:bg-current after:scale-x-0 after:origin-right after:transition-transform after:duration-500 group-hover:after:scale-x-100"
             >
               {t("aquariums-title")}
             </Link>
+
+            <span className="text-nowrap"> &nbsp; | &nbsp;</span>
           </span>
-          <span className="text-nowrap"> &nbsp; | &nbsp;</span>
           {aquarium ? (
             <span className="relative group transition-all duration-700 text-nowrap">
               <Link
@@ -733,11 +748,12 @@ export default function MaintenancePage({
               >
                 {aquarium.name}
               </Link>
+              <span className="text-nowrap"> &nbsp; | &nbsp;</span>
             </span>
           ) : (
             <div className="inline-block h-6 sm:h-8 w-32 sm:w-40 rounded bg-muted animate-pulse" />
           )}
-          <span className="text-nowrap"> &nbsp; | &nbsp;</span>
+
           {aquarium ? (
             <span className="text-wrap">{tDetails("maintenanceCalendar")}</span>
           ) : (

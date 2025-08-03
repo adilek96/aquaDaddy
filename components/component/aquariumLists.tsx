@@ -78,8 +78,8 @@ export default function AquariumLists() {
 
   return (
     <>
-      <div className="flex flex-wrap justify-end items-center gap-4 my-10 mr-10">
-        <div className="flex flex-row items-end gap-4">
+      <div className="flex flex-wrap justify-center md:justify-end items-center gap-4  ">
+        <div className="flex flex-row items-center gap-4 ">
           <Input
             type="text"
             placeholder={t("searchPlaceholder")}
