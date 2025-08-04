@@ -46,7 +46,7 @@ const montserrat = Montserrat({
 
 // Функция для генерации мета-данных
 async function generateMetadata(): Promise<Metadata> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const locale = cookieStore.get("NEXT_LOCALE")?.value || "en";
   const messages = await getMessages({ locale });
 
@@ -137,12 +137,12 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const locale = cookieStore.get("NEXT_LOCALE")?.value || "en";
   const messages = await getMessages({ locale });
 
   return (
-    <html suppressHydrationWarning className="scroll-smooth" lang={locale}>
+    <html suppressHydrationWarning data-scroll-behavior="smooth" lang={locale}>
       <body
         className={`${libre_franklin.className} ${bebas.variable} ${montserrat.variable}`}
       >

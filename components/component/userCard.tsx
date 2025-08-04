@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import { Card } from "../ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { UserIcon } from "@/public/user";
@@ -20,6 +20,8 @@ const collectionsIcons = [
 
 export default function UserCard() {
   const { data: session } = useSession();
+  const [avatarError, setAvatarError] = useState(false);
+  const [flagError, setFlagError] = useState(false);
 
   if (!session?.user) {
     return null; // или показать загрузку
@@ -32,10 +34,12 @@ export default function UserCard() {
           <Avatar className="w-[120px] h-[120px] flex items-center justify-center">
             {session?.user.image !== null ? (
               <Image
-                src={String(session.user.image)}
+                src={avatarError ? "/app-logo.svg" : String(session.user.image)}
                 alt="Profile picture"
                 fill={true}
-                loading="lazy"
+                sizes="120px"
+                priority
+                onError={() => setAvatarError(true)}
               />
             ) : (
               <UserIcon />
@@ -49,10 +53,17 @@ export default function UserCard() {
                 <GlobeIcon className="h-5 w-5" />
               </div>
             ) : (
-              <img
-                src={`https://flagcdn.com/w40/${session?.user.country.toLowerCase()}.png`}
+              <Image
+                src={
+                  flagError
+                    ? "/app-logo.svg"
+                    : `https://flagcdn.com/w40/${session?.user.country.toLowerCase()}.png`
+                }
                 alt={`Flag of ${session?.user.country}`}
                 className="w-full h-full object-cover"
+                width={32}
+                height={32}
+                onError={() => setFlagError(true)}
               />
             )}
           </div>

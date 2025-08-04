@@ -1,7 +1,6 @@
 "use client";
 import { aquariumAddingAction } from "@/app/actions/aquariumAddingAction";
-import React, { useEffect, useState } from "react";
-import { useFormState } from "react-dom";
+import React, { useEffect, useState, useActionState } from "react";
 import { useTranslations } from "next-intl";
 import { motion } from "motion/react";
 import { Label } from "../ui/label";
@@ -32,7 +31,7 @@ export default function AquariumAddingForm() {
   const router = useRouter();
   const [currentMeasurementSystem, setCurrentMeasurementSystem] =
     useState<string>("metric");
-  const [formState, formAction] = useFormState(
+  const [formState, formAction] = useActionState(
     aquariumAddingAction,
     INITIAL_STATE
   );

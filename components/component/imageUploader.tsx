@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "motion/react";
 import { FaUpload, FaTrash, FaEye, FaTimes } from "react-icons/fa";
+import Image from "next/image";
+import { useImageFullscreenStore } from "@/store/imageFullscreenStore";
 
 interface ImageUploaderProps {
   aquariumId: string;
@@ -23,6 +25,16 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [deletingImage, setDeletingImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imgErrorIds, setImgErrorIds] = useState<{ [id: string]: boolean }>({});
+  const [modalImgError, setModalImgError] = useState(false);
+  const { openFullscreen } = useImageFullscreenStore();
+
+  const handleOpenFullscreen = useCallback(
+    (index: number) => {
+      openFullscreen(images, index);
+    },
+    [openFullscreen, images, selectedImage]
+  );
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -167,14 +179,6 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     }
   };
 
-  const openImageModal = (url: string) => {
-    setSelectedImage(url);
-  };
-
-  const closeImageModal = () => {
-    setSelectedImage(null);
-  };
-
   return (
     <>
       <div className="space-y-4">
@@ -244,7 +248,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
             <h3 className="text-sm font-medium">{t("uploadedImages")}</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               <AnimatePresence>
-                {images.map((image) => (
+                {images.map((image, index) => (
                   <motion.div
                     key={image.id}
                     initial={{ opacity: 0, scale: 0.8 }}
@@ -252,16 +256,44 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                     exit={{ opacity: 0, scale: 0.8 }}
                     className="relative group aspect-square rounded-lg overflow-hidden border border-muted hover:border-primary/50 transition-all duration-200"
                   >
-                    <img
-                      src={image.url}
-                      alt="Aquarium"
-                      className="w-full h-full object-cover"
-                    />
+                    {image.url ? (
+                      <Image
+                        src={
+                          imgErrorIds[image.id] ? "/app-logo.svg" : image.url
+                        }
+                        alt="Aquarium"
+                        className="w-full h-full object-cover"
+                        width={200}
+                        height={200}
+                        onError={() =>
+                          setImgErrorIds((prev) => ({
+                            ...prev,
+                            [image.id]: true,
+                          }))
+                        }
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gray-200 dark:bg-gray-800">
+                        <svg
+                          className="w-12 h-12 text-gray-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          ></path>
+                        </svg>
+                      </div>
+                    )}
 
                     {/* Overlay с кнопками */}
                     <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center space-x-2">
                       <button
-                        onClick={() => openImageModal(image.url)}
+                        onClick={() => handleOpenFullscreen(index)}
                         className="p-2 bg-white/20 rounded-full hover:bg-white/30 transition-colors"
                         title={t("viewImage")}
                       >
@@ -292,8 +324,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
           </div>
         )}
       </div>
-
-      {/* Модальное окно для просмотра изображения */}
+      {/* Модальное окно для просмотра изображения
       <AnimatePresence>
         {selectedImage && (
           <motion.div
@@ -316,15 +347,37 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
               >
                 <FaTimes className="w-6 h-6 text-white" />
               </button>
-              <img
-                src={selectedImage}
-                alt="Aquarium"
-                className="max-w-full max-h-full object-contain rounded-lg"
-              />
+              {selectedImage ? (
+                <Image
+                  src={modalImgError ? "/app-logo.svg" : selectedImage}
+                  alt="Aquarium"
+                  className="max-w-full max-h-full object-contain rounded-lg"
+                  width={800}
+                  height={600}
+                  priority
+                  onError={() => setModalImgError(true)}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gray-200 dark:bg-gray-800 rounded-lg">
+                  <svg
+                    className="w-24 h-24 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    ></path>
+                  </svg>
+                </div>
+              )}
             </motion.div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence> */}
     </>
   );
 };

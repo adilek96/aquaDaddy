@@ -34,8 +34,7 @@ export async function DELETE(request: NextRequest) {
         secretKey: minioSecretKey,
       });
 
-             // Извлекаем имя файла из presigned URL
-       // presigned URL содержит параметры, нужно извлечь имя файла из базы данных
+       // Получаем запись изображения из базы данных
        const imageRecord = await prisma.aquariumImage.findUnique({
          where: { id: imageId },
        });
@@ -47,9 +46,11 @@ export async function DELETE(request: NextRequest) {
          );
        }
        
-       // Извлекаем имя файла из URL в базе данных
-       const urlParts = imageRecord.url.split('/');
-       const fileName = urlParts.slice(-2).join('/'); // aquariumId/filename
+       // Извлекаем имя файла из presigned URL
+       // presigned URL имеет формат: http://endpoint/bucket/object?params
+       const urlObj = new URL(imageRecord.url);
+       const pathParts = urlObj.pathname.split('/');
+       const fileName = pathParts.slice(-2).join('/'); // aquariumId/filename
       
       
       

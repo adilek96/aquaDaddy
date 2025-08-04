@@ -1,14 +1,11 @@
 "use client";
 
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import {
-  FaChevronLeft,
-  FaChevronRight,
-  FaTimes,
-} from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaTimes } from "react-icons/fa";
 import { useTranslations } from "next-intl";
 import { useImageFullscreenStore } from "@/store/imageFullscreenStore";
+import Image from "next/image";
 
 const ImageFullscreenModal: React.FC = () => {
   const t = useTranslations("AquariumDetails");
@@ -22,6 +19,8 @@ const ImageFullscreenModal: React.FC = () => {
     nextImage,
     prevImage,
   } = useImageFullscreenStore();
+
+  const [imgError, setImgError] = useState(false);
 
   // Обработка клавиш для навигации
   useEffect(() => {
@@ -60,7 +59,14 @@ const ImageFullscreenModal: React.FC = () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "unset";
     };
-  }, [isOpen, imageScale, prevImage, nextImage, closeFullscreen, setImageScale]);
+  }, [
+    isOpen,
+    imageScale,
+    prevImage,
+    nextImage,
+    closeFullscreen,
+    setImageScale,
+  ]);
 
   if (!isOpen || images.length === 0) {
     return null;
@@ -91,17 +97,24 @@ const ImageFullscreenModal: React.FC = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <AnimatePresence mode="wait">
-              <motion.img
+              <motion.div
                 key={currentIndex}
-                src={images[currentIndex].url}
-                alt={`Aquarium ${currentIndex + 1}`}
-                className="max-w-full max-h-[70vh] w-auto h-auto object-contain cursor-zoom-in rounded-lg"
                 style={{ transform: `scale(${imageScale})` }}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 1.1 }}
                 transition={{ duration: 0.3 }}
-              />
+                className="max-w-full max-h-[70vh] w-auto h-auto object-contain cursor-zoom-in rounded-lg"
+              >
+                <Image
+                  src={imgError ? "/app-logo.svg" : images[currentIndex].url}
+                  alt={`Aquarium ${currentIndex + 1}`}
+                  className="max-w-full max-h-[70vh] w-auto h-auto object-contain cursor-zoom-in rounded-lg"
+                  width={1200}
+                  height={800}
+                  onError={() => setImgError(true)}
+                />
+              </motion.div>
             </AnimatePresence>
 
             {/* Навигационные кнопки в полноэкранном режиме */}
@@ -140,4 +153,4 @@ const ImageFullscreenModal: React.FC = () => {
   );
 };
 
-export default ImageFullscreenModal; 
+export default ImageFullscreenModal;

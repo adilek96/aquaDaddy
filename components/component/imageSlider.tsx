@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { FaChevronLeft, FaChevronRight, FaExpand } from "react-icons/fa";
 import { useTranslations } from "next-intl";
 import { useImageFullscreenStore } from "@/store/imageFullscreenStore";
+import Image from "next/image";
 
 interface Image {
   id: string;
@@ -24,6 +25,10 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
   const t = useTranslations("AquariumDetails");
   const [currentIndex, setCurrentIndex] = useState(0);
   const { openFullscreen } = useImageFullscreenStore();
+  const [mainImgError, setMainImgError] = useState(false);
+  const [thumbImgError, setThumbImgError] = useState<{ [k: number]: boolean }>(
+    {}
+  );
 
   const nextImage = useCallback(() => {
     setCurrentIndex((prevIndex) =>
@@ -61,16 +66,24 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
         {/* Основной слайдер */}
         <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
           <AnimatePresence mode="wait">
-            <motion.img
+            <motion.div
               key={currentIndex}
-              src={images[currentIndex].url}
-              alt={`Aquarium ${currentIndex + 1}`}
-              className="w-full h-full object-cover"
               initial={{ opacity: 0, scale: 1.1 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.3 }}
-            />
+              className="w-full h-full"
+            >
+              <Image
+                src={mainImgError ? "/app-logo.svg" : images[currentIndex].url}
+                alt={`Aquarium ${currentIndex + 1}`}
+                className="w-full h-full object-cover"
+                width={800}
+                height={450}
+                priority={currentIndex === 0}
+                onError={() => setMainImgError(true)}
+              />
+            </motion.div>
           </AnimatePresence>
 
           {/* Навигационные кнопки */}
@@ -121,10 +134,15 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
                     : "border-muted hover:border-primary/50"
                 }`}
               >
-                <img
-                  src={image.url}
+                <Image
+                  src={thumbImgError[index] ? "/app-logo.svg" : image.url}
                   alt={`Thumbnail ${index + 1}`}
                   className="w-full h-full object-cover"
+                  width={64}
+                  height={48}
+                  onError={() =>
+                    setThumbImgError((prev) => ({ ...prev, [index]: true }))
+                  }
                 />
               </button>
             ))}

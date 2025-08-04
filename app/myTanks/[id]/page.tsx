@@ -1,10 +1,9 @@
 "use client";
 import { fetchUserAquarium } from "@/app/actions/aquariumFetch";
-
 import LoadingBlock from "@/components/ui/loadingBlock";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, use } from "react";
 import { measurCalcInch } from "@/components/helpers/measurCalcInch";
 import { measurCalcGal } from "@/components/helpers/mesurCalcGal";
 import { FaEdit } from "react-icons/fa";
@@ -110,8 +109,12 @@ const MaintenanceCard = ({
   );
 };
 
-export default function UserAquarium({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function UserAquarium({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = use(params);
   const t = useTranslations("AquariumForm");
   const tDetails = useTranslations("AquariumDetails");
   const [aquarium, setAquarium] = useState<any>(null);
@@ -219,8 +222,6 @@ export default function UserAquarium({ params }: { params: { id: string } }) {
     if (value === null) return null;
     return measurCalcGal(value, currentMeasurementSystem);
   };
-
-  // Функции для управления модальными окнами
 
   // Функции для сохранения данных
   const handleSaveDescription = async (data: any) => {

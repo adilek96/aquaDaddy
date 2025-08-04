@@ -4,6 +4,7 @@ import { Card, CardContent } from "../ui/card";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { motion } from "motion/react";
+import Image from "next/image";
 
 export default function TankCard({
   aquarium,
@@ -18,6 +19,8 @@ export default function TankCard({
   );
   const [nextServiceDay, setNextServiceDay] = useState("notAssignedText");
   const image = aquarium.image || "/app-logo.svg";
+  const [mainImgError, setMainImgError] = useState(false);
+  const [defaultImgError, setDefaultImgError] = useState(false);
 
   // Получаем ближайшее PENDING обслуживание
   const getNextPendingMaintenance = () => {
@@ -93,11 +96,27 @@ export default function TankCard({
         <Card className="w-[300px] rounded-t-xl mb-10 cursor-pointer shadow-lg bg-white/50 dark:bg-black/50  hover:bg-green-300/50 dark:hover:bg-green-700/20 transition-all duration-300 hover:translate-y-1">
           <Link href={`/myTanks/${aquarium.id}`}>
             <CardContent className="p-0 cursor-pointer">
-              <img
-                src={image}
-                alt={aquarium.name}
-                className="w-full rounded-t-xl h-40 object-cover"
-              />
+              {aquarium.images && aquarium.images.length > 0 ? (
+                <Image
+                  src={mainImgError ? "/app-logo.svg" : aquarium.images[0].url}
+                  alt={aquarium.name}
+                  className="w-full rounded-t-xl h-40 object-cover"
+                  width={300}
+                  height={160}
+                  sizes="(max-width: 768px) 100vw, 300px"
+                  onError={() => setMainImgError(true)}
+                />
+              ) : (
+                <Image
+                  src={defaultImgError ? "/app-logo.svg" : image}
+                  alt={aquarium.name}
+                  className="w-full rounded-t-xl h-40 object-cover"
+                  width={300}
+                  height={160}
+                  sizes="(max-width: 768px) 100vw, 300px"
+                  onError={() => setDefaultImgError(true)}
+                />
+              )}
               <div className="p-4 ">
                 <h3 className="font-semibold mb-2 ">{aquarium.name}</h3>
                 <p

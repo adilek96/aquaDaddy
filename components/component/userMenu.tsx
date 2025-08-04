@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
 import { SVGProps, useEffect } from "react";
 import LogOutButton from "../ui/logOutButton";
@@ -16,10 +16,12 @@ import SettingsWrapper from "./settingsWrapper";
 import { UserIcon } from "@/public/user";
 import { useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
+import { useState } from "react";
 
 export function UserMenu() {
   const t = useTranslations("Header");
   const { data: session } = useSession();
+  const [avatarError, setAvatarError] = useState(false);
 
   useEffect(() => {
     const measurementSystem = localStorage.getItem("measurement_system");
@@ -92,10 +94,14 @@ export function UserMenu() {
               {session.user.image !== undefined ||
               session.user.image !== null ? (
                 <Image
-                  src={String(session.user.image)}
+                  src={
+                    avatarError ? "/app-logo.svg" : String(session.user.image)
+                  }
                   alt="Profile picture"
                   fill={true}
-                  loading="lazy"
+                  sizes="32px"
+                  priority
+                  onError={() => setAvatarError(true)}
                 />
               ) : (
                 <UserIcon />
@@ -117,10 +123,14 @@ export function UserMenu() {
                 {session.user.image !== undefined ||
                 session.user.image !== null ? (
                   <Image
-                    src={String(session.user.image)}
+                    src={
+                      avatarError ? "/app-logo.svg" : String(session.user.image)
+                    }
                     alt="Profile picture"
                     fill={true}
-                    loading="lazy"
+                    sizes="32px"
+                    priority
+                    onError={() => setAvatarError(true)}
                   />
                 ) : (
                   <UserIcon />
