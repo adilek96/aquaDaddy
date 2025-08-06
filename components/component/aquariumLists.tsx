@@ -153,7 +153,7 @@ export default function AquariumLists() {
         </motion.div>
       </motion.div>
       <motion.div
-        className="flex flex-wrap justify-evenly my-10"
+        className="flex flex-wrap justify-center  items-center mx-auto gap-4 my-10"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}

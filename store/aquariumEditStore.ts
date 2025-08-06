@@ -30,6 +30,7 @@ interface AquariumEditStore {
   isRemindersModalOpen: boolean;
   isTimelineModalOpen: boolean;
   isOverviewModalOpen: boolean;
+  isDeleteModalOpen: boolean;
 
   // Данные аквариума
   selectedAquarium: AquariumData | null;
@@ -42,6 +43,7 @@ interface AquariumEditStore {
   onSaveReminders: ((data: { reminders: string }) => Promise<void>) | null;
   onSaveTimeline: ((data: { startDate: string }) => Promise<void>) | null;
   onSaveOverview: ((data: { type: string; shape: string; isPublic: boolean }) => Promise<void>) | null;
+  onDeleteAquarium: ((tankId: string) => Promise<void>) | null;
 
   // Методы для открытия модальных окон
   openDescriptionModal: (aquarium: AquariumData, onSave: (data: { description: string }) => Promise<void>) => void;
@@ -51,6 +53,7 @@ interface AquariumEditStore {
   openRemindersModal: (aquarium: AquariumData, onSave: (data: { reminders: string }) => Promise<void>) => void;
   openTimelineModal: (aquarium: AquariumData, onSave: (data: { startDate: string }) => Promise<void>) => void;
   openOverviewModal: (aquarium: AquariumData, onSave: (data: { type: string; shape: string; isPublic: boolean }) => Promise<void>) => void;
+  openDeleteModal: (aquarium: AquariumData, onDelete: (tankId: string) => Promise<void>) => void;
 
   // Методы для закрытия модальных окон
   closeDescriptionModal: () => void;
@@ -60,6 +63,7 @@ interface AquariumEditStore {
   closeRemindersModal: () => void;
   closeTimelineModal: () => void;
   closeOverviewModal: () => void;
+  closeDeleteModal: () => void;
 }
 
 export const useAquariumEditStore = create<AquariumEditStore>((set) => ({
@@ -71,6 +75,7 @@ export const useAquariumEditStore = create<AquariumEditStore>((set) => ({
   isRemindersModalOpen: false,
   isTimelineModalOpen: false,
   isOverviewModalOpen: false,
+  isDeleteModalOpen: false,
 
   selectedAquarium: null,
   
@@ -81,6 +86,7 @@ export const useAquariumEditStore = create<AquariumEditStore>((set) => ({
   onSaveReminders: null,
   onSaveTimeline: null,
   onSaveOverview: null,
+  onDeleteAquarium: null,
 
   // Методы для открытия модальных окон
   openDescriptionModal: (aquarium: AquariumData, onSave: (data: { description: string }) => Promise<void>) => {
@@ -139,6 +145,14 @@ export const useAquariumEditStore = create<AquariumEditStore>((set) => ({
     });
   },
 
+  openDeleteModal: (aquarium: AquariumData, onDelete: (tankId: string) => Promise<void>) => {
+    set({
+      isDeleteModalOpen: true,
+      selectedAquarium: aquarium,
+      onDeleteAquarium: onDelete,
+    });
+  },
+
   // Методы для закрытия модальных окон
   closeDescriptionModal: () => {
     set({
@@ -193,6 +207,14 @@ export const useAquariumEditStore = create<AquariumEditStore>((set) => ({
       isOverviewModalOpen: false,
       selectedAquarium: null,
       onSaveOverview: null,
+    });
+  },
+
+  closeDeleteModal: () => {
+    set({
+      isDeleteModalOpen: false,
+      selectedAquarium: null,
+      onDeleteAquarium: null,
     });
   },
 })); 

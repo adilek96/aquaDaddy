@@ -3,11 +3,13 @@ import { fetchUserAquarium } from "@/app/actions/aquariumFetch";
 import LoadingBlock from "@/components/ui/loadingBlock";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState, use } from "react";
 import { measurCalcInch } from "@/components/helpers/measurCalcInch";
 import { measurCalcGal } from "@/components/helpers/mesurCalcGal";
-import { FaEdit } from "react-icons/fa";
+import { FaEdit, FaTrash } from "react-icons/fa";
 import { useAquariumEditStore } from "@/store/aquariumEditStore";
+import { deleteAquarium } from "@/app/actions/aquariumDeleteAction";
 import WaterParametersCards from "@/components/component/waterParametersCards";
 import {
   updateAquariumDescription,
@@ -17,6 +19,7 @@ import {
   updateAquariumOverview,
   updateWaterParameters,
 } from "@/app/actions/aquariumUpdateAction";
+
 import { motion } from "motion/react";
 import ImageUploader from "@/components/component/imageUploader";
 import ImageSlider from "@/components/component/imageSlider";
@@ -117,6 +120,7 @@ export default function UserAquarium({
   const { id } = use(params);
   const t = useTranslations("AquariumForm");
   const tDetails = useTranslations("AquariumDetails");
+  const router = useRouter();
   const [aquarium, setAquarium] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentMeasurementSystem, setCurrentMeasurementSystem] =
@@ -131,6 +135,7 @@ export default function UserAquarium({
     openRemindersModal,
     openTimelineModal,
     openOverviewModal,
+    openDeleteModal,
   } = useAquariumEditStore();
 
   // Состояния загрузки для каждой секции
@@ -376,6 +381,19 @@ export default function UserAquarium({
       console.error("Error saving overview:", error);
     } finally {
       setLoadingStates((prev) => ({ ...prev, overview: false }));
+    }
+  };
+
+  const handleDeleteAquarium = async (tankId: string) => {
+    try {
+      const result = await deleteAquarium(tankId);
+      if (result.success) {
+        router.push("/myTanks");
+      } else {
+        console.error("Failed to delete aquarium:", result.error);
+      }
+    } catch (error) {
+      console.error("Error deleting aquarium:", error);
     }
   };
 
@@ -740,7 +758,9 @@ export default function UserAquarium({
           </span>
 
           {aquarium ? (
-            <span className="text-wrap">{aquarium.name}</span>
+            <div className="flex items-center gap-4">
+              <span className="text-wrap">{aquarium.name}</span>
+            </div>
           ) : (
             <div className="inline-block h-6 sm:h-8 w-32 sm:w-40 rounded bg-muted animate-pulse" />
           )}
@@ -1123,10 +1143,31 @@ export default function UserAquarium({
                 <div className="text-sm sm:text-base lg:text-xl font-bebas uppercase leading-none tracking-wide mb-4 sm:mb-6 border-b pb-2 font-bold">
                   {tDetails("maintenance")}
                 </div>
-                <div className="space-y-4">
+                <div className="space-y-4 ">
                   <Link href={`/myTanks/${id}/maintenance`}>
                     <MaintenanceCard aquarium={aquarium} tDetails={tDetails} />
                   </Link>
+                </div>
+              </div>
+              {/* Delete Button */}
+              <div>
+                <div className="text-sm sm:text-base lg:text-xl font-bebas uppercase leading-none tracking-wide mb-4 sm:mb-6 border-b pb-2 font-bold">
+                  {tDetails("deleteAquarium")}
+                </div>
+                <div className="space-y-4">
+                  <motion.button
+                    className={`w-full flex items-center justify-between gap-2 p-4 border  hover:bg-green-500/40 hover:text-red-500 border-muted rounded-xl shadow-sm transition-colors duration-200 cursor-pointer`}
+                    style={{ borderColor: "hsl(var(--border))" }}
+                    onClick={() =>
+                      openDeleteModal(aquarium, handleDeleteAquarium)
+                    }
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {tDetails("deleteAquarium")}
+
+                    <FaTrash className="w-4 h-4" />
+                  </motion.button>
                 </div>
               </div>
             </div>

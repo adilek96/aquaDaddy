@@ -95,7 +95,7 @@ model Aquarium {
 model WaterParameters {
     id           String   @id @default(cuid())
     aquariumId   String   @unique
-    aquarium     Aquarium @relation(fields: [aquariumId], references: [id])
+    aquarium     Aquarium @relation(fields: [aquariumId], references: [id], onDelete: Cascade)
     pH           Float?
     temperatureC Float?
     KH           Float?
@@ -116,7 +116,7 @@ model WaterParameters {
 model Inhabitant {
     id         String   @id @default(cuid())
     aquariumId String
-    aquarium   Aquarium @relation(fields: [aquariumId], references: [id])
+    aquarium   Aquarium @relation(fields: [aquariumId], references: [id], onDelete: Cascade)
     species    String
     count      Int
     addedAt    DateTime @default(now())
@@ -146,7 +146,7 @@ model Maintenance {
     id          String            @id @default(cuid())
     aquariumId  String
     type        MaintenanceType[]
-    aquarium    Aquarium          @relation(fields: [aquariumId], references: [id])
+    aquarium    Aquarium          @relation(fields: [aquariumId], references: [id], onDelete: Cascade)
     performedAt DateTime
     description String
     WaterLog    WaterLog[]
@@ -156,7 +156,7 @@ model Maintenance {
 model Reminder {
     id          String   @id @default(cuid())
     aquariumId  String
-    aquarium    Aquarium @relation(fields: [aquariumId], references: [id])
+    aquarium    Aquarium @relation(fields: [aquariumId], references: [id], onDelete: Cascade)
     title       String
     remindAt    DateTime
     isCompleted Boolean  @default(false)
@@ -165,7 +165,7 @@ model Reminder {
 model AquariumImage {
     id         String   @id @default(cuid())
     aquariumId String
-    aquarium   Aquarium @relation(fields: [aquariumId], references: [id])
+    aquarium   Aquarium @relation(fields: [aquariumId], references: [id], onDelete: Cascade)
     url        String
     uploadedAt DateTime @default(now())
 }
@@ -173,7 +173,7 @@ model AquariumImage {
 model WaterLog {
     id            String       @id @default(cuid())
     aquariumId    String
-    aquarium      Aquarium     @relation(fields: [aquariumId], references: [id])
+    aquarium      Aquarium     @relation(fields: [aquariumId], references: [id], onDelete: Cascade)
     recordedAt    DateTime
     pH            Float?
     temperatureC  Float?
@@ -198,7 +198,7 @@ model Rating {
     userId     String
     aquariumId String
     user       User     @relation(fields: [userId], references: [id])
-    aquarium   Aquarium @relation(fields: [aquariumId], references: [id])
+    aquarium   Aquarium @relation(fields: [aquariumId], references: [id], onDelete: Cascade)
     value      Int
     createdAt  DateTime @default(now())
 
