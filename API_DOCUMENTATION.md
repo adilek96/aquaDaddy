@@ -11,7 +11,7 @@
 
 ## API Эндпоинты
 
-### Базовый URL
+### URL для работы с пользователями
 
 ```
 https://aquadaddy.app/api
@@ -112,6 +112,13 @@ curl -X DELETE "http://localhost:3000/api/delete-user" \
 - Все API эндпоинты защищены токеном `ADMIN_TOKEN`
 - Токен должен передаваться в заголовке `Authorization: Bearer <token>`
 - При удалении пользователя удаляются все связанные данные (аквариумы, рейтинги и т.д.) благодаря каскадному удалению в базе данных
+
+## CORS
+
+- Все API эндпоинты поддерживают CORS (Cross-Origin Resource Sharing)
+- Разрешены запросы с любых доменов (`Access-Control-Allow-Origin: *`)
+- Поддерживаемые методы: GET, POST, PUT, DELETE, OPTIONS
+- Разрешенные заголовки: Content-Type, Authorization
 
 ## Примеры использования в JavaScript
 

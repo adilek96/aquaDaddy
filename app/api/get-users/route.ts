@@ -2,16 +2,33 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
+  // Добавляем CORS заголовки
+  const response = NextResponse.next();
+  response.headers.set('Access-Control-Allow-Origin', '*');
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  // Обрабатываем preflight запросы
+  if (request.method === 'OPTIONS') {
+    return response;
+  }
   try {
     // Проверяем токен авторизации
     const authHeader = request.headers.get('authorization');
     const token = authHeader?.replace('Bearer ', '');
     
     if (!token || token !== process.env.ADMIN_TOKEN) {
-      return NextResponse.json(
+      const unauthorizedResponse = NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       );
+      
+      // Добавляем CORS заголовки к ответу об ошибке авторизации
+      unauthorizedResponse.headers.set('Access-Control-Allow-Origin', '*');
+      unauthorizedResponse.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+      unauthorizedResponse.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      
+      return unauthorizedResponse;
     }
 
     // Получаем параметры запроса
@@ -60,15 +77,29 @@ export async function GET(request: NextRequest) {
     // Вычисляем общее количество страниц
     const totalPages = Math.ceil(totalCount / limit);
 
-    return NextResponse.json({
+    const jsonResponse = NextResponse.json({
       users,
       totalCount,
     });
+    
+    // Добавляем CORS заголовки к ответу
+    jsonResponse.headers.set('Access-Control-Allow-Origin', '*');
+    jsonResponse.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    jsonResponse.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    
+    return jsonResponse;
   } catch (error) {
     console.error('Error fetching users:', error);
-    return NextResponse.json(
+    const errorResponse = NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     );
+    
+    // Добавляем CORS заголовки к ответу об ошибке
+    errorResponse.headers.set('Access-Control-Allow-Origin', '*');
+    errorResponse.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    errorResponse.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    
+    return errorResponse;
   }
 }
