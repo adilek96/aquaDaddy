@@ -62,7 +62,7 @@ model Session {
 model Aquarium {
     id           String       @id @default(cuid())
     userId       String
-    user         User         @relation(fields: [userId], references: [id])
+    user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
     name         String
     description  String?
     type         AquariumType
@@ -197,7 +197,7 @@ model Rating {
     id         String   @id @default(cuid())
     userId     String
     aquariumId String
-    user       User     @relation(fields: [userId], references: [id])
+    user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     aquarium   Aquarium @relation(fields: [aquariumId], references: [id], onDelete: Cascade)
     value      Int
     createdAt  DateTime @default(now())
