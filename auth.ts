@@ -16,6 +16,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   session: {
     strategy: "jwt",
+    maxAge: 60 * 60 * 24 * 2,  // 2 дня (в секундах)
+    updateAge: 60 * 60 * 12,   // продлеваем раз в 12 часов при активности
+  },
+  jwt: {
+    maxAge: 60 * 60 * 24 * 2,  // JWT тоже живёт 2 дня
   },
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
