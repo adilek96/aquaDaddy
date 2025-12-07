@@ -147,41 +147,39 @@ export default function AquariumLists() {
       </div>
 
       {/* Список аквариумов */}
-      <div>
-        {loading ? (
-          <LoadingBlock translate={t("loading")} />
-        ) : aquariums.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {aquariums.map((aquarium, index) => (
-              <motion.div
-                key={aquarium.id || index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
-              >
-                <TankCard
-                  aquarium={aquarium}
-                  notAssignedText={t("notAssigned")}
-                />
-              </motion.div>
-            ))}
-          </div>
-        ) : (
-          <EmptyState
-            icon={<FishIcon className="w-16 h-16" />}
-            title={tHome("noAquariumsYet")}
-            description={tHome("noAquariumsDescription")}
-            action={
-              <Button asChild size="lg" className="gap-2">
-                <Link href="/myTanks/addNewTank">
-                  <PlusIcon className="w-5 h-5" />
-                  {tHome("addFirstAquarium")}
-                </Link>
-              </Button>
-            }
-          />
-        )}
-      </div>
+      {loading ? (
+        <LoadingBlock translate={t("loading")} />
+      ) : aquariums.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {aquariums.map((aquarium, index) => (
+            <motion.div
+              key={aquarium.id || index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.05 }}
+            >
+              <TankCard
+                aquarium={aquarium}
+                notAssignedText={t("notAssigned")}
+              />
+            </motion.div>
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          icon={<FishIcon className="w-16 h-16" />}
+          title={tHome("noAquariumsYet")}
+          description={tHome("noAquariumsDescription")}
+          action={
+            <Button asChild size="lg" className="gap-2">
+              <Link href="/myTanks/addNewTank">
+                <PlusIcon className="w-5 h-5" />
+                {tHome("addFirstAquarium")}
+              </Link>
+            </Button>
+          }
+        />
+      )}
     </>
   );
 }
