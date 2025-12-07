@@ -1,206 +1,219 @@
-datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
-}
-
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
-enum AquariumType {
-    FRESHWATER
-    SALTWATER
-    PALUDARIUM
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String    @unique
-    emailVerified DateTime?
-    image         String?
-    country       String?
-    accounts      Account[]
-    sessions      Session[]
-
-    aquariums Aquarium[]
-    ratings   Rating[]
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id            String     @id @default(cuid())
+  name          String?
+  email         String     @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  country       String?
+  accounts      Account[]
+  aquariums     Aquarium[]
+  ratings       Rating[]
+  sessions      Session[]
+  comments      Comment[]
 }
 
 model Account {
-    provider          String
-    providerAccountId String
-    userId            String
-    type              String
-    refresh_token     String?
-    access_token      String?
-    expires_at        Int?
-    token_type        String?
-    scope             String?
-    id_token          String?
-    session_state     String?
-    createdAt         DateTime @default(now())
-    updatedAt         DateTime @updatedAt
+  provider          String
+  providerAccountId String
+  userId            String
+  type              String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-    @@id([provider, providerAccountId])
+  @@id([provider, providerAccountId])
 }
 
 model Session {
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @updatedAt
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Aquarium {
-    id           String       @id @default(cuid())
-    userId       String
-    user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-    name         String
-    description  String?
-    type         AquariumType
-    shape        String
-    lengthCm     Float?
-    widthCm      Float?
-    heightCm     Float?
-    volumeLiters Float?
-    startDate    DateTime?
-    isPublic     Boolean      @default(false)
-
-    // Дополнительные поля для разных форм аквариума
-    diameterCm Float?
-    sideCm     Float?
-    depthCm    Float?
-    k          Float?
-
-    waterParams WaterParameters?
-    inhabitants Inhabitant[]
-    maintenance Maintenance[]
-    reminders   Reminder[]
-    images      AquariumImage[]
-    waterLogs   WaterLog[]
-    ratings     Rating[]
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id           String           @id @default(cuid())
+  userId       String
+  name         String
+  description  String?
+  type         AquariumType
+  shape        String
+  lengthCm     Float?
+  widthCm      Float?
+  heightCm     Float?
+  volumeLiters Float?
+  startDate    DateTime?
+  isPublic     Boolean          @default(false)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  depthCm      Float?
+  diameterCm   Float?
+  k            Float?
+  sideCm       Float?
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  images       AquariumImage[]
+  inhabitants  Inhabitant[]
+  maintenance  Maintenance[]
+  ratings      Rating[]
+  reminders    Reminder[]
+  waterLogs    WaterLog[]
+  waterParams  WaterParameters?
+  comments     Comment[]
 }
 
 model WaterParameters {
-    id           String   @id @default(cuid())
-    aquariumId   String   @unique
-    aquarium     Aquarium @relation(fields: [aquariumId], references: [id], onDelete: Cascade)
-    pH           Float?
-    temperatureC Float?
-    KH           Float?
-    GH           Float?
-    NH3          Float?
-    NH4          Float?
-    NO2          Float?
-    NO3          Float?
-    PO4          Float?
-    K            Float?
-    Fe           Float?
-    Mg           Float?
-    Ca           Float?
-    salinity     Float?
-    lastUpdated  DateTime @default(now())
+  id           String   @id @default(cuid())
+  aquariumId   String   @unique
+  pH           Float?
+  temperatureC Float?
+  lastUpdated  DateTime @default(now())
+  Ca           Float?
+  Fe           Float?
+  GH           Float?
+  K            Float?
+  KH           Float?
+  Mg           Float?
+  NH3          Float?
+  NH4          Float?
+  NO2          Float?
+  NO3          Float?
+  PO4          Float?
+  salinity     Float?
+  aquarium     Aquarium @relation(fields: [aquariumId], references: [id], onDelete: Cascade)
 }
 
 model Inhabitant {
-    id         String   @id @default(cuid())
-    aquariumId String
-    aquarium   Aquarium @relation(fields: [aquariumId], references: [id], onDelete: Cascade)
-    species    String
-    count      Int
-    addedAt    DateTime @default(now())
-}
-
-enum MaintenanceType {
-    WATER_CHANGE // Смена воды
-    GRAVEL_CLEANING // Сифонка грунта
-    GLASS_CLEANING // Чистка стёкол
-    FILTER_CLEANING // Обслуживание фильтра
-    PARAMETER_CHECK // Проверка параметров воды
-    PLANT_CARE // Уход за растениями
-    CORAL_CARE // Уход за кораллами
-    SUPPLEMENTS // Добавление питательных веществ
-    ALGAE_CONTROL // Удаление водорослей
-    OTHER // Другое
-}
-
-enum MaintenanceStatus {
-    PENDING // Ожидает выполнения
-    COMPLETED // Выполнено
-    CANCELLED // Отменено
-    SKIPPED // Пропущено
+  id         String   @id @default(cuid())
+  aquariumId String
+  species    String
+  count      Int
+  addedAt    DateTime @default(now())
+  aquarium   Aquarium @relation(fields: [aquariumId], references: [id], onDelete: Cascade)
 }
 
 model Maintenance {
-    id          String            @id @default(cuid())
-    aquariumId  String
-    type        MaintenanceType[]
-    aquarium    Aquarium          @relation(fields: [aquariumId], references: [id], onDelete: Cascade)
-    performedAt DateTime
-    description String
-    WaterLog    WaterLog[]
-    status      MaintenanceStatus @default(PENDING)
+  id          String            @id @default(cuid())
+  aquariumId  String
+  performedAt DateTime
+  description String
+  status      MaintenanceStatus @default(PENDING)
+  type        MaintenanceType[]
+  aquarium    Aquarium          @relation(fields: [aquariumId], references: [id], onDelete: Cascade)
+  WaterLog    WaterLog[]
 }
 
 model Reminder {
-    id          String   @id @default(cuid())
-    aquariumId  String
-    aquarium    Aquarium @relation(fields: [aquariumId], references: [id], onDelete: Cascade)
-    title       String
-    remindAt    DateTime
-    isCompleted Boolean  @default(false)
+  id          String   @id @default(cuid())
+  aquariumId  String
+  title       String
+  remindAt    DateTime
+  isCompleted Boolean  @default(false)
+  aquarium    Aquarium @relation(fields: [aquariumId], references: [id], onDelete: Cascade)
 }
 
 model AquariumImage {
-    id         String   @id @default(cuid())
-    aquariumId String
-    aquarium   Aquarium @relation(fields: [aquariumId], references: [id], onDelete: Cascade)
-    url        String
-    uploadedAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  aquariumId String
+  url        String
+  uploadedAt DateTime @default(now())
+  aquarium   Aquarium @relation(fields: [aquariumId], references: [id], onDelete: Cascade)
 }
 
 model WaterLog {
-    id            String       @id @default(cuid())
-    aquariumId    String
-    aquarium      Aquarium     @relation(fields: [aquariumId], references: [id], onDelete: Cascade)
-    recordedAt    DateTime
-    pH            Float?
-    temperatureC  Float?
-    KH            Float?
-    GH            Float?
-    NH3           Float?
-    NH4           Float?
-    NO2           Float?
-    NO3           Float?
-    PO4           Float?
-    K             Float?
-    Fe            Float?
-    Mg            Float?
-    Ca            Float?
-    salinity      Float?
-    maintenanceId String?
-    Maintenance   Maintenance? @relation(fields: [maintenanceId], references: [id])
+  id            String       @id @default(cuid())
+  aquariumId    String
+  recordedAt    DateTime
+  pH            Float?
+  temperatureC  Float?
+  Ca            Float?
+  Fe            Float?
+  GH            Float?
+  K             Float?
+  KH            Float?
+  Mg            Float?
+  NH3           Float?
+  NH4           Float?
+  NO2           Float?
+  NO3           Float?
+  PO4           Float?
+  salinity      Float?
+  maintenanceId String?
+  aquarium      Aquarium     @relation(fields: [aquariumId], references: [id], onDelete: Cascade)
+  Maintenance   Maintenance? @relation(fields: [maintenanceId], references: [id])
 }
 
 model Rating {
-    id         String   @id @default(cuid())
-    userId     String
-    aquariumId String
-    user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    aquarium   Aquarium @relation(fields: [aquariumId], references: [id], onDelete: Cascade)
-    value      Int
-    createdAt  DateTime @default(now())
+  id         String   @id @default(cuid())
+  userId     String
+  aquariumId String
+  value      Int
+  createdAt  DateTime @default(now())
+  aquarium   Aquarium @relation(fields: [aquariumId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@unique([userId, aquariumId])
+  @@unique([userId, aquariumId])
+}
+
+enum AquariumType {
+  FRESHWATER
+  SALTWATER
+  PALUDARIUM
+}
+
+enum MaintenanceType {
+  WATER_CHANGE
+  GRAVEL_CLEANING
+  GLASS_CLEANING
+  FILTER_CLEANING
+  PARAMETER_CHECK
+  PLANT_CARE
+  CORAL_CARE
+  SUPPLEMENTS
+  ALGAE_CONTROL
+  OTHER
+}
+
+enum MaintenanceStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+  SKIPPED
+}
+
+model Comment {
+  id         String   @id @default(cuid())
+  userId     String
+  aquariumId String
+  text       String   @db.Text
+  parentId   String?  // ID родительского комментария
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  aquarium   Aquarium @relation(fields: [aquariumId], references: [id], onDelete: Cascade)
+  parent     Comment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies    Comment[] @relation("CommentReplies")
+
+  @@index([aquariumId])
+  @@index([userId])
+  @@index([parentId])
 }

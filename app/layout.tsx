@@ -11,6 +11,7 @@ import { ThemeProvider } from "next-themes";
 import Settings from "@/components/component/settings";
 import { SessionProvider } from "next-auth/react";
 import { cookies } from "next/headers";
+import { ToastProvider } from "@/components/ui/toast";
 import MaintenanceEditModal from "@/components/component/maintenanceEditModal";
 import MaintenanceAddModal from "@/components/component/maintenanceAddModal";
 import SuccessModal from "@/components/component/successModal";
@@ -154,17 +155,18 @@ export default async function RootLayout({
         >
           <NextIntlClientProvider messages={messages} locale={locale}>
             <SessionProvider>
-              <main className="flex relative  w-full h-full min-h-screen flex-col items-center justify-center bg-transparent bg-opacity-0 ">
-                <Header />
-                <div className="w-full h-full z-40 flex flex-col items-center justify-center ">
-                  {children}
-                </div>
+              <ToastProvider>
+                <main className="flex relative  w-full h-full min-h-screen flex-col items-center justify-center bg-transparent bg-opacity-0 ">
+                  <Header />
+                  <div className="w-full h-full z-40 flex flex-col items-center justify-center ">
+                    {children}
+                  </div>
 
                 <div
-                  className="w-[100vw] h-[100vh] fixed top-0 z-10 overflow-hidden   "
+                  className="w-[100vw] h-[100vh] fixed top-0 z-10 overflow-hidden bg-gradient-to-br from-blue-50 via-cyan-50 to-teal-50 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800"
                   style={{ width: "100%", height: "100%" }}
                 >
-                  <Bg />
+                  {/* <Bg /> */}
                 </div>
                 <Settings />
                 <MaintenanceEditModal />
@@ -181,6 +183,7 @@ export default async function RootLayout({
                 <AquariumDeleteModal />
                 <ImageFullscreenModal />
               </main>
+              </ToastProvider>
             </SessionProvider>
           </NextIntlClientProvider>
         </ThemeProvider>

@@ -10,6 +10,7 @@ declare module "next-auth" {
       email?: string | null;
       image?: string | null;
       country?: string | null;
+      createdAt?: string | null;
     };
   }
   
@@ -19,6 +20,7 @@ declare module "next-auth" {
     email?: string | null;
     image?: string | null;
     country?: string | null;
+    createdAt?: Date | null;
   }
 }
 

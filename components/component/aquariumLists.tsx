@@ -10,9 +10,13 @@ import { Input } from "../ui/input";
 import LoadingBlock from "../ui/loadingBlock";
 import { useSearchParams } from "next/navigation";
 import { useSettingStore } from "@/store/modalsStore";
+import { EmptyState } from "../ui/empty-state";
+import { Button } from "../ui/button";
+import Link from "next/link";
 
 export default function AquariumLists() {
   const t = useTranslations("MyTanks");
+  const tHome = useTranslations("HomePage");
   const { data: session } = useSession();
   const searchParams = useSearchParams();
   const { openSuccessModal } = useSettingStore();
@@ -116,67 +120,44 @@ export default function AquariumLists() {
 
   return (
     <>
-      <motion.div
-        className="flex flex-wrap justify-center md:justify-end items-center gap-4"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <motion.div
-          className="flex flex-row items-center gap-4"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            <Input
-              type="text"
-              placeholder={t("searchPlaceholder")}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="border rounded-md px-3 py-2 md:w-64 md:h-12 md:text-lg md:p-4 lg:h-14 lg:text-xl lg:p-5"
-            />
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            <Select value={sort} onValueChange={setSort}>
-              <SelectTrigger className="border rounded-md px-3 py-2 md:h-12 md:text-lg md:p-4 lg:h-14 lg:text-xl lg:p-5 flex items-center justify-center">
-                <SortIcon className="w-5 h-5" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="nextService">
-                  {t("sortByNextService")}
-                </SelectItem>
-                <SelectItem value="name">{t("sortByName")}</SelectItem>
-              </SelectContent>
-            </Select>
-          </motion.div>
-        </motion.div>
-      </motion.div>
-      <motion.div
-        className="flex flex-wrap justify-center  items-center mx-auto gap-4 my-10"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-      >
+      {/* Фильтры */}
+      <div className="flex flex-col sm:flex-row gap-4 mb-8">
+        <div className="relative flex-1">
+          <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+          <Input
+            type="text"
+            placeholder={t("searchPlaceholder")}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        <Select value={sort} onValueChange={setSort}>
+          <SelectTrigger className="w-full sm:w-48">
+            <SortIcon className="mr-2 w-4 h-4" />
+            <span>{sort === "nextService" ? t("sortByNextService") : t("sortByName")}</span>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="nextService">
+              {t("sortByNextService")}
+            </SelectItem>
+            <SelectItem value="name">{t("sortByName")}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Список аквариумов */}
+      <div>
         {loading ? (
           <LoadingBlock translate={t("loading")} />
         ) : aquariums.length > 0 ? (
-          <AnimatePresence>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {aquariums.map((aquarium, index) => (
               <motion.div
                 key={aquarium.id || index}
-                initial={{ opacity: 0, y: 30, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -30, scale: 0.9 }}
-                transition={{
-                  duration: 0.4,
-                  delay: index * 0.1,
-                  ease: "easeOut",
-                }}
-                whileHover={{
-                  y: -5,
-                  transition: { duration: 0.2 },
-                }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
               >
                 <TankCard
                   aquarium={aquarium}
@@ -184,19 +165,44 @@ export default function AquariumLists() {
                 />
               </motion.div>
             ))}
-          </AnimatePresence>
+          </div>
         ) : (
-          <motion.div
-            className="text-2xl font-bold w-full text-center h-[50vh] flex items-center justify-center"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            {t("noAquariums")}
-          </motion.div>
+          <EmptyState
+            icon={<FishIcon className="w-16 h-16" />}
+            title={tHome("noAquariumsYet")}
+            description={tHome("noAquariumsDescription")}
+            action={
+              <Button asChild size="lg" className="gap-2">
+                <Link href="/myTanks/addNewTank">
+                  <PlusIcon className="w-5 h-5" />
+                  {tHome("addFirstAquarium")}
+                </Link>
+              </Button>
+            }
+          />
         )}
-      </motion.div>
+      </div>
     </>
+  );
+}
+
+function SearchIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.35-4.35" />
+    </svg>
   );
 }
 
@@ -207,20 +213,58 @@ function SortIcon(props: React.SVGProps<SVGSVGElement>) {
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
-      viewBox="0 0 24 25"
+      viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <path
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        d="M7 4v16M7 4l3 3M7 4 4 7m9-3h6l-6 6h6m-6.5 10 3.5-7 3.5 7M14 18h4"
-      />
+      <path d="M7 4v16M7 4l3 3M7 4 4 7m9-3h6l-6 6h6m-6.5 10 3.5-7 3.5 7M14 18h4" />
+    </svg>
+  );
+}
+
+function FishIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6Z" />
+      <path d="M18 12v.5" />
+      <path d="M16 17.93a9.77 9.77 0 0 1 0-11.86" />
+      <path d="M7 10.67C7 8 5.58 5.97 2.73 5.5c-1 1.5-1 5 .23 6.5-1.24 1.5-1.24 5-.23 6.5C5.58 18.03 7 16 7 13.33" />
+      <path d="M10.46 7.26C10.2 5.88 9.17 4.24 8 3h5.8a2 2 0 0 1 1.98 1.67l.23 1.4" />
+      <path d="m16.01 17.93-.23 1.4A2 2 0 0 1 13.8 21H9.5a5.96 5.96 0 0 0 1.49-3.98" />
+    </svg>
+  );
+}
+
+function PlusIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M5 12h14" />
+      <path d="M12 5v14" />
     </svg>
   );
 }

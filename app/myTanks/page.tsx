@@ -4,37 +4,46 @@ import { Button } from "@/components/ui/button";
 import AquariumLists from "@/components/component/aquariumLists";
 import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
+import { FiPlus } from "react-icons/fi";
 
 export default function MyTanks() {
   const t = useTranslations("MyTanks");
+  const tHome = useTranslations("HomePage");
 
   return (
-    <>
-      <div className="flex no-wrap justify-between items-center">
-        <motion.h2
-          className="text-2xl sm:text-3xl md:text-4xl font-bold my-6 sm:my-10 font-bebas leading-none tracking-wide cursor-default inline-flex flex-wrap"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-        >
-          {t("title")}
-        </motion.h2>
-
-        <Link href={"myTanks/addNewTank"}>
-          <Button variant={"ghost"} className="mr-5 bg-red-500 text-white">
-            +
-          </Button>
-        </Link>
-      </div>
-      <motion.h3
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8, delay: 0.1 }}
-        className="text-lg md:text-xl lg:text-2xl font-bold my-10 ml-5 font-bebas  leading-none  tracking-wide   cursor-default "
+    <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
       >
-        {t("subtitle")}
-      </motion.h3>
-      <AquariumLists />
-    </>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold font-bebas">
+            {t("title")}
+          </h1>
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mt-4 sm:mt-0"
+          >
+            <Link href={"myTanks/addNewTank"}>
+              <Button 
+                className="gap-2 bg-green-600 hover:bg-green-700 text-white shadow-lg"
+                aria-label={tHome("addNewAquarium")}
+              >
+                <FiPlus className="w-5 h-5" />
+                <span className="hidden sm:inline">{tHome("addNewAquarium")}</span>
+                <span className="sm:hidden">Add</span>
+              </Button>
+            </Link>
+          </motion.div>
+        </div>
+        <p className="text-muted-foreground mb-8 text-lg">
+          {t("subtitle")}
+        </p>
+        <AquariumLists />
+      </motion.div>
+    </div>
   );
 }

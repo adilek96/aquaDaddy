@@ -7,13 +7,23 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import Link from "next/link";
-import { JSX, SVGProps } from "react";
+import { JSX, SVGProps, useEffect, useState } from "react";
 import CardFilling from "./cardFilling";
 import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
+import { useSession } from "next-auth/react";
+import { fetchAquariumCount } from "@/app/actions/aquariumCountFetch";
 
 export function MainPage() {
   const t = useTranslations("HomePage");
+  const { data: session } = useSession();
+  const [aquariumCount, setAquariumCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetchAquariumCount(session.user.id).then(setAquariumCount);
+    }
+  }, [session]);
 
   return (
     <div className="flex justify-center items-center h-[100vh] w-[100vw]  ">
@@ -37,21 +47,30 @@ export function MainPage() {
               <CardHeader>
                 <CardTitle>{t("aquariums-title")}</CardTitle>
                 <CardDescription>
-                  Explore and manage your aquatic ecosystems.
+                  {t("aquariums-description")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <FishIcon className="h-6 w-6" />
-                    <span className="text-2xl font-bold">12</span>
-                  </div>
+                  {session?.user ? (
+                    <div className="flex items-center gap-2">
+                      <FishIcon className="h-6 w-6" />
+                      <span className="text-2xl font-bold">
+                        {aquariumCount !== null ? aquariumCount : "—"}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <FishIcon className="h-6 w-6" />
+                      <span className="text-sm">{t("signInToView")}</span>
+                    </div>
+                  )}
                   <Link
                     href={`/myTanks`}
                     className="text-sm underline"
                     prefetch={false}
                   >
-                    View Aquariums
+                    {t("aquariums-link")}
                   </Link>
                 </div>
               </CardContent>
@@ -93,7 +112,7 @@ export function MainPage() {
                 title={t("discovery-title")}
                 description={t("discovery-description")}
                 icon={<CompassIcon className="h-6 w-6" />}
-                link={`#`}
+                link={`/discovery`}
                 count={1000}
                 linkText={t("discovery-link")}
               />

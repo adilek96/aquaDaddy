@@ -93,9 +93,9 @@ export default function TankCard({
         }}
         whileTap={{ scale: 0.98 }}
       >
-        <Card className="w-[300px] rounded-t-xl mb-10 cursor-pointer shadow-lg bg-white/50 dark:bg-black/50  hover:bg-green-300/50 dark:hover:bg-green-700/20 transition-all duration-300 hover:translate-y-1">
-          <Link href={`/myTanks/${aquarium.id}`}>
-            <CardContent className="p-0 cursor-pointer">
+        <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white/50 dark:bg-black/50 backdrop-blur-md border border-muted overflow-hidden h-[320px] flex flex-col">
+          <Link href={`/myTanks/${aquarium.id}`} className="flex flex-col h-full">
+            <CardContent className="p-0 cursor-pointer flex flex-col h-full">
               {aquarium.images && aquarium.images.length > 0 ? (
                 <Image
                   src={mainImgError ? "/app-logo.svg" : aquarium.images[0].url}
@@ -117,17 +117,19 @@ export default function TankCard({
                   onError={() => setDefaultImgError(true)}
                 />
               )}
-              <div className="p-4 ">
-                <h3 className="font-semibold mb-2 ">{aquarium.name}</h3>
-                <p
-                  className={`text-sm ${nextServiceStyle} px-2 py-1 rounded-sm inline-flex flex-col w-full`}
-                >
-                  <span className="font-bold">{t("nextService")}</span>
-                  <span>{nextService}</span>
-                  {nextServiceDay !== notAssignedText && (
-                    <span>{nextServiceDay}</span>
-                  )}
-                </p>
+              <div className="p-4 flex-1 flex flex-col">
+                <h3 className="font-semibold mb-2 line-clamp-2">{aquarium.name}</h3>
+                <div className="mt-auto">
+                  <p
+                    className={`text-sm ${nextServiceStyle} px-2 py-1 rounded-sm inline-flex flex-col w-full`}
+                  >
+                    <span className="font-bold">{t("nextService")}</span>
+                    <span className="line-clamp-1">{nextService}</span>
+                    {nextServiceDay !== notAssignedText && (
+                      <span className="line-clamp-1">{nextServiceDay}</span>
+                    )}
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Link>
