@@ -13,6 +13,8 @@ model User {
   email         String     @unique
   emailVerified DateTime?
   image         String?
+  password      String?    // Для входа по почте
+  role          Role       @default(USER)
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
   country       String?
@@ -216,4 +218,9 @@ model Comment {
   @@index([aquariumId])
   @@index([userId])
   @@index([parentId])
+}
+
+enum Role {
+  USER
+  ADMIN
 }
