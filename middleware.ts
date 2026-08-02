@@ -4,10 +4,32 @@ import { auth } from '@/auth';
 
 const PRIVATE_PATHS = ['/myTanks', '/profile'];
 
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET,POST,PATCH,PUT,DELETE,OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Max-Age': '86400',
+};
+
 export async function middleware(request: NextRequest) {
-  const session = await auth();
   const { pathname } = request.nextUrl;
-  const isAuthed = session && session.user;
+
+  // API отвечает мобильному приложению и дашборду с другого origin.
+  // Выходим до auth(), чтобы не дёргать сессию на каждый запрос к API.
+  if (pathname.startsWith('/api')) {
+    if (request.method === 'OPTIONS') {
+      return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
+    }
+
+    const response = NextResponse.next();
+    for (const [header, value] of Object.entries(CORS_HEADERS)) {
+      response.headers.set(header, value);
+    }
+    return response;
+  }
+
+  const session = await auth();
+  const isAuthed = Boolean(session?.user);
 
   // Проверка приватных роутов
   if (PRIVATE_PATHS.some((p) => pathname.startsWith(p)) && !isAuthed) {
@@ -23,5 +45,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/myTanks/:path*', '/profile/:path*', '/signIn']
+  matcher: ['/', '/api/:path*', '/myTanks/:path*', '/profile/:path*', '/signIn'],
 };
