@@ -1,5 +1,6 @@
 "use server";
 import { prisma } from "@/lib/prisma";
+import { refreshImageUrls } from "@/lib/minio";
 
 export type SortType = "newest" | "rating";
 
@@ -68,27 +69,30 @@ export async function fetchPublicAquariums({
   });
 
   // Подсчитываем средний рейтинг для каждого аквариума
-  const aquariumsWithRating = aquariums.map((aquarium) => {
-    const totalRating = aquarium.ratings.reduce(
-      (sum, rating) => sum + rating.value,
-      0
-    );
-    const averageRating =
-      aquarium.ratings.length > 0 ? totalRating / aquarium.ratings.length : 0;
+  const aquariumsWithRating = await Promise.all(
+    aquariums.map(async (aquarium) => {
+      const totalRating = aquarium.ratings.reduce(
+        (sum, rating) => sum + rating.value,
+        0
+      );
+      const averageRating =
+        aquarium.ratings.length > 0 ? totalRating / aquarium.ratings.length : 0;
 
-    return {
-      ...aquarium,
-      averageRating: Math.round(averageRating * 10) / 10, // Округляем до 1 знака
-      ratings: undefined, // Убираем детали рейтингов из ответа
-      startDate: aquarium.startDate ? aquarium.startDate.toISOString() : null,
-      createdAt: aquarium.createdAt.toISOString(),
-      updatedAt: aquarium.updatedAt.toISOString(),
-      images: aquarium.images.map((img) => ({
-        ...img,
-        uploadedAt: img.uploadedAt.toISOString(),
-      })),
-    };
-  });
+      return {
+        ...aquarium,
+        averageRating: Math.round(averageRating * 10) / 10, // Округляем до 1 знака
+        ratings: undefined, // Убираем детали рейтингов из ответа
+        startDate: aquarium.startDate ? aquarium.startDate.toISOString() : null,
+        createdAt: aquarium.createdAt.toISOString(),
+        updatedAt: aquarium.updatedAt.toISOString(),
+        // Подпись ссылки живёт 7 дней, а в базе она хранится постоянно
+        images: (await refreshImageUrls(aquarium.images)).map((img) => ({
+          ...img,
+          uploadedAt: img.uploadedAt.toISOString(),
+        })),
+      };
+    })
+  );
 
   // Если сортировка по рейтингу, пересортируем по среднему рейтингу
   if (sort === "rating") {
@@ -208,7 +212,8 @@ export async function fetchAquariumDetails(aquariumId: string) {
     startDate: aquarium.startDate ? aquarium.startDate.toISOString() : null,
     createdAt: aquarium.createdAt.toISOString(),
     updatedAt: aquarium.updatedAt.toISOString(),
-    images: aquarium.images.map((img) => ({
+    // Подпись ссылки живёт 7 дней, а в базе она хранится постоянно
+    images: (await refreshImageUrls(aquarium.images)).map((img) => ({
       ...img,
       uploadedAt: img.uploadedAt.toISOString(),
     })),

@@ -1,12 +1,19 @@
 "use server";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { refreshImageUrls } from "@/lib/minio";
 
 export async function fetchUserAquarium({  tankId }: {   tankId: string }) {
-  const where: any = {id: tankId };
-  
- 
+  const session = await auth();
+  const userId = session?.user?.id;
 
-  const aquarium = await prisma.aquarium.findUnique({
+  // Раньше по одному id отдавался любой аквариум, включая приватный —
+  // вместе с замерами, обитателями и напоминаниями владельца
+  const where = userId
+    ? { id: tankId, OR: [{ userId }, { isPublic: true }] }
+    : { id: tankId, isPublic: true };
+
+  const aquarium = await prisma.aquarium.findFirst({
     where,
     include: {
       images: true,
@@ -39,7 +46,8 @@ export async function fetchUserAquarium({  tankId }: {   tankId: string }) {
         ...r,
         remindAt: r.remindAt.toISOString(),
       })),
-      images: aquarium.images.map(img => ({
+      // Подпись ссылки живёт 7 дней, а в базе она хранится постоянно
+      images: (await refreshImageUrls(aquarium.images)).map(img => ({
         ...img,
         uploadedAt: img.uploadedAt.toISOString(),
       })),

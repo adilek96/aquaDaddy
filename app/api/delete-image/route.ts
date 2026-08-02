@@ -1,94 +1,78 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import * as Minio from "minio";
+import { getApiUser } from "@/lib/apiAuth";
+import { getMinioBucket, getMinioClient, objectKeyFromUrl } from "@/lib/minio";
 
 export async function DELETE(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { imageId, aquariumId, url } = body;
-
-    if (!imageId || !aquariumId || !url) {
+    // Раньше роут не проверял вообще ничего: по одному id можно было
+    // удалить чужое изображение и из хранилища, и из базы
+    const user = await getApiUser(request);
+    if (!user) {
       return NextResponse.json(
-        { success: false, error: "Недостаточно данных для удаления" },
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    const body = await request.json();
+    const { imageId } = body;
+
+    if (!imageId) {
+      return NextResponse.json(
+        { success: false, error: "Не указан imageId" },
         { status: 400 }
       );
     }
 
-        // Настройки MinIO из переменных окружения
-    const minioEndpoint = process.env.MINIO_ENDPOINT || '194.163.151.11';
-    const minioPort = parseInt(process.env.MINIO_PORT || '9000');
-    const minioAccessKey = process.env.MINIO_ACCESS_KEY || 'minioadmin';
-    const minioSecretKey = process.env.MINIO_SECRET_KEY || 'minioadmin';
-    const minioBucketName = process.env.MINIO_BUCKET_NAME || 'aquarium-images';
-    const minioUseSSL = process.env.MINIO_USE_SSL === 'true';
-    
+    // Владельца берём из базы, а не из тела запроса
+    const imageRecord = await prisma.aquariumImage.findFirst({
+      where: {
+        id: imageId,
+        aquarium: { userId: user.id },
+      },
+      select: { id: true, url: true },
+    });
 
-    
-    try {
-      // Инициализируем MinIO клиент
-      const minioClient = new Minio.Client({
-        endPoint: minioEndpoint,
-        port: minioPort,
-        useSSL: minioUseSSL,
-        accessKey: minioAccessKey,
-        secretKey: minioSecretKey,
-      });
-
-       // Получаем запись изображения из базы данных
-       const imageRecord = await prisma.aquariumImage.findUnique({
-         where: { id: imageId },
-       });
-       
-       if (!imageRecord) {
-         return NextResponse.json(
-           { success: false, error: "Изображение не найдено в базе данных" },
-           { status: 404 }
-         );
-       }
-       
-       // Извлекаем имя файла из presigned URL
-       // presigned URL имеет формат: http://endpoint/bucket/object?params
-       const urlObj = new URL(imageRecord.url);
-       const pathParts = urlObj.pathname.split('/');
-       const fileName = pathParts.slice(-2).join('/'); // aquariumId/filename
-      
-      
-      
-      // Удаляем файл из MinIO
-      await minioClient.removeObject(minioBucketName, fileName);
-      
-      
-    } catch (minioError) {
-
+    if (!imageRecord) {
       return NextResponse.json(
-        { success: false, error: "Ошибка удаления из MinIO: " + (minioError instanceof Error ? minioError.message : "Неизвестная ошибка") },
-        { status: 500 }
+        { success: false, error: "Изображение не найдено" },
+        { status: 404 }
       );
     }
 
-    // Удаляем запись из базы данных
-    try {
-      await prisma.aquariumImage.delete({
-        where: { id: imageId },
-      });
+    const objectKey = objectKeyFromUrl(imageRecord.url);
 
-      return NextResponse.json({
-        success: true,
-        message: "Изображение успешно удалено",
-      });
-    } catch (dbError) {
-
-      return NextResponse.json(
-        { success: false, error: "Ошибка удаления из базы данных" },
-        { status: 500 }
-      );
+    if (objectKey) {
+      try {
+        await getMinioClient().removeObject(getMinioBucket(), objectKey);
+      } catch (minioError) {
+        console.error("Ошибка удаления из MinIO:", minioError);
+        return NextResponse.json(
+          {
+            success: false,
+            error:
+              "Ошибка удаления из хранилища: " +
+              (minioError instanceof Error
+                ? minioError.message
+                : "неизвестная ошибка"),
+          },
+          { status: 500 }
+        );
+      }
     }
 
+    await prisma.aquariumImage.delete({ where: { id: imageId } });
+
+    return NextResponse.json({
+      success: true,
+      message: "Изображение успешно удалено",
+    });
   } catch (error) {
-
+    console.error("Ошибка удаления изображения:", error);
     return NextResponse.json(
       { success: false, error: "Внутренняя ошибка сервера" },
       { status: 500 }
     );
   }
-} 
+}
