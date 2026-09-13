@@ -4,6 +4,11 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Сборка в standalone: Next кладёт в .next/standalone только те
+  // модули, которые реально нужны в рантайме. Без этого в образ
+  // пришлось бы тащить весь node_modules.
+  output: "standalone",
+
   images: {
     // images.domains объявлен устаревшим в Next 15 — remotePatterns точнее,
     // потому что ограничивает ещё и протокол с путём
@@ -11,7 +16,10 @@ const nextConfig = {
       { protocol: "https", hostname: "lh3.googleusercontent.com" },
       { protocol: "https", hostname: "avatars.githubusercontent.com" },
       { protocol: "https", hostname: "flagcdn.com" },
-      // MinIO: отдаёт фотографии аквариумов по подписанным ссылкам
+      // MinIO: отдаёт фотографии аквариумов по подписанным ссылкам.
+      // Новый сервер — s3.169-58-147-171.sslip.io (за Traefik, только https).
+      // Старый хост оставлен: в базе лежат ссылки, выданные им.
+      { protocol: "https", hostname: "s3.169-58-147-171.sslip.io" },
       { protocol: "http", hostname: "194.163.151.112" },
       { protocol: "https", hostname: "194.163.151.112" },
     ],
