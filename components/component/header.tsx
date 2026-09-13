@@ -81,15 +81,19 @@ export function Header() {
           className="group flex shrink-0 items-center rounded-lg p-1"
           aria-label={tHeader("home")}
         >
+          {/* app-logo-mark.svg — тот же знак, но с обрезанными пустыми
+              полями. В исходном app-logo.svg графика занимает лишь 39%
+              высоты файла, поэтому увеличение бокса раздувало отступы,
+              а сам знак почти не рос. Здесь он заполняет холст целиком,
+              и высота бокса = высоте видимого знака. Пропорции 1.94:1,
+              поэтому ширину отдаём авто. */}
           <Image
-            src="/app-logo.svg"
+            src="/app-logo-mark.svg"
             alt="AquaDaddy"
-            width={48}
-            height={48}
+            width={305}
+            height={157}
             priority
-            // 48px в шапке высотой 64: внутри SVG есть собственные поля,
-            // поэтому видимый знак заметно меньше самого бокса
-            className="h-12 w-12 transition-transform duration-fast ease-out-soft group-hover:scale-105"
+            className="h-10 w-auto transition-transform duration-fast ease-out-soft group-hover:scale-105"
           />
         </Link>
 
