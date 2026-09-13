@@ -68,11 +68,11 @@ export async function MainPage() {
             priority={false}
             // В тёмной теме бирюза на тёмно-синем теряется сильнее,
             // поэтому там знак чуть плотнее
-            // Размер задаём по высоте секции: знак квадратный, а hero
-            // низкий, и при ширине в 78% он вылезал за края и обрезался —
-            // на фоне оставался нечитаемый обрывок. object-contain
-            // страхует, когда узкий экран ограничивает ещё и ширину.
-            className="h-[88%] max-h-[440px] w-auto max-w-[82%] object-contain opacity-[0.07] dark:opacity-[0.12]"
+            // Внутри самого SVG большие пустые поля: графика занимает
+            // примерно 37% высоты viewBox по вертикали. Поэтому размер
+            // задаём по ширине — привязка к высоте секции давала формально
+            // большой элемент и маленький видимый знак.
+            className="h-auto w-[130%] max-w-[820px] opacity-[0.14] dark:opacity-[0.2] sm:w-[72%] sm:max-w-[1000px]"
           />
         </div>
 
@@ -82,7 +82,7 @@ export async function MainPage() {
         {/* Картинки в hero больше нет: колонка одна, содержимое по центру.
             Визуальную работу берёт на себя фоновая стайка неонов, которой
             теперь досталась вся ширина блока. */}
-        <div className="app-container relative flex flex-col items-center pb-20 pt-10 text-center sm:pb-24 sm:pt-16 lg:pb-28 lg:pt-20">
+        <div className="app-container relative flex flex-col items-center pb-24 pt-14 text-center sm:pb-28 sm:pt-20 lg:pb-32 lg:pt-24">
           {/* max-w держит длину строки в читаемых пределах — без него
               заголовок на широком мониторе растянулся бы во всю ширину */}
           <h1 className="relative z-raised mb-5 max-w-3xl text-balance">

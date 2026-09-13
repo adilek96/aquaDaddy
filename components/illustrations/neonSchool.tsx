@@ -11,6 +11,21 @@ type Fish = {
   len: number;
   /** фаза виляния хвостом, у каждой рыбы своя */
   wobble: number;
+  /** скорость виляния: мелкие рыбы машут хвостом чаще */
+  wobbleRate: number;
+  /** собственный потолок скорости — общий на всех давал строй */
+  maxSpeed: number;
+  /** насколько сильно эта рыба тянется к цели: кто-то ведёт, кто-то плетётся */
+  seek: number;
+  /** текущее направление блуждания (Reynolds wander) */
+  wander: number;
+  /** как резко это направление гуляет */
+  wanderRate: number;
+  /** своё место в стае: угол и радиус относительно общей цели */
+  slotAngle: number;
+  slotRadius: number;
+  /** место медленно дрейфует, поэтому рыбы меняются местами */
+  slotDrift: number;
 };
 
 /**
@@ -70,13 +85,23 @@ export function NeonSchool({ className }: { className?: string }) {
         // а не собирается из россыпи первые несколько секунд
         const r = Math.random() * Math.min(width, height) * 0.3;
         const spread = Math.random() * Math.PI * 2;
+        const len = 19 + Math.random() * 11;
         return {
           x: width * 0.5 + Math.cos(spread) * r,
           y: height * 0.5 + Math.sin(spread) * r,
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed,
-          len: 19 + Math.random() * 11,
+          len,
           wobble: Math.random() * Math.PI * 2,
+          // Мелкая рыба машет хвостом чаще крупной
+          wobbleRate: 0.34 - len * 0.004 + Math.random() * 0.06,
+          maxSpeed: 1.5 + Math.random() * 0.9,
+          seek: 0.07 + Math.random() * 0.07,
+          wander: Math.random() * Math.PI * 2,
+          wanderRate: 0.15 + Math.random() * 0.25,
+          slotAngle: Math.random() * Math.PI * 2,
+          slotRadius: 70 * (0.35 + Math.random() * 0.65),
+          slotDrift: (Math.random() - 0.5) * 0.012,
         };
       });
       target.x = width * 0.5;
@@ -239,25 +264,38 @@ export function NeonSchool({ className }: { className?: string }) {
         if (neighbours > 0) {
           aliX /= neighbours;
           aliY /= neighbours;
-          ax += (aliX - fish.vx) * 0.08;
-          ay += (aliY - fish.vy) * 0.08;
+          ax += (aliX - fish.vx) * 0.03;
+          ay += (aliY - fish.vy) * 0.03;
 
           cohX /= neighbours;
           cohY /= neighbours;
-          ax += (cohX - fish.x) * 0.0016;
-          ay += (cohY - fish.y) * 0.0016;
+          ax += (cohX - fish.x) * 0.0014;
+          ay += (cohY - fish.y) * 0.0014;
         }
 
         ax += sepX * 12;
         ay += sepY * 12;
 
         // Притяжение к курсору слабое: стайка догоняет и проскакивает,
-        // а не приклеивается к указателю
-        const tx = target.x - fish.x;
-        const ty = target.y - fish.y;
+        // а не приклеивается к указателю.
+        //
+        // Целится каждая рыба не в саму точку, а в своё место рядом с ней.
+        // Когда все тянулись к одной координате, вектор притяжения у всех
+        // был почти одинаковым и стая шла строем.
+        fish.slotAngle += fish.slotDrift;
+        const goalX = target.x + Math.cos(fish.slotAngle) * fish.slotRadius;
+        const goalY = target.y + Math.sin(fish.slotAngle) * fish.slotRadius;
+        const tx = goalX - fish.x;
+        const ty = goalY - fish.y;
         const tDist = Math.hypot(tx, ty) || 1;
-        ax += (tx / tDist) * 0.1;
-        ay += (ty / tDist) * 0.1;
+        ax += (tx / tDist) * fish.seek;
+        ay += (ty / tDist) * fish.seek;
+
+        // Блуждание: направление медленно гуляет само по себе, поэтому
+        // рыбы порой отбиваются от стаи и возвращаются
+        fish.wander += (Math.random() - 0.5) * fish.wanderRate;
+        ax += Math.cos(fish.wander) * 0.12;
+        ay += Math.sin(fish.wander) * 0.12;
 
         // Мягко отворачиваем от краёв, чтобы стая не залипала в углу
         const margin = 70;
@@ -273,7 +311,7 @@ export function NeonSchool({ className }: { className?: string }) {
         // слишком быстрые выглядят как выстрел
         const speed = Math.hypot(fish.vx, fish.vy);
         const min = 0.45;
-        const max = 1.9;
+        const max = fish.maxSpeed;
         if (speed > max) {
           fish.vx = (fish.vx / speed) * max;
           fish.vy = (fish.vy / speed) * max;
@@ -284,7 +322,7 @@ export function NeonSchool({ className }: { className?: string }) {
 
         fish.x += fish.vx;
         fish.y += fish.vy;
-        fish.wobble += 0.18 + speed * 0.08;
+        fish.wobble += fish.wobbleRate + speed * 0.08;
 
         // Страховка от вылета за пределы холста
         if (fish.x < -40) fish.x = width + 40;
