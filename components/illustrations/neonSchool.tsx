@@ -75,7 +75,7 @@ export function NeonSchool({ className }: { className?: string }) {
           y: height * 0.5 + Math.sin(spread) * r,
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed,
-          len: 17 + Math.random() * 10,
+          len: 19 + Math.random() * 11,
           wobble: Math.random() * Math.PI * 2,
         };
       });
@@ -107,59 +107,73 @@ export function NeonSchool({ className }: { className?: string }) {
       const angle = Math.atan2(fish.vy, fish.vx);
       const len = fish.len;
       const half = len * 0.5;
-      const tall = len * 0.27;
+      const tall = len * 0.22;
       // Хвост виляет — иначе рыба выглядит как летящая щепка
-      const tailSwing = Math.sin(fish.wobble) * tall * 0.9;
+      const swing = Math.sin(fish.wobble) * tall * 0.8;
 
       ctx.save();
       ctx.translate(fish.x, fish.y);
       ctx.rotate(angle);
 
-      // Хвост
+      // При развороте влево поворот на угол больше 90° переворачивает
+      // локальную ось Y, и красное брюшко оказывалось сверху, а голубая
+      // полоса снизу. Зеркалим по вертикали: голова остаётся по ходу
+      // движения, низ рыбы — снизу.
+      if (Math.cos(angle) < 0) ctx.scale(1, -1);
+
+      // Хвост вилкой. Был тонкой щепкой и почти не читался.
       ctx.beginPath();
-      ctx.moveTo(-half * 0.75, 0);
-      ctx.lineTo(-half * 1.5, tailSwing - tall * 0.85);
-      ctx.lineTo(-half * 1.2, 0);
-      ctx.lineTo(-half * 1.5, tailSwing + tall * 0.85);
+      ctx.moveTo(-half * 0.92, 0);
+      ctx.lineTo(-half * 1.62, swing - tall * 1.15);
+      ctx.lineTo(-half * 1.3, swing * 0.5);
+      ctx.lineTo(-half * 1.62, swing + tall * 1.15);
       ctx.closePath();
-      ctx.fillStyle = "rgba(148, 210, 235, 0.35)";
+      ctx.fillStyle = "rgba(150, 214, 238, 0.45)";
       ctx.fill();
 
-      // Полупрозрачное тело
+      // Тело: сужается к хвосту, с округлой головой и пузом.
+      // Раньше это был просто эллипс, из-за чего рыба выглядела капсулой.
       ctx.beginPath();
-      ctx.ellipse(0, 0, half, tall, 0, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(186, 224, 240, 0.28)";
+      ctx.moveTo(half, 0);
+      ctx.quadraticCurveTo(half * 0.35, -tall, -half * 0.25, -tall * 0.72);
+      ctx.quadraticCurveTo(-half * 0.7, -tall * 0.45, -half * 0.92, 0);
+      ctx.quadraticCurveTo(-half * 0.7, tall * 0.45, -half * 0.25, tall * 0.78);
+      ctx.quadraticCurveTo(half * 0.35, tall, half, 0);
+      ctx.closePath();
+      ctx.fillStyle = "rgba(198, 231, 244, 0.32)";
       ctx.fill();
 
-      // Свечение голубой полосы. Вместо дорогого shadowBlur рисуем
-      // ту же линию дважды: широкую и бледную, затем узкую и яркую.
       ctx.lineCap = "round";
+
+      // Свечение голубой полосы. Вместо дорогого shadowBlur рисуем ту же
+      // линию дважды: широкую и бледную, затем узкую и яркую. Ширина
+      // свечения была больше самого тела и заливала рыбу целиком.
       ctx.beginPath();
-      ctx.moveTo(-half * 0.72, -tall * 0.22);
-      ctx.lineTo(half * 0.82, -tall * 0.3);
-      ctx.strokeStyle = "rgba(34, 211, 238, 0.3)";
-      ctx.lineWidth = tall * 1.5;
+      ctx.moveTo(-half * 0.78, -tall * 0.12);
+      ctx.lineTo(half * 0.62, -tall * 0.34);
+      ctx.strokeStyle = "rgba(34, 211, 238, 0.32)";
+      ctx.lineWidth = tall * 0.75;
       ctx.stroke();
 
       ctx.beginPath();
-      ctx.moveTo(-half * 0.72, -tall * 0.22);
-      ctx.lineTo(half * 0.82, -tall * 0.3);
-      ctx.strokeStyle = "rgba(125, 240, 255, 0.95)";
-      ctx.lineWidth = tall * 0.55;
+      ctx.moveTo(-half * 0.78, -tall * 0.12);
+      ctx.lineTo(half * 0.62, -tall * 0.34);
+      ctx.strokeStyle = "rgba(140, 243, 255, 0.95)";
+      ctx.lineWidth = tall * 0.3;
       ctx.stroke();
 
-      // Красное брюшко у хвоста — вторая узнаваемая черта неона
+      // Красная полоса — от середины тела к хвосту, по нижней половине
       ctx.beginPath();
-      ctx.moveTo(-half * 0.7, tall * 0.34);
-      ctx.lineTo(half * 0.05, tall * 0.3);
-      ctx.strokeStyle = "rgba(244, 63, 94, 0.85)";
-      ctx.lineWidth = tall * 0.6;
+      ctx.moveTo(-half * 0.82, tall * 0.16);
+      ctx.lineTo(half * 0.02, tall * 0.3);
+      ctx.strokeStyle = "rgba(239, 68, 68, 0.9)";
+      ctx.lineWidth = tall * 0.32;
       ctx.stroke();
 
-      // Глаз
+      // Глаз: маленькая точка у самого носа
       ctx.beginPath();
-      ctx.arc(half * 0.66, -tall * 0.12, tall * 0.26, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(15, 35, 50, 0.75)";
+      ctx.arc(half * 0.72, -tall * 0.14, Math.max(0.7, tall * 0.18), 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(20, 45, 62, 0.7)";
       ctx.fill();
 
       ctx.restore();
