@@ -6,6 +6,7 @@ import { auth } from "@/auth";
 import { fetchHomeStats } from "@/app/actions/homeStatsFetch";
 import { AquariumScene } from "@/components/illustrations/aquariumScene";
 import { CardIllustration, WaveDivider } from "@/components/illustrations/decor";
+import { NeonSchool } from "@/components/illustrations/neonSchool";
 
 export async function MainPage() {
   const [t, session] = await Promise.all([getTranslations("HomePage"), auth()]);
@@ -52,6 +53,10 @@ export async function MainPage() {
     <div className="flex flex-col gap-10 pb-4 sm:gap-12">
       {/* ================= Hero ================= */}
       <section className="relative overflow-hidden">
+        {/* Стайка неонов в фоне. Лежит первой в разметке и без z-index,
+            поэтому оказывается под контентом, у которого z-raised */}
+        <NeonSchool className="absolute inset-0 h-full w-full" />
+
         <div className="app-container relative grid items-center gap-6 pb-16 pt-6 sm:gap-8 sm:pb-20 sm:pt-8 lg:grid-cols-[1.05fr_1fr] lg:gap-12 lg:pb-24">
           {/* --- Текстовая колонка --- */}
           <div className="relative z-raised max-w-xl">
