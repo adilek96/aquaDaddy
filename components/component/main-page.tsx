@@ -4,181 +4,201 @@ import { Fish, Compass, BookOpen, CalendarClock, ArrowRight } from "lucide-react
 import { Button } from "@/components/ui/button";
 import { auth } from "@/auth";
 import { fetchHomeStats } from "@/app/actions/homeStatsFetch";
+import { AquariumScene } from "@/components/illustrations/aquariumScene";
+import { CardIllustration, WaveDivider } from "@/components/illustrations/decor";
 
-/**
- * Главная — серверный компонент. Раньше это был "use client" с useSession +
- * useEffect: разметка приезжала пустой, счётчик аквариумов подгружался вторым
- * запросом уже в браузере, а числа на карточках Wiki/Discovery были константами
- * 250 и 1000. Теперь всё считается на сервере и приходит сразу с HTML.
- */
 export async function MainPage() {
-  const [t, session] = await Promise.all([
-    getTranslations("HomePage"),
-    auth(),
-  ]);
+  const [t, session] = await Promise.all([getTranslations("HomePage"), auth()]);
   const stats = await fetchHomeStats(session?.user?.id);
   const isAuthed = Boolean(session?.user);
 
   const shortcuts = [
     {
       href: "/myTanks",
+      art: "tanks" as const,
       icon: Fish,
       title: t("aquariums-title"),
       description: t("aquariums-description"),
       linkText: t("aquariums-link"),
-      value: isAuthed ? stats.aquariums ?? 0 : null,
+      value: isAuthed ? (stats.aquariums ?? 0) : null,
       valueLabel: t("statAquariums"),
-      accent: "from-primary/20 to-primary/5 text-primary",
+      badge: "text-primary",
     },
     {
       href: "/discovery",
+      art: "discovery" as const,
       icon: Compass,
       title: t("discovery-title"),
       description: t("discovery-description"),
       linkText: t("discovery-link"),
       value: stats.publicAquariums,
       valueLabel: t("statAquariums"),
-      accent: "from-secondary/25 to-secondary/5 text-secondary",
+      badge: "text-accent",
     },
     {
       href: "/wiki",
+      art: "wiki" as const,
       icon: BookOpen,
       title: t("wiki-title"),
       description: t("wiki-description"),
       linkText: t("wiki-link"),
       value: null,
       valueLabel: t("statSpecies"),
-      accent: "from-accent/25 to-accent/5 text-accent",
+      badge: "text-success",
     },
   ];
 
   return (
-    <div className="app-container flex flex-col gap-10 py-6 sm:gap-14 sm:py-10">
-      {/* ---------- Hero ---------- */}
-      <section className="surface-panel-raised relative overflow-hidden p-6 sm:p-10 lg:p-14">
-        {/* Декоративное свечение; не влияет на поток и скрыто от скринридеров */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-primary/20 blur-3xl"
-        />
-        <div className="relative max-w-2xl">
-          <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
-            AquaDaddy
-          </p>
-          <h1 className="mb-4">{t("heroTitle")}</h1>
-          <p className="measure mb-8 text-base text-muted-foreground sm:text-lg">
-            {t("heroSubtitle")}
-          </p>
+    <div className="flex flex-col gap-10 pb-4 sm:gap-12">
+      {/* ================= Hero ================= */}
+      <section className="relative overflow-hidden">
+        <div className="app-container relative grid items-center gap-6 pb-16 pt-6 sm:gap-8 sm:pb-20 sm:pt-8 lg:grid-cols-[1.05fr_1fr] lg:gap-12 lg:pb-24">
+          {/* --- Текстовая колонка --- */}
+          <div className="relative z-raised max-w-xl">
+            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
+              <span className="grid h-1.5 w-1.5 place-items-center rounded-full bg-primary" />
+              AquaDaddy
+            </p>
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Button asChild size="lg">
-              <Link href={isAuthed ? "/myTanks" : "/signIn"}>
-                {isAuthed ? t("heroCta") : t("signInToView")}
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </Link>
-            </Button>
-            <Button asChild size="lg" variant="outline">
-              <Link href="/discovery">{t("heroCtaSecondary")}</Link>
-            </Button>
+            <h1 className="mb-4">{t("heroTitle")}</h1>
+
+            <p className="measure mb-8 text-base text-muted-foreground sm:text-lg">
+              {t("heroSubtitle")}
+            </p>
+
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <Button asChild size="lg">
+                <Link href={isAuthed ? "/myTanks" : "/signIn"}>
+                  {isAuthed ? t("heroCta") : t("signInToView")}
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <Link href="/discovery">{t("heroCtaSecondary")}</Link>
+              </Button>
+            </div>
+
+            {/* Сводка — только для авторизованных, иначе цифры пустые */}
+            {isAuthed && (
+              <dl className="mt-9 grid max-w-md grid-cols-2 gap-3 sm:gap-4">
+                <div className="surface-panel p-4">
+                  <dt className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    <Fish className="h-4 w-4 text-primary" aria-hidden="true" />
+                    {t("statAquariums")}
+                  </dt>
+                  <dd
+                    data-numeric
+                    className="mt-1 font-display text-3xl font-extrabold"
+                  >
+                    {stats.aquariums ?? 0}
+                  </dd>
+                </div>
+                <div className="surface-panel p-4">
+                  <dt className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    <CalendarClock
+                      className="h-4 w-4 text-warning"
+                      aria-hidden="true"
+                    />
+                    {t("statUpcoming")}
+                  </dt>
+                  <dd
+                    data-numeric
+                    className="mt-1 font-display text-3xl font-extrabold"
+                  >
+                    {stats.upcomingMaintenance ?? 0}
+                  </dd>
+                </div>
+              </dl>
+            )}
+          </div>
+
+          {/* --- Иллюстрация ---
+              На телефоне идёт под текстом и ужимается: она украшает экран,
+              но не должна отодвигать кнопки за первый экран */}
+          <div className="relative z-raised mx-auto w-full max-w-md lg:max-w-none">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 -z-10 translate-y-6 rounded-full bg-primary/20 blur-3xl"
+            />
+            <AquariumScene className="h-auto w-full drop-shadow-xl" />
           </div>
         </div>
 
-        {/* Сводка показателей — только для авторизованных, иначе цифры пустые */}
-        {isAuthed && (
-          <dl className="relative mt-10 grid grid-cols-2 gap-3 sm:max-w-lg sm:gap-4">
-            <div className="rounded-xl border border-surface-border bg-background/50 p-4">
-              <dt className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                <Fish className="h-4 w-4 text-primary" aria-hidden="true" />
-                {t("statAquariums")}
-              </dt>
-              <dd
-                data-numeric
-                className="mt-1 font-display text-3xl font-extrabold"
-              >
-                {stats.aquariums ?? 0}
-              </dd>
-            </div>
-            <div className="rounded-xl border border-surface-border bg-background/50 p-4">
-              <dt className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                <CalendarClock
-                  className="h-4 w-4 text-warning"
-                  aria-hidden="true"
-                />
-                {t("statUpcoming")}
-              </dt>
-              <dd
-                data-numeric
-                className="mt-1 font-display text-3xl font-extrabold"
-              >
-                {stats.upcomingMaintenance ?? 0}
-              </dd>
-            </div>
-          </dl>
-        )}
+        {/* Волна отделяет hero от остальной страницы */}
+        <WaveDivider
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-16 w-full sm:h-24"
+        />
       </section>
 
-      {/* ---------- Быстрые переходы ---------- */}
-      <section aria-labelledby="shortcuts-heading">
-        <h2 id="shortcuts-heading" className="mb-5 sm:mb-6">
+      {/* ================= Разделы ================= */}
+      <section aria-labelledby="shortcuts-heading" className="app-container">
+        <h2 id="shortcuts-heading" className="mb-5 sm:mb-7">
           {t("sectionShortcuts")}
         </h2>
 
-        {/* Сетка на самом контейнере: раньше col-span-* стояли на <Card>,
-            которая была внуком грида, поэтому пропорции просто не работали */}
-        <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 sm:gap-5">
+        {/* Сетка объявлена на самом контейнере: до редизайна col-span-*
+            стояли на <Card>, которая была внуком грида, и не работали */}
+        <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {shortcuts.map(
             ({
               href,
+              art,
               icon: Icon,
               title,
               description,
               linkText,
               value,
               valueLabel,
-              accent,
+              badge,
             }) => (
               <li key={href} className="flex">
                 <Link
                   href={href}
-                  className="surface-panel surface-interactive group flex w-full flex-col p-5 sm:p-6"
+                  className="surface-panel surface-interactive group flex w-full flex-col overflow-hidden"
                 >
-                  <span
-                    className={`mb-4 grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br ${accent}`}
-                  >
-                    <Icon className="h-6 w-6" aria-hidden="true" />
+                  {/* Иллюстрированная шапка вместо простого цветного квадрата */}
+                  <span className="relative block h-28 w-full overflow-hidden sm:h-32">
+                    <CardIllustration art={art} />
+                    <span className="absolute bottom-2 left-5 grid h-11 w-11 place-items-center rounded-xl border border-surface-border bg-surface shadow-soft transition-transform duration-base ease-out-soft group-hover:-translate-y-1">
+                      <Icon className={`h-5 w-5 ${badge}`} aria-hidden="true" />
+                    </span>
                   </span>
 
-                  <h3 className="mb-2 text-lg sm:text-xl">{title}</h3>
-                  <p className="mb-6 text-sm text-muted-foreground">
-                    {description}
-                  </p>
+                  <span className="flex flex-1 flex-col p-5 pt-4">
+                    <span className="mb-2 font-display text-lg font-bold tracking-tight sm:text-xl">
+                      {title}
+                    </span>
+                    <span className="mb-6 text-sm text-muted-foreground">
+                      {description}
+                    </span>
 
-                  <span className="mt-auto flex items-center justify-between gap-3 border-t border-surface-border pt-4">
-                    {/* Энциклопедия ещё не подключена к бэкенду вики,
-                        поэтому у неё счётчика нет — вместо выдуманного числа
-                        показываем только действие */}
-                    {value !== null ? (
-                      <span className="flex items-baseline gap-1.5">
-                        <span
-                          data-numeric
-                          className="font-display text-2xl font-extrabold"
-                        >
-                          {value}
+                    <span className="mt-auto flex items-center justify-between gap-3 border-t border-surface-border pt-4">
+                      {/* У энциклопедии счётчика нет: раздел ещё не подключён
+                          к aquaWikiBackend, а выдуманное число там стояло
+                          захардкоженным («250») */}
+                      {value !== null ? (
+                        <span className="flex items-baseline gap-1.5">
+                          <span
+                            data-numeric
+                            className="font-display text-2xl font-extrabold"
+                          >
+                            {value}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {valueLabel}
+                          </span>
                         </span>
-                        <span className="text-xs text-muted-foreground">
-                          {valueLabel}
-                        </span>
+                      ) : (
+                        <span aria-hidden="true" />
+                      )}
+
+                      <span className="flex items-center gap-1 text-sm font-semibold text-primary">
+                        {linkText}
+                        <ArrowRight
+                          className="h-4 w-4 transition-transform duration-fast ease-out-soft group-hover:translate-x-0.5"
+                          aria-hidden="true"
+                        />
                       </span>
-                    ) : (
-                      <span aria-hidden="true" />
-                    )}
-
-                    <span className="flex items-center gap-1 text-sm font-semibold text-primary">
-                      {linkText}
-                      <ArrowRight
-                        className="h-4 w-4 transition-transform duration-fast ease-out-soft group-hover:translate-x-0.5"
-                        aria-hidden="true"
-                      />
                     </span>
                   </span>
                 </Link>

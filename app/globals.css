@@ -332,6 +332,119 @@
   }
 }
 
+/* =========================================================================
+   Иллюстрация аквариума (components/illustrations/aquariumScene.tsx)
+   Всё движение — transform/opacity, чтобы не вызывать перерасчёт layout.
+   ========================================================================= */
+
+.aq-scene .aq-sway {
+  animation: aq-sway 7s ease-in-out infinite alternate;
+}
+
+.aq-scene .aq-bubbles circle {
+  animation: aq-bubble 5.5s linear infinite;
+}
+
+.aq-scene .aq-fish-1 {
+  animation: aq-swim-far 22s ease-in-out infinite;
+}
+.aq-scene .aq-fish-2 {
+  animation: aq-swim-mid 17s ease-in-out infinite;
+}
+.aq-scene .aq-fish-3 {
+  animation: aq-swim-near 27s ease-in-out infinite;
+}
+
+.aq-scene .aq-beams {
+  animation: aq-beams 9s ease-in-out infinite alternate;
+}
+
+@keyframes aq-sway {
+  from {
+    transform: rotate(-3.5deg);
+  }
+  to {
+    transform: rotate(3.5deg);
+  }
+}
+
+@keyframes aq-bubble {
+  0% {
+    transform: translateY(0) scale(0.7);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.5;
+  }
+  85% {
+    opacity: 0.35;
+  }
+  100% {
+    transform: translateY(-190px) scale(1.1);
+    opacity: 0;
+  }
+}
+
+/* Дальняя рыба идёт медленно и разворачивается на краях */
+@keyframes aq-swim-far {
+  0%,
+  100% {
+    transform: translateX(0) scaleX(1);
+  }
+  45% {
+    transform: translateX(120px) scaleX(1);
+  }
+  50% {
+    transform: translateX(120px) scaleX(-1);
+  }
+  95% {
+    transform: translateX(0) scaleX(-1);
+  }
+}
+
+@keyframes aq-swim-mid {
+  0%,
+  100% {
+    transform: scale(0.7) translate(0, 0) scaleX(1);
+  }
+  46% {
+    transform: scale(0.7) translate(-150px, -26px) scaleX(1);
+  }
+  52% {
+    transform: scale(0.7) translate(-150px, -26px) scaleX(-1);
+  }
+  96% {
+    transform: scale(0.7) translate(0, 0) scaleX(-1);
+  }
+}
+
+@keyframes aq-swim-near {
+  0%,
+  100% {
+    transform: scale(0.55) translate(0, 0) scaleX(1);
+  }
+  48% {
+    transform: scale(0.55) translate(240px, -34px) scaleX(1);
+  }
+  54% {
+    transform: scale(0.55) translate(240px, -34px) scaleX(-1);
+  }
+  98% {
+    transform: scale(0.55) translate(0, 0) scaleX(-1);
+  }
+}
+
+@keyframes aq-beams {
+  from {
+    opacity: 0.55;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(6px);
+  }
+}
+
 @keyframes skeleton-shimmer {
   100% {
     transform: translateX(100%);
@@ -354,6 +467,10 @@
   .surface-interactive:hover {
     transform: none;
   }
+  /* Пузырьки в иллюстрации застывают видимыми, а не на кадре с opacity 0 */
+  .aq-scene .aq-bubbles circle {
+    opacity: 0.4 !important;
+  }
 }
 
 /* То же самое, но по выбору пользователя в настройках приложения.
@@ -373,4 +490,7 @@ html[data-motion="off"] *::after {
 }
 html[data-motion="off"] .surface-interactive:hover {
   transform: none;
+}
+html[data-motion="off"] .aq-scene .aq-bubbles circle {
+  opacity: 0.4 !important;
 }
