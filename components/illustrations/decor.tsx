@@ -21,15 +21,17 @@ export function WaveDivider({
       className={className}
       style={flip ? { transform: "scaleY(-1)" } : undefined}
     >
+      {/* Два оттенка зелени вместо синего с бирюзой: дальняя волна темнее,
+          ближняя светлее — так полоса читается объёмнее плоской заливки */}
       <path
         d="M0 64c120-34 240-34 360 0s240 34 360 0 240-34 360 0 240 34 360 0v56H0Z"
-        fill="hsl(var(--primary))"
-        fillOpacity="0.10"
+        fill="hsl(var(--plant-deep))"
+        fillOpacity="0.2"
       />
       <path
         d="M0 82c130-30 250-22 370 6s250 28 370 0 250-30 370-6 210 30 330 18v20H0Z"
-        fill="hsl(var(--secondary))"
-        fillOpacity="0.12"
+        fill="hsl(var(--plant))"
+        fillOpacity="0.28"
       />
     </svg>
   );
@@ -108,14 +110,14 @@ export function CardIllustration({ art }: { art: CardArt }) {
           <circle cx="182" cy="59" r="1.6" fill="hsl(var(--background))" />
           <path
             d="M60 92c-5-11 3-19-1-29"
-            stroke="hsl(var(--success))"
+            stroke="hsl(var(--plant))"
             strokeWidth="4"
             strokeLinecap="round"
             opacity="0.65"
           />
           <path
             d="M248 92c-4-9 2-15 0-23"
-            stroke="hsl(var(--success))"
+            stroke="hsl(var(--plant))"
             strokeWidth="3.5"
             strokeLinecap="round"
             opacity="0.5"

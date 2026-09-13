@@ -77,6 +77,10 @@ const config = {
           DEFAULT: "hsl(var(--warning))",
           foreground: "hsl(var(--warning-foreground))",
         },
+        plant: {
+          DEFAULT: "hsl(var(--plant))",
+          deep: "hsl(var(--plant-deep))",
+        },
         muted: {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
