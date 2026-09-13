@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import { Eye, Trash2, Upload, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "motion/react";
-import { FaUpload, FaTrash, FaEye, FaTimes } from "react-icons/fa";
 import Image from "next/image";
 import { useImageFullscreenStore } from "@/store/imageFullscreenStore";
 
@@ -204,7 +204,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
           />
 
           <div className="space-y-3">
-            <FaUpload className="mx-auto h-8 w-8 text-muted-foreground" />
+            <Upload className="mx-auto h-8 w-8 text-muted-foreground" />
             <div>
               <p className="text-sm font-medium">
                 {isUploading ? t("uploading") : t("dragDropMessage")}
@@ -275,7 +275,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gray-200 dark:bg-gray-800">
                         <svg
-                          className="w-12 h-12 text-gray-400"
+                          className="h-12 w-12 text-muted-foreground"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -297,7 +297,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                         className="p-2 bg-white/20 rounded-full hover:bg-white/30 transition-colors"
                         title={t("viewImage")}
                       >
-                        <FaEye className="w-4 h-4 text-white" />
+                        <Eye className="w-4 h-4 text-white" />
                       </button>
                       <button
                         onClick={() => handleDeleteImage(image.id)}
@@ -308,7 +308,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                         {deletingImage === image.id ? (
                           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         ) : (
-                          <FaTrash className="w-4 h-4 text-white" />
+                          <Trash2 className="w-4 h-4 text-white" />
                         )}
                       </button>
                     </div>
@@ -345,7 +345,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                 onClick={closeImageModal}
                 className="absolute -top-4 -right-4 z-10 p-2 bg-black/50 rounded-full hover:bg-black/70 transition-colors"
               >
-                <FaTimes className="w-6 h-6 text-white" />
+                <X className="w-6 h-6 text-white" />
               </button>
               {selectedImage ? (
                 <Image
@@ -360,7 +360,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-gray-200 dark:bg-gray-800 rounded-lg">
                   <svg
-                    className="w-24 h-24 text-gray-400"
+                    className="h-24 w-24 text-muted-foreground"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"

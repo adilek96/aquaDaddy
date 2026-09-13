@@ -1,12 +1,12 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { FiStar, FiMessageCircle, FiUser } from "react-icons/fi";
+import { Star, MessageCircle, User } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
 
 interface DiscoveryCardProps {
   aquarium: any;
@@ -16,71 +16,92 @@ export default function DiscoveryCard({ aquarium }: DiscoveryCardProps) {
   const t = useTranslations("Discovery");
   const [imgError, setImgError] = useState(false);
 
+  const hasPhoto = Boolean(aquarium.images?.length) && !imgError;
   const imageUrl = aquarium.images?.[0]?.url || "/app-logo.svg";
   const averageRating = aquarium.averageRating || 0;
   const ratingsCount = aquarium._count?.ratings || 0;
   const commentsCount = aquarium._count?.comments || 0;
 
   return (
-    <Link href={`/discovery/${aquarium.id}`}>
-      <Card className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-white/50 dark:bg-black/50 backdrop-blur-md border border-muted overflow-hidden h-[380px] flex flex-col">
-        {/* Изображение */}
-        <div className="relative h-48 w-full overflow-hidden">
-          <Image
-            src={imgError ? "/app-logo.svg" : imageUrl}
-            alt={aquarium.name}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
-            onError={() => setImgError(true)}
-          />
-          {/* Тип аквариума */}
-          <div className="absolute top-2 right-2 px-2 py-1 bg-black/60 backdrop-blur-sm rounded text-xs text-white">
-            {t(`aquariumType.${aquarium.type.toLowerCase()}`)}
-          </div>
-        </div>
+    <Link
+      href={`/discovery/${aquarium.id}`}
+      className="surface-panel surface-interactive group flex h-full flex-col overflow-hidden"
+    >
+      <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted">
+        <Image
+          src={imgError ? "/app-logo.svg" : imageUrl}
+          alt={aquarium.name}
+          fill
+          // sizes отсутствовал: браузер запрашивал картинку под всю ширину
+          // вьюпорта даже для карточки в четыре колонки
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+          className={cn(
+            "transition-transform duration-slow ease-out-soft group-hover:scale-[1.04]",
+            hasPhoto ? "object-cover" : "object-contain p-8 opacity-60"
+          )}
+          onError={() => setImgError(true)}
+        />
+        <span className="absolute right-2 top-2 rounded-full border border-white/20 bg-scrim/70 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur-sm">
+          {t(`aquariumType.${aquarium.type.toLowerCase()}` as any)}
+        </span>
+      </div>
 
-        <CardContent className="p-4 flex-1 flex flex-col">
-          {/* Название */}
-          <h3 className="font-semibold text-lg mb-2 line-clamp-2 min-h-[56px]">
-            {aquarium.name}
-          </h3>
+      <div className="flex flex-1 flex-col p-4">
+        {/* line-clamp вместо прежнего min-h-[56px]: заголовок в одну строку
+            больше не оставляет пустой полосы под собой */}
+        <h3 className="mb-2 line-clamp-2 text-base font-bold leading-snug sm:text-lg">
+          {aquarium.name}
+        </h3>
 
-          {/* Описание */}
-          <p className="text-sm text-muted-foreground mb-3 line-clamp-3 flex-1">
-            {aquarium.description || "No description"}
+        {aquarium.description && (
+          <p className="mb-4 line-clamp-3 text-sm text-muted-foreground">
+            {aquarium.description}
           </p>
+        )}
 
-          {/* Рейтинг и комментарии */}
-          <div className="flex items-center gap-4 mb-3 text-sm mt-auto">
-            <div className="flex items-center gap-1">
-              <FiStar className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-              <span className="font-medium">
+        <div className="mt-auto flex flex-col gap-3">
+          <div className="flex items-center gap-4 text-sm">
+            <span className="flex items-center gap-1.5">
+              <Star
+                className={cn(
+                  "h-4 w-4",
+                  averageRating > 0
+                    ? "fill-warning text-warning"
+                    : "text-muted-foreground"
+                )}
+                aria-hidden="true"
+              />
+              <span data-numeric className="font-bold">
                 {averageRating > 0 ? averageRating.toFixed(1) : "—"}
               </span>
               {ratingsCount > 0 && (
-                <span className="text-muted-foreground">({ratingsCount})</span>
+                <span className="text-muted-foreground" data-numeric>
+                  ({ratingsCount})
+                </span>
               )}
-            </div>
-            <div className="flex items-center gap-1 text-muted-foreground">
-              <FiMessageCircle className="w-4 h-4" />
-              <span>{commentsCount}</span>
-            </div>
-          </div>
+              <span className="sr-only">{t("ratings")}</span>
+            </span>
 
-          {/* Автор */}
-          <div className="flex items-center gap-2 pt-3 border-t">
-            <Avatar className="w-6 h-6">
-              <AvatarImage src={aquarium.user.image || ""} />
-              <AvatarFallback>
-                <FiUser className="w-3 h-3" />
-              </AvatarFallback>
-            </Avatar>
-            <span className="text-sm text-muted-foreground">
-              {aquarium.user.name || "Anonymous"}
+            <span className="flex items-center gap-1.5 text-muted-foreground">
+              <MessageCircle className="h-4 w-4" aria-hidden="true" />
+              <span data-numeric>{commentsCount}</span>
+              <span className="sr-only">{t("comments")}</span>
             </span>
           </div>
-        </CardContent>
-      </Card>
+
+          <div className="flex items-center gap-2 border-t border-surface-border pt-3">
+            <Avatar className="h-6 w-6">
+              <AvatarImage src={aquarium.user?.image || ""} alt="" />
+              <AvatarFallback>
+                <User className="h-3 w-3" aria-hidden="true" />
+              </AvatarFallback>
+            </Avatar>
+            <span className="truncate text-sm text-muted-foreground">
+              {aquarium.user?.name || "Anonymous"}
+            </span>
+          </div>
+        </div>
+      </div>
     </Link>
   );
 }

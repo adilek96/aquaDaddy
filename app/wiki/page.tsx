@@ -1,8 +1,7 @@
-import CardFilling from "@/components/component/cardFilling";
-import { Card } from "@/components/ui/card";
-import { BookIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
-import React from "react";
+import Link from "next/link";
+import { getTranslations } from "next-intl/server";
+import { BookOpen, Compass, Fish } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { generateWikiMetadata } from "@/components/helpers/MetaTags";
 import { cookies } from "next/headers";
 
@@ -12,23 +11,41 @@ export async function generateMetadata() {
   return generateWikiMetadata(locale);
 }
 
-export default function Wiki() {
-  const t = useTranslations("HomePage");
+/**
+ * Энциклопедия ещё не подключена к aquaWikiBackend: статьи живут в отдельном
+ * сервисе, и в aquaDaddy нет ни одного обращения к нему. Раньше страница
+ * показывала карточку со ссылкой href="#" и счётчиком «250» — выглядело как
+ * рабочий раздел, который никуда не ведёт. Пока честно говорим, что раздел
+ * готовится, и уводим туда, где контент действительно есть.
+ */
+export default async function Wiki() {
+  const t = await getTranslations("HomePage");
 
   return (
-    <div className="flex justify-center items-center h-[100vh] w-[100vw]  ">
-      <div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 grid-flow-row-dense md:grid-cols-3 gap-8 p-4 sm:p-6 md:p-8  ">
-          <Card className="bg-[#00EBFF]/5 dark:bg-black/50  dark:hover:bg-green-700/70  backdrop-blur-md text-secondary-foreground hover:bg-green-300/50  transition-all duration-300   hover:text-secondary-foregroundcol-span-1 sm:col-span-1 md:col-span-3  border border-muted   hover:-translate-y-1   ">
-            <CardFilling
-              title={t("wiki-title")}
-              description={t("wiki-description")}
-              icon={<BookIcon className="h-6 w-6" />}
-              link={`#`}
-              count={250}
-              linkText={t("wiki-link")}
-            />
-          </Card>
+    <div className="app-container flex min-h-[60dvh] items-center justify-center py-10">
+      <div className="surface-panel-raised w-full max-w-xl animate-fade-in-up p-6 text-center sm:p-10">
+        <span className="mx-auto mb-6 grid h-16 w-16 place-items-center rounded-2xl bg-accent/15 text-accent">
+          <BookOpen className="h-8 w-8" aria-hidden="true" />
+        </span>
+
+        <h1 className="mb-3">{t("wiki-title")}</h1>
+        <p className="measure mx-auto mb-8 text-muted-foreground">
+          {t("wiki-description")}
+        </p>
+
+        <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+          <Button asChild size="lg">
+            <Link href="/discovery">
+              <Compass className="h-4 w-4" aria-hidden="true" />
+              {t("discovery-link")}
+            </Link>
+          </Button>
+          <Button asChild size="lg" variant="outline">
+            <Link href="/myTanks">
+              <Fish className="h-4 w-4" aria-hidden="true" />
+              {t("aquariums-link")}
+            </Link>
+          </Button>
         </div>
       </div>
     </div>

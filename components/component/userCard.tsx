@@ -29,8 +29,8 @@ export default function UserCard() {
 
   return (
     <>
-      <Card className=" w-[100%] h-fit mb-5 pb-10 border border-mutted  rounded-b-2xl backdrop-blur-3xl relative flex justify-center bg-white/60 dark:bg-black/60">
-        <div className="w-[130px] h-[130px] absolute -top-12 flex items-center justify-center backdrop-blur-3xl rounded-full bg-[#00EBFF]/20">
+      <Card className=" w-[100%] h-fit mb-5 pb-10 border border-border  rounded-b-2xl backdrop-blur-3xl relative flex justify-center bg-white/60 dark:bg-black/60">
+        <div className="w-[130px] h-[130px] absolute -top-12 flex items-center justify-center backdrop-blur-3xl rounded-full bg-primary/15">
           <Avatar className="w-[120px] h-[120px] flex items-center justify-center">
             {session?.user.image !== null ? (
               <Image
@@ -76,7 +76,7 @@ export default function UserCard() {
             <span>
               <Link
                 href={`/myTanks`}
-                className="hover:text-green-300/50 dark:hover:text-green-300/80 transition-all duration-300 "
+                className="hover:text-primary transition-colors duration-fast "
               >
                 0 Aquariums
               </Link>
@@ -85,7 +85,7 @@ export default function UserCard() {
             <span>
               <Link
                 href={`/myTanks/published`}
-                className="hover:text-green-300/50 dark:hover:text-green-300/80 transition-all duration-300 "
+                className="hover:text-primary transition-colors duration-fast "
               >
                 2 Published
               </Link>
@@ -95,7 +95,7 @@ export default function UserCard() {
           <div className="flex flex-col items-center">
             <Link
               href={`/myTanks/collections`}
-              className="hover:text-green-300/50 dark:hover:text-green-300/80 transition-all duration-300 "
+              className="hover:text-primary transition-colors duration-fast "
             >
               <h3 className="text-lg font-semibold mb-2">Collections</h3>
             </Link>
@@ -104,7 +104,7 @@ export default function UserCard() {
                 <Link
                   href={"#"}
                   key={index}
-                  className="flex border border-muted bg-white/20 hover:bg-green-300/50 dark:hover:bg-green-700/70 dark:bg-black/20  transition-all duration-300 hover:translate-y-1  rounded-sm px-2 py-1 items-center space-x-2"
+                  className="flex border border-muted bg-background/40 hover:bg-primary/10 dark:hover:bg-primary/70 dark:bg-black/20  transition-all duration-300 hover:translate-y-1  rounded-sm px-2 py-1 items-center space-x-2"
                 >
                   <collection.icon className="h-5 w-5 text-primary" />
                   <div>

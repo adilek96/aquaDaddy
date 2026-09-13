@@ -1,6 +1,3 @@
-"use client";
-
-import { motion } from "motion/react";
 import { ReactNode } from "react";
 
 interface EmptyStateProps {
@@ -10,51 +7,35 @@ interface EmptyStateProps {
   action?: ReactNode;
 }
 
-export function EmptyState({ icon, title, description, action }: EmptyStateProps) {
+/**
+ * Пустое состояние. Раньше собиралось из пяти вложенных motion.div со
+ * ступенчатыми задержками — ради статичного блока это тянуло рантайм анимаций
+ * в каждую страницу со списком. Тот же эффект даёт CSS-анимация из конфига,
+ * которая вдобавок сама отключается при prefers-reduced-motion.
+ */
+export function EmptyState({
+  icon,
+  title,
+  description,
+  action,
+}: EmptyStateProps) {
   return (
-    <motion.div
-      className="flex flex-col items-center justify-center py-12 px-4 text-center"
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.5 }}
-    >
+    <div className="surface-panel flex animate-fade-in-up flex-col items-center justify-center px-6 py-14 text-center sm:py-20">
       {icon && (
-        <motion.div
-          className="mb-4 text-muted-foreground"
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+        <div
+          aria-hidden="true"
+          className="mb-5 grid h-20 w-20 place-items-center rounded-2xl bg-primary/10 text-primary"
         >
           {icon}
-        </motion.div>
+        </div>
       )}
-      <motion.h3
-        className="text-xl font-semibold mb-2"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-      >
-        {title}
-      </motion.h3>
+      <h3 className="mb-2 text-xl sm:text-2xl">{title}</h3>
       {description && (
-        <motion.p
-          className="text-muted-foreground mb-6 max-w-md"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
+        <p className="measure mb-7 text-sm text-muted-foreground sm:text-base">
           {description}
-        </motion.p>
+        </p>
       )}
-      {action && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          {action}
-        </motion.div>
-      )}
-    </motion.div>
+      {action}
+    </div>
   );
 }

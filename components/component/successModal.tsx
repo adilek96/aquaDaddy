@@ -11,11 +11,15 @@ import {
 import { useSettingStore } from "@/store/modalsStore";
 import Link from "next/link";
 import { CheckCircle, Edit, Home } from "lucide-react";
+import { useModalDismiss } from "@/lib/useModalDismiss";
 
 export default function SuccessModal() {
   const t = useTranslations("AquariumForm");
   const { isSuccessModalOpen, successModalData, closeSuccessModal } =
     useSettingStore();
+
+  // Хук вызываем до раннего return, иначе порядок хуков поедет
+  useModalDismiss(isSuccessModalOpen, closeSuccessModal);
 
   if (!isSuccessModalOpen || !successModalData) {
     return null;
@@ -23,16 +27,16 @@ export default function SuccessModal() {
 
   return (
     <div
-      className={`w-full h-full ${
+      className={`fixed inset-0 z-modal overflow-y-auto overscroll-contain bg-scrim/60 p-4 backdrop-blur-sm ${
         isSuccessModalOpen ? "flex" : "hidden"
-      } justify-center items-center fixed top-0 left-0 z-50 backdrop-blur-md transition-all duration-700 overscroll-none overflow-hidden`}
+      } items-start justify-center sm:items-center`}
     >
-      <Card className="w-[98%] max-w-md  mx-auto  backdrop-blur-md border border-muted bg-[#00EBFF]/5 dark:bg-black/30 z-50 mt-20 ">
+      <Card className="surface-panel-raised my-auto w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <CheckCircle className="w-16 h-16 text-green-500" />
+            <CheckCircle className="w-16 h-16 text-success" />
           </div>
-          <CardTitle className="text-2xl font-bold text-green-600">
+          <CardTitle className="text-2xl font-bold text-success">
             {t("successModalTitle")}
           </CardTitle>
           <CardDescription className="text-lg">
@@ -40,14 +44,14 @@ export default function SuccessModal() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-gray-600 text-center">
+          <p className="text-center text-muted-foreground">
             {t("successModalMessage")}
           </p>
 
           <div className="flex flex-col gap-3">
             <Link href={`/myTanks/${successModalData.aquariumId}`}>
               <Button
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                className="w-full"
                 onClick={closeSuccessModal}
               >
                 <Edit className="w-4 h-4 mr-2" />

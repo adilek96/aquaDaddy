@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { X } from "lucide-react";
 import { useMaintenanceAddStore } from "@/store/maintenanceAddStore";
+import { useModalDismiss } from "@/lib/useModalDismiss";
 
 const maintenanceTypes = [
   { value: "WATER_CHANGE", label: "maintenanceTypes.WATER_CHANGE" },
@@ -64,18 +65,21 @@ export default function MaintenanceAddModal() {
     closeModal();
   };
 
+  // Escape закрывает окно, фон под ним не прокручивается
+  useModalDismiss(isOpen, handleClose);
+
   if (!isOpen || !selectedDate) {
     return null;
   }
 
   return (
     <div
-      className={`w-full h-full ${
+      className={`fixed inset-0 z-modal overflow-y-auto overscroll-contain bg-scrim/60 p-4 backdrop-blur-sm ${
         isOpen ? "flex" : "hidden"
-      } justify-center items-center fixed top-0 left-0 z-50 backdrop-blur-md transition-all duration-700`}
+      } items-start justify-center sm:items-center`}
       style={{ overflow: "visible" }}
     >
-      <Card className="w-[98%] min-w-[300px] max-w-md mx-auto bg-[#01EBFF]/5  dark:bg-black/50  backdrop-blur-3xl border border-muted z-50 mt-20">
+      <Card className="surface-panel-raised my-auto w-full max-w-md">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             {tDetails("addMaintenance")}
@@ -129,7 +133,7 @@ export default function MaintenanceAddModal() {
                 {newMaintenance.type.map((type) => (
                   <div
                     key={type}
-                    className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs flex items-center gap-1"
+                    className="bg-primary/10 text-primary border border-primary/25 px-2 py-1 rounded-full font-semibold text-xs flex items-center gap-1"
                   >
                     {tDetails(
                       maintenanceTypes.find((t) => t.value === type)?.label ||
@@ -141,7 +145,7 @@ export default function MaintenanceAddModal() {
                           type: newMaintenance.type.filter((t) => t !== type),
                         })
                       }
-                      className="text-blue-600 hover:text-blue-800"
+                      className="text-primary hover:text-primary/70"
                     >
                       <X className="w-3 h-3" />
                     </button>

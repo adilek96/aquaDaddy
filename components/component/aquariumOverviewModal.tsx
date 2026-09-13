@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAquariumEditStore } from "@/store/aquariumEditStore";
+import { useModalDismiss } from "@/lib/useModalDismiss";
 
 export default function AquariumOverviewModal() {
   const t = useTranslations("AquariumForm");
@@ -58,18 +59,21 @@ export default function AquariumOverviewModal() {
     closeOverviewModal();
   };
 
+  // Escape закрывает окно, фон под ним не прокручивается
+  useModalDismiss(isOverviewModalOpen, handleClose);
+
   if (!isOverviewModalOpen || !selectedAquarium) {
     return null;
   }
 
   return (
     <div
-      className={`w-full h-full ${
+      className={`fixed inset-0 z-modal overflow-y-auto overscroll-contain bg-scrim/60 p-4 backdrop-blur-sm ${
         isOverviewModalOpen ? "flex" : "hidden"
-      } justify-center items-center fixed top-0 left-0 z-50 backdrop-blur-md transition-all duration-700`}
+      } items-start justify-center sm:items-center`}
       style={{ overflow: "visible" }}
     >
-      <Card className="w-[98%] min-w-[300px] max-w-md mx-auto bg-[#01EBFF]/5  dark:bg-black/50  backdrop-blur-3xl border border-muted z-50 mt-20">
+      <Card className="surface-panel-raised my-auto w-full max-w-md">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             {tDetails("editOverview")}

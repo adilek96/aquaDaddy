@@ -1,52 +1,43 @@
-import type { Metadata } from "next";
-import { Tektur } from "next/font/google";
-import { Montserrat } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Manrope } from "next/font/google";
 import "./globals.css";
-import { Libre_Franklin } from "next/font/google";
 import { Header } from "@/components/component/header";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
-import { Bg } from "@/components/animations/bg";
 import { ThemeProvider } from "next-themes";
-import Settings from "@/components/component/settings";
 import { SessionProvider } from "next-auth/react";
 import { cookies } from "next/headers";
 import { ToastProvider } from "@/components/ui/toast";
-import MaintenanceEditModal from "@/components/component/maintenanceEditModal";
-import MaintenanceAddModal from "@/components/component/maintenanceAddModal";
-import SuccessModal from "@/components/component/successModal";
-import WaterParamsModal from "@/components/component/waterParamsModal";
-import AquariumDescriptionModal from "@/components/component/aquariumDescriptionModal";
-import AquariumSpecificationsModal from "@/components/component/aquariumSpecificationsModal";
-import AquariumInhabitantsModal from "@/components/component/aquariumInhabitantsModal";
-import AquariumWaterParamsModal from "@/components/component/aquariumWaterParamsModal";
-import AquariumRemindersModal from "@/components/component/aquariumRemindersModal";
-import AquariumTimelineModal from "@/components/component/aquariumTimelineModal";
-import AquariumOverviewModal from "@/components/component/aquariumOverviewModal";
-import AquariumDeleteModal from "@/components/component/aquariumDeleteModal";
-import ImageFullscreenModal from "@/components/component/imageFullscreenModal";
+import GlobalModals from "@/components/component/globalModals";
+import Settings from "@/components/component/settings";
 
-const libre_franklin = Libre_Franklin({
-  subsets: ["latin"],
+/**
+ * Раньше подключались три семейства Google Fonts (Libre Franklin, Tektur,
+ * Montserrat) — три отдельных запроса за шрифтами на первой отрисовке.
+ * Manrope переменный, покрывает latin + latin-ext + cyrillic (нужен для ru/az)
+ * и закрывает и заголовки, и текст одним файлом.
+ */
+const manrope = Manrope({
+  subsets: ["latin", "latin-ext", "cyrillic"],
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
+  variable: "--font-manrope",
+  fallback: ["system-ui", "sans-serif"],
+  adjustFontFallback: true,
 });
 
-const bebas = Tektur({
-  weight: "400",
-  subsets: ["latin"],
-  style: "normal",
-  display: "swap",
-  variable: "--font-bebas",
-});
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  // Зум не запрещаем — это требование доступности
+  maximumScale: 5,
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F0F9FF" },
+    { media: "(prefers-color-scheme: dark)", color: "#0A1721" },
+  ],
+};
 
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  style: "normal",
-  display: "swap",
-  variable: "--font-montserrat",
-});
-
-// Функция для генерации мета-данных
 async function generateMetadata(): Promise<Metadata> {
   const cookieStore = await cookies();
   const locale = cookieStore.get("NEXT_LOCALE")?.value || "en";
@@ -56,6 +47,7 @@ async function generateMetadata(): Promise<Metadata> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://aquadaddy.app";
 
   return {
+    metadataBase: new URL(baseUrl),
     title: meta.title,
     description: meta.description,
     keywords: meta.keywords,
@@ -122,11 +114,9 @@ async function generateMetadata(): Promise<Metadata> {
       "application-name": "AquaDaddy",
       "apple-mobile-web-app-title": "AquaDaddy",
       "apple-mobile-web-app-capable": "yes",
-      "apple-mobile-web-app-status-bar-style": "default",
+      "apple-mobile-web-app-status-bar-style": "black-translucent",
       "mobile-web-app-capable": "yes",
-      "msapplication-TileColor": "#000000",
       "msapplication-config": "/browserconfig.xml",
-      "theme-color": "#000000",
       "format-detection": "telephone=no",
     },
   };
@@ -144,45 +134,41 @@ export default async function RootLayout({
   const messages = await getMessages({ locale });
 
   return (
-    <html suppressHydrationWarning data-scroll-behavior="smooth" lang={locale}>
-      <body
-        className={`${libre_franklin.className} ${bebas.variable} ${montserrat.variable}`}
-      >
+    <html
+      suppressHydrationWarning
+      data-scroll-behavior="smooth"
+      lang={locale}
+      className={manrope.variable}
+    >
+      <body className="app-backdrop min-h-dvh tap-fast">
         <ThemeProvider
           attribute="class"
           enableSystem={false}
           defaultTheme="light"
+          disableTransitionOnChange
         >
           <NextIntlClientProvider messages={messages} locale={locale}>
             <SessionProvider>
               <ToastProvider>
-                <main className="flex relative  w-full h-full min-h-screen flex-col items-center justify-center bg-transparent bg-opacity-0 ">
-                  <Header />
-                  <div className="w-full h-full z-40 flex flex-col items-center justify-center ">
-                    {children}
-                  </div>
+                <a href="#main-content" className="skip-link">
+                  Skip to content
+                </a>
 
-                <div
-                  className="w-[100vw] h-[100vh] fixed top-0 z-10 overflow-hidden bg-gradient-to-br from-blue-50 via-cyan-50 to-teal-50 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800"
-                  style={{ width: "100%", height: "100%" }}
-                >
-                  {/* <Bg /> */}
+                <div className="relative flex min-h-dvh w-full flex-col">
+                  <Header />
+
+                  {/* Фон — статичный CSS-градиент на body (.app-backdrop):
+                      никаких лишних DOM-узлов и канваса поверх контента */}
+                  <main
+                    id="main-content"
+                    className="app-page relative z-raised w-full flex-1"
+                  >
+                    {children}
+                  </main>
                 </div>
+
                 <Settings />
-                <MaintenanceEditModal />
-                <MaintenanceAddModal />
-                <SuccessModal />
-                <WaterParamsModal />
-                <AquariumDescriptionModal />
-                <AquariumSpecificationsModal />
-                <AquariumInhabitantsModal />
-                <AquariumWaterParamsModal />
-                <AquariumRemindersModal />
-                <AquariumTimelineModal />
-                <AquariumOverviewModal />
-                <AquariumDeleteModal />
-                <ImageFullscreenModal />
-              </main>
+                <GlobalModals />
               </ToastProvider>
             </SessionProvider>
           </NextIntlClientProvider>

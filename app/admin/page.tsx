@@ -45,17 +45,17 @@ export default async function AdminDashboard() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-white">Admin Dashboard</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">Admin Dashboard</h1>
         <p className="text-slate-400 mt-2">Manage the platform and monitor community activity.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 lg:gap-6">
         {cards.map((card) => (
-          <div key={card.label} className="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+          <div key={card.label} className="rounded-2xl border border-slate-800 bg-slate-900 p-4 sm:p-6">
             <div className="flex items-center justify-between mb-4">
               <card.icon className={card.color} size={24} />
             </div>
-            <div className="text-2xl font-bold text-white">{card.value}</div>
+            <div className="text-2xl font-bold text-white" data-numeric>{card.value}</div>
             <div className="text-sm text-slate-400 mt-1">{card.label}</div>
           </div>
         ))}

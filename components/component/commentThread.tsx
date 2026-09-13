@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { ChevronDown, ChevronUp, MessageCircle, Trash2, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { FiUser, FiTrash2, FiMessageCircle, FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { useTranslations } from "next-intl";
 
 interface CommentThreadProps {
@@ -58,7 +58,7 @@ export default function CommentThread({
         <Avatar className="w-10 h-10 flex-shrink-0">
           <AvatarImage src={comment.user.image || ""} />
           <AvatarFallback>
-            <FiUser />
+            <User />
           </AvatarFallback>
         </Avatar>
         <div className="flex-1 min-w-0">
@@ -71,10 +71,10 @@ export default function CommentThread({
               {currentUserId === comment.userId && (
                 <button
                   onClick={handleDelete}
-                  className="text-red-500 hover:text-red-700 transition-colors"
+                  className="text-destructive transition-colors hover:text-destructive/70"
                   aria-label={t("deleteComment")}
                 >
-                  <FiTrash2 className="w-4 h-4" />
+                  <Trash2 className="w-4 h-4" />
                 </button>
               )}
             </div>
@@ -88,7 +88,7 @@ export default function CommentThread({
                 onClick={() => setIsReplying(!isReplying)}
                 className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
               >
-                <FiMessageCircle className="w-3 h-3" />
+                <MessageCircle className="w-3 h-3" />
                 {t("reply")}
               </button>
             )}
@@ -99,12 +99,12 @@ export default function CommentThread({
               >
                 {showReplies ? (
                   <>
-                    <FiChevronUp className="w-3 h-3" />
+                    <ChevronUp className="w-3 h-3" />
                     {t("hideReplies")} ({comment.replies.length})
                   </>
                 ) : (
                   <>
-                    <FiChevronDown className="w-3 h-3" />
+                    <ChevronDown className="w-3 h-3" />
                     {t("showReplies")} ({comment.replies.length})
                   </>
                 )}
@@ -142,7 +142,7 @@ export default function CommentThread({
                     size="sm"
                     onClick={handleReply}
                     disabled={submitting || !replyText.trim()}
-                    className="bg-green-600 hover:bg-green-700 text-white"
+                    className=""
                   >
                     {submitting ? t("submitting") : t("reply")}
                   </Button>

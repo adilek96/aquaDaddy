@@ -1,14 +1,14 @@
 "use client";
 import React from "react";
 import {
-  FaTint,
-  FaThermometerHalf,
-  FaFlask,
-  FaWater,
-  FaLeaf,
-  FaCircle,
-  FaAtom,
-} from "react-icons/fa";
+  Atom,
+  Circle,
+  Droplet,
+  FlaskConical,
+  Leaf,
+  Thermometer,
+  Waves,
+} from "lucide-react";
 
 interface WaterParameter {
   id?: string;
@@ -57,7 +57,7 @@ const WaterParameterCard = ({
     switch (key) {
       case "pH":
         label = "pH";
-        icon = <FaTint className="text-blue-500 w-5 h-5" />;
+        icon = <Droplet className="text-primary w-5 h-5" />;
         break;
       case "temperatureC":
         if (temperatureScale === "fahrenheit") {
@@ -67,59 +67,59 @@ const WaterParameterCard = ({
           displayValue = `${value}°C`;
           label = "Температура (°C)";
         }
-        icon = <FaThermometerHalf className="text-red-500 w-5 h-5" />;
+        icon = <Thermometer className="text-destructive w-5 h-5" />;
         break;
       case "KH":
         label = "KH";
-        icon = <FaAtom className="text-yellow-500 w-5 h-5" />;
+        icon = <Atom className="text-warning w-5 h-5" />;
         break;
       case "GH":
         label = "GH";
-        icon = <FaAtom className="text-yellow-700 w-5 h-5" />;
+        icon = <Atom className="text-warning w-5 h-5" />;
         break;
       case "NH3":
         label = "NH3";
-        icon = <FaFlask className="text-green-600 w-5 h-5" />;
+        icon = <FlaskConical className="text-success w-5 h-5" />;
         break;
       case "NH4":
         label = "NH4";
-        icon = <FaFlask className="text-green-700 w-5 h-5" />;
+        icon = <FlaskConical className="text-success w-5 h-5" />;
         break;
       case "NO2":
         label = "NO2";
-        icon = <FaFlask className="text-purple-500 w-5 h-5" />;
+        icon = <FlaskConical className="text-purple-500 w-5 h-5" />;
         break;
       case "NO3":
         label = "NO3";
-        icon = <FaFlask className="text-purple-700 w-5 h-5" />;
+        icon = <FlaskConical className="text-purple-700 w-5 h-5" />;
         break;
       case "PO4":
         label = "PO4";
-        icon = <FaFlask className="text-pink-500 w-5 h-5" />;
+        icon = <FlaskConical className="text-pink-500 w-5 h-5" />;
         break;
       case "K":
         label = "K";
-        icon = <FaLeaf className="text-green-500 w-5 h-5" />;
+        icon = <Leaf className="text-success w-5 h-5" />;
         break;
       case "Fe":
         label = "Fe";
-        icon = <FaCircle className="text-orange-500 w-5 h-5" />;
+        icon = <Circle className="text-orange-500 w-5 h-5" />;
         break;
       case "Mg":
         label = "Mg";
-        icon = <FaCircle className="text-blue-400 w-5 h-5" />;
+        icon = <Circle className="text-secondary w-5 h-5" />;
         break;
       case "Ca":
         label = "Ca";
-        icon = <FaCircle className="text-gray-400 w-5 h-5" />;
+        icon = <Circle className="text-muted-foreground w-5 h-5" />;
         break;
       case "salinity":
         label = "Соленость";
-        icon = <FaWater className="text-cyan-500 w-5 h-5" />;
+        icon = <Waves className="text-cyan-500 w-5 h-5" />;
         break;
       default:
         label = key;
-        icon = <FaFlask className="text-muted-foreground w-5 h-5" />;
+        icon = <FlaskConical className="text-muted-foreground w-5 h-5" />;
     }
 
     return { label, icon, displayValue };
@@ -139,8 +139,8 @@ const WaterParameterCard = ({
 
   if (validParameters.length === 0) {
     return (
-      <div className="bg-gray-50 p-4 rounded-lg">
-        <p className="text-gray-500 text-center">
+      <div className="rounded-lg border border-border bg-muted/50 p-4">
+        <p className="text-center text-muted-foreground">
           Нет данных о параметрах воды
         </p>
       </div>
@@ -148,7 +148,7 @@ const WaterParameterCard = ({
   }
 
   return (
-    <div className="bg-gray-50 p-4 rounded-lg">
+    <div className="rounded-lg border border-border bg-muted/50 p-4">
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
         {validParameters.map(([key, value]) => {
           const { label, icon, displayValue } = getParameterConfig(key, value);
@@ -156,11 +156,11 @@ const WaterParameterCard = ({
           return (
             <div
               key={key}
-              className="flex flex-col items-center justify-center bg-white hover:bg-green-500/40 border border-gray-200 rounded-xl shadow-sm p-3 min-w-0 transition-colors"
+              className="flex flex-col items-center justify-center bg-card hover:border-primary/40 border border-gray-200 rounded-xl shadow-sm p-3 min-w-0 transition-colors"
             >
               <span className="mb-1">{icon}</span>
               <span
-                className="text-xs text-gray-600 text-center mb-0.5 truncate w-full"
+                className="text-xs text-muted-foreground text-center mb-0.5 truncate w-full"
                 title={label}
               >
                 {label}
@@ -173,7 +173,7 @@ const WaterParameterCard = ({
         })}
       </div>
       {showDate && parameter.recordedAt && (
-        <div className="text-xs text-gray-500 mt-3 pt-2 border-t border-gray-200">
+        <div className="text-xs text-muted-foreground mt-3 pt-2 border-t border-bory-200">
           <strong>Записано: </strong>
           {new Date(parameter.recordedAt).toLocaleDateString("ru-RU")}
         </div>
@@ -192,8 +192,8 @@ export default function WaterParametersCards({
 
   if (parametersArray.length === 0) {
     return (
-      <div className={`bg-gray-50 p-4 rounded-lg ${className}`}>
-        <p className="text-gray-500 text-center">
+      <div className={`rounded-lg border border-border bg-muted/50 p-4 ${className}`}>
+        <p className="text-center text-muted-foreground">
           Нет данных о параметрах воды
         </p>
       </div>

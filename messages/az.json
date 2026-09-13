@@ -16,6 +16,14 @@
       "twitterImageAlt": "AquaDaddy - Akvarium İdarəetmə Platforması"
     },
     "HomePage": {
+      "heroTitle": "Akvariumlarınız nəzarət altında",
+      "heroSubtitle": "Su parametrlərini izləyin, baxımı planlaşdırın və akvariumlarınızı icma ilə paylaşın.",
+      "heroCta": "Akvariumlarım",
+      "heroCtaSecondary": "İcmanı kəşf et",
+      "statAquariums": "Akvarium",
+      "statUpcoming": "Yaxın baxım",
+      "statSpecies": "Ensiklopediyada növ",
+      "sectionShortcuts": "Növbəti addım",
       "discovery-title": "Kəşf et",
       "aquariums-title": "Mənim akvariumlarım",
       "wiki-title": "Ensiklopediya",
@@ -91,12 +99,20 @@
       "temp": "Temperatur şkalalsı"
     },
     "Header": {
+      "home": "Ana səhifə",
+      "nav": "Əsas naviqasiya",
+      "openMenu": "Menyunu aç",
+      "closeMenu": "Menyunu bağla",
+      "back": "Geri",
+      "brand": "AquaDaddy",
       "settings": "Ayarlar",
       "signIn": "Giriş",
       "logout": "Çıxış",
       "profile": "Profil"
     },
     "Profile": {
+      "edit": "Redaktə et",
+      "cancel": "Ləğv et",
       "title": "Profil",
       "subtitle": "Şəxsi məlumatlarınızı yeniləyin",
       "username": "İstifadəçi adı",
@@ -342,6 +358,7 @@
       "loading": "Yüklənir..."
     },
     "Discovery": {
+      "sortBy": "Sıralama",
       "title": "Kəşf et",
       "subtitle": "İcmadan heyrətamiz akvariumları kəşf edin",
       "searchPlaceholder": "Akvarium axtar...",

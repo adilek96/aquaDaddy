@@ -1,100 +1,151 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { motion } from "motion/react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { Search, SlidersHorizontal, Loader2 } from "lucide-react";
 import { fetchPublicAquariums, SortType } from "@/app/actions/discoveryFetch";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import LoadingBlock from "@/components/ui/loadingBlock";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { CardSkeletonGrid } from "@/components/ui/card-skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import DiscoveryCard from "@/components/component/discoveryCard";
-import { FiSearch, FiFilter } from "react-icons/fi";
+
+const PAGE_SIZE = 12;
 
 export default function DiscoveryPage() {
   const t = useTranslations("Discovery");
   const [aquariums, setAquariums] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  // Отдельный флаг для подгрузки: раньше «Load More» поднимал общий loading,
+  // и условие (loading && page === 1) прятало уже показанный список —
+  // на экране вместо карточек появлялась заглушка «Loading...»
+  const [loadingMore, setLoadingMore] = useState(false);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [sort, setSort] = useState<SortType>("newest");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
 
+  // Один запрос на паузу в наборе вместо запроса на каждую букву
   useEffect(() => {
-    loadAquariums();
-  }, [search, sort, typeFilter]);
+    const id = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(id);
+  }, [search]);
 
-  const loadAquariums = async (pageNum = 1) => {
+  const loadFirstPage = useCallback(async () => {
     setLoading(true);
     try {
       const result = await fetchPublicAquariums({
-        search,
+        search: debouncedSearch,
         sort,
         type: typeFilter,
-        page: pageNum,
-        limit: 12,
+        page: 1,
+        limit: PAGE_SIZE,
       });
-      
-      if (pageNum === 1) {
-        setAquariums(result.aquariums);
-      } else {
-        setAquariums((prev) => [...prev, ...result.aquariums]);
-      }
-      
+      setAquariums(result.aquariums);
       setHasMore(result.hasMore);
-      setPage(pageNum);
+      setPage(1);
     } catch (error) {
       console.error("Error loading aquariums:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [debouncedSearch, sort, typeFilter]);
 
-  const handleLoadMore = () => {
-    loadAquariums(page + 1);
+  useEffect(() => {
+    loadFirstPage();
+  }, [loadFirstPage]);
+
+  const handleLoadMore = async () => {
+    const nextPage = page + 1;
+    setLoadingMore(true);
+    try {
+      const result = await fetchPublicAquariums({
+        search: debouncedSearch,
+        sort,
+        type: typeFilter,
+        page: nextPage,
+        limit: PAGE_SIZE,
+      });
+      setAquariums((prev) => [...prev, ...result.aquariums]);
+      setHasMore(result.hasMore);
+      setPage(nextPage);
+    } catch (error) {
+      console.error("Error loading aquariums:", error);
+    } finally {
+      setLoadingMore(false);
+    }
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 font-bebas">
-          {t("title")}
-        </h1>
-        <p className="text-muted-foreground mb-8 text-lg">
+    <div className="app-container py-6 sm:py-10">
+      <header className="mb-6 animate-fade-in-up sm:mb-8">
+        <h1 className="mb-2">{t("title")}</h1>
+        <p className="measure text-sm text-muted-foreground sm:text-base">
           {t("subtitle")}
         </p>
+      </header>
 
-        {/* Фильтры */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-8">
-          <div className="relative flex-1">
-            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder={t("searchPlaceholder")}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-10"
-            />
-          </div>
+      {/* Фильтры: столбик на телефоне, два селекта в ряд от sm,
+          вся панель в одну строку от lg */}
+      <div className="mb-6 flex flex-col gap-3 sm:mb-8 lg:flex-row">
+        <div className="relative flex-1">
+          <Search
+            className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden="true"
+          />
+          <label htmlFor="discovery-search" className="sr-only">
+            {t("searchPlaceholder")}
+          </label>
+          <Input
+            id="discovery-search"
+            type="search"
+            placeholder={t("searchPlaceholder")}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:flex lg:shrink-0">
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-full sm:w-48">
+            <SelectTrigger
+              className="h-11 w-full lg:w-48"
+              aria-label={t("filterByType")}
+            >
               <SelectValue placeholder={t("filterByType")} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{t("allTypes")}</SelectItem>
-              <SelectItem value="freshwater">{t("aquariumType.freshwater")}</SelectItem>
-              <SelectItem value="saltwater">{t("aquariumType.saltwater")}</SelectItem>
-              <SelectItem value="paludarium">{t("aquariumType.paludarium")}</SelectItem>
+              <SelectItem value="freshwater">
+                {t("aquariumType.freshwater")}
+              </SelectItem>
+              <SelectItem value="saltwater">
+                {t("aquariumType.saltwater")}
+              </SelectItem>
+              <SelectItem value="paludarium">
+                {t("aquariumType.paludarium")}
+              </SelectItem>
             </SelectContent>
           </Select>
-          <Select value={sort} onValueChange={(value) => setSort(value as SortType)}>
-            <SelectTrigger className="w-full sm:w-48">
-              <FiFilter className="mr-2" />
+
+          <Select
+            value={sort}
+            onValueChange={(value) => setSort(value as SortType)}
+          >
+            <SelectTrigger className="h-11 w-full lg:w-48" aria-label={t("sortBy")}>
+              <SlidersHorizontal
+                className="mr-2 h-4 w-4 shrink-0 text-muted-foreground"
+                aria-hidden="true"
+              />
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -103,45 +154,49 @@ export default function DiscoveryPage() {
             </SelectContent>
           </Select>
         </div>
+      </div>
 
-        {/* Список аквариумов */}
-        {loading && page === 1 ? (
-          <LoadingBlock translate={t("loading")} />
-        ) : aquariums.length > 0 ? (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {aquariums.map((aquarium, index) => (
-                <motion.div
-                  key={aquarium.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.05 }}
-                >
-                  <DiscoveryCard aquarium={aquarium} />
-                </motion.div>
-              ))}
+      {loading ? (
+        <CardSkeletonGrid count={PAGE_SIZE} label={t("loading")} />
+      ) : aquariums.length > 0 ? (
+        <>
+          <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:gap-5">
+            {aquariums.map((aquarium, index) => (
+              <li
+                key={aquarium.id}
+                className="animate-fade-in-up"
+                style={{
+                  animationDelay: `${Math.min((index % PAGE_SIZE) * 40, 320)}ms`,
+                }}
+              >
+                <DiscoveryCard aquarium={aquarium} />
+              </li>
+            ))}
+          </ul>
+
+          {hasMore && (
+            <div className="mt-8 flex justify-center sm:mt-10">
+              <Button
+                onClick={handleLoadMore}
+                disabled={loadingMore}
+                size="lg"
+                variant="outline"
+              >
+                {loadingMore && (
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                )}
+                {loadingMore ? t("loading") : t("loadMore")}
+              </Button>
             </div>
-
-            {hasMore && (
-              <div className="flex justify-center mt-8">
-                <button
-                  onClick={handleLoadMore}
-                  disabled={loading}
-                  className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
-                >
-                  {loading ? t("loading") : t("loadMore")}
-                </button>
-              </div>
-            )}
-          </>
-        ) : (
-          <EmptyState
-            icon={<FiSearch className="w-16 h-16" />}
-            title={t("noAquariums")}
-            description={t("noAquariumsDescription")}
-          />
-        )}
-      </motion.div>
+          )}
+        </>
+      ) : (
+        <EmptyState
+          icon={<Search className="h-10 w-10" />}
+          title={t("noAquariums")}
+          description={t("noAquariumsDescription")}
+        />
+      )}
     </div>
   );
 }

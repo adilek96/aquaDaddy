@@ -777,8 +777,8 @@ export default function AquariumAddingForm() {
               formState.message.includes("successfully") ||
               formState.message.includes("успешно") ||
               formState.message.includes("uğurla")
-                ? "text-green-600"
-                : "text-red-600"
+                ? "text-success"
+                : "text-destructive"
             }`}
           >
             {formState.message}

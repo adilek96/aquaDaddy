@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
+import { ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { FaChevronLeft, FaChevronRight, FaExpand } from "react-icons/fa";
 import { useTranslations } from "next-intl";
 import { useImageFullscreenStore } from "@/store/imageFullscreenStore";
 import Image from "next/image";
@@ -94,14 +94,14 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
                 className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors"
                 aria-label={t("previousImage")}
               >
-                <FaChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 onClick={nextImage}
                 className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors"
                 aria-label={t("nextImage")}
               >
-                <FaChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-4 h-4" />
               </button>
             </>
           )}
@@ -112,7 +112,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
             className="absolute top-2 right-2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors"
             aria-label={t("fullscreen")}
           >
-            <FaExpand className="w-4 h-4" />
+            <Maximize2 className="w-4 h-4" />
           </button>
 
           {/* Счетчик изображений */}

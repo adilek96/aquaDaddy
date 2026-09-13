@@ -1,86 +1,71 @@
 "use client";
-import React, { SVGProps } from "react";
-import { Card, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import ThemeToggle from "./themeToggle";
 import AnimationToggle from "./animationToggle";
 import { useSettingStore } from "@/store/modalsStore";
 import { Button } from "../ui/button";
-import { DropdownMenuSeparator } from "../ui/dropdown-menu";
 import MeasurementToggle from "./measurementToggle";
 import TempToggle from "./tempToggle";
+import { useModalDismiss } from "@/lib/useModalDismiss";
 
 export default function Settings() {
   const { isOpen, setIsOpen } = useSettingStore();
   const t = useTranslations("Settings");
+
+  // setIsOpen — переключатель, при открытом окне он его закрывает
+  useModalDismiss(isOpen, setIsOpen);
   return (
     <div
-      className={`w-full h-full ${
+      className={`fixed inset-0 z-modal overflow-y-auto overscroll-contain bg-scrim/60 p-4 backdrop-blur-sm ${
         isOpen ? "flex" : "hidden"
-      } justify-center items-center fixed top-0 left-0 z-50 backdrop-blur-md transition-all duration-700 overflow-hidden`}
+      } items-start justify-center sm:items-center`}
+      // Клик по подложке закрывает окно — раньше выйти можно было
+      // только крестиком в углу
+      onClick={setIsOpen}
+      role="presentation"
     >
-      <Card className="w-[98%] min-w-[300px] max-w-md mx-auto bg-[#01EBFF]/5  dark:bg-black/50  backdrop-blur-3xl border border-muted z-50 mt-20">
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-          <br />
-          <div className="flex  w-full justify-between items-center ">
-            <CardDescription>{t("theme")}</CardDescription>
-            <ThemeToggle />
-          </div>
-          <DropdownMenuSeparator />
-          <div className="flex  w-full justify-between items-center ">
-            <CardDescription>{t("animate")}</CardDescription>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="settings-title"
+        onClick={(event) => event.stopPropagation()}
+        className="surface-panel-raised relative my-auto w-full max-w-md animate-scale-in p-5 sm:p-6"
+      >
+        <div className="mb-5 flex items-start justify-between gap-3">
+          <h2 id="settings-title" className="text-xl sm:text-2xl">
+            {t("title")}
+          </h2>
+          <Button
+            onClick={setIsOpen}
+            variant="ghost"
+            size="icon-sm"
+            aria-label={t("title")}
+            className="-mr-1 -mt-1 shrink-0"
+          >
+            <X className="h-5 w-5" aria-hidden="true" />
+          </Button>
+        </div>
 
-            <AnimationToggle />
-          </div>
-          <DropdownMenuSeparator />
-          <div className="flex  w-full justify-between items-center ">
-            <CardDescription>{t("measurement")}</CardDescription>
-
-            <MeasurementToggle />
-          </div>
-          <DropdownMenuSeparator />
-          <div className="flex  w-full justify-between items-center ">
-            <CardDescription>{t("temp")}</CardDescription>
-
-            <TempToggle />
-          </div>
-        </CardHeader>
-        <Button
-          onClick={setIsOpen}
-          className="absolute top-3 right-2 hover:bg-red-300"
-          variant="ghost"
-          size="icon"
-        >
-          <Close />
-          <span className="sr-only">Close</span>
-        </Button>
-      </Card>
+        {/* Каждая настройка — строка «подпись / управление» с разделителями
+            между строками, а не подряд идущие CardDescription в CardHeader */}
+        <dl className="divide-y divide-border">
+          {[
+            { label: t("theme"), control: <ThemeToggle /> },
+            { label: t("animate"), control: <AnimationToggle /> },
+            { label: t("measurement"), control: <MeasurementToggle /> },
+            { label: t("temp"), control: <TempToggle /> },
+          ].map(({ label, control }) => (
+            <div
+              key={label}
+              className="flex min-h-[56px] items-center justify-between gap-4 py-1"
+            >
+              <dt className="text-sm font-medium">{label}</dt>
+              <dd className="shrink-0">{control}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
     </div>
-  );
-}
-
-function Close(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="27"
-      height="27"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        d="M6 18 17.94 6M18 18 6.06 6"
-      />
-    </svg>
   );
 }

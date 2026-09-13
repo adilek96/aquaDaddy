@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
+import { ArrowLeft, MapPin, Star, Trash2, User } from "lucide-react";
 import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
@@ -15,7 +16,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ImageSlider from "@/components/component/imageSlider";
 import CommentThread from "@/components/component/commentThread";
 import Link from "next/link";
-import { FiStar, FiUser, FiArrowLeft, FiTrash2, FiMapPin } from "react-icons/fi";
 import { useToast } from "@/components/ui/toast";
 import { useRouter } from "next/navigation";
 
@@ -218,7 +218,7 @@ export default function DiscoveryDetailPage({
   const canRate = session?.user?.id && aquarium.userId !== session.user.id;
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="app-container max-w-6xl py-6 sm:py-10">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -229,28 +229,28 @@ export default function DiscoveryDetailPage({
           href="/discovery"
           className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"
         >
-          <FiArrowLeft />
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           {t("backToDiscovery")}
         </Link>
 
         {/* Заголовок и автор */}
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-bold mb-2 font-bebas">
+            <h1 className="mb-2">
               {aquarium.name}
             </h1>
             <div className="flex items-center gap-3">
               <Avatar className="w-8 h-8">
                 <AvatarImage src={aquarium.user.image || ""} />
                 <AvatarFallback>
-                  <FiUser />
+                  <User className="h-4 w-4" aria-hidden="true" />
                 </AvatarFallback>
               </Avatar>
               <div>
                 <p className="font-medium">{aquarium.user.name || "Anonymous"}</p>
                 {aquarium.user.country && (
                   <p className="text-sm text-muted-foreground flex items-center gap-1">
-                    <FiMapPin className="w-3 h-3" />
+                    <MapPin className="w-3 h-3" />
                     {aquarium.user.country}
                   </p>
                 )}
@@ -259,10 +259,10 @@ export default function DiscoveryDetailPage({
           </div>
 
           {/* Средний рейтинг */}
-          <Card className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-950 dark:to-orange-950 border-yellow-200 dark:border-yellow-800">
+          <Card className="w-full border-warning/30 bg-warning/10 sm:w-auto">
             <CardContent className="p-4 text-center">
               <div className="flex items-center justify-center gap-2 mb-1">
-                <FiStar className="w-6 h-6 text-yellow-500 fill-yellow-500" />
+                <Star className="h-6 w-6 fill-warning text-warning" />
                 <span className="text-3xl font-bold">
                   {aquarium.averageRating > 0
                     ? aquarium.averageRating.toFixed(1)
@@ -361,7 +361,7 @@ export default function DiscoveryDetailPage({
                       disabled={submittingRating}
                       className={`w-10 h-10 rounded-lg border-2 transition-all ${
                         (hoveredRating !== null ? value <= hoveredRating : value <= (userRating || 0))
-                          ? "bg-yellow-500 border-yellow-500 text-white"
+                          ? "bg-warning border-warning text-warning-foreground"
                           : "border-muted hover:border-yellow-500"
                       } disabled:opacity-50`}
                     >
@@ -413,7 +413,7 @@ export default function DiscoveryDetailPage({
                   <Button
                     onClick={() => handleAddComment()}
                     disabled={submittingComment || !commentText.trim()}
-                    className="bg-green-600 hover:bg-green-700 text-white"
+                    className=""
                   >
                     {submittingComment ? t("submitting") : t("addComment")}
                   </Button>

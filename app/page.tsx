@@ -9,9 +9,5 @@ export async function generateMetadata() {
 }
 
 export default function Home() {
-  return (
-    <div className="z-40">
-      <MainPage />
-    </div>
-  );
+  return <MainPage />;
 }

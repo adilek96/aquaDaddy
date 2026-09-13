@@ -11,7 +11,17 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <input
         type={type}
         className={cn(
-          "flex h-10 w-full rounded-md border border-input   bg-transparent/10 px-3 py-2 text-sm ring-offset-green-300/60  file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:green-300/60 focus-visible:bg-green-300/60  focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+          // h-11 = 44px под палец; text-base на мобильных, иначе iOS зумит
+          // страницу при фокусе на поле с шрифтом меньше 16px
+          "flex h-11 w-full rounded-lg border border-input bg-background/70 px-3.5 py-2",
+          "text-base sm:text-sm",
+          "shadow-sm backdrop-blur-sm transition-[border-color,box-shadow,background-color] duration-fast",
+          "file:border-0 file:bg-transparent file:text-sm file:font-medium",
+          "placeholder:text-muted-foreground",
+          "hover:border-primary/40",
+          "focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
+          "disabled:cursor-not-allowed disabled:opacity-50",
+          "aria-[invalid=true]:border-destructive aria-[invalid=true]:ring-destructive/30",
           className
         )}
         ref={ref}

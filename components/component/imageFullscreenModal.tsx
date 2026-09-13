@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { FaChevronLeft, FaChevronRight, FaTimes } from "react-icons/fa";
 import { useTranslations } from "next-intl";
 import { useImageFullscreenStore } from "@/store/imageFullscreenStore";
 import Image from "next/image";
@@ -78,7 +78,7 @@ const ImageFullscreenModal: React.FC = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 bg-[#01EBFF]/5 dark:bg-black/50 backdrop-blur-3xl flex items-center justify-center p-8"
+        className="fixed inset-0 z-modal flex items-center justify-center bg-scrim/90 p-4 backdrop-blur-md sm:p-8"
         onClick={closeFullscreen}
       >
         <div className="relative max-w-4xl max-h-[80vh] flex items-center justify-center">
@@ -88,7 +88,7 @@ const ImageFullscreenModal: React.FC = () => {
             className="absolute top-4 right-4 z-10 p-3 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors"
             aria-label={t("close")}
           >
-            <FaTimes className="w-6 h-6" />
+            <X className="w-6 h-6" />
           </button>
 
           {/* Изображение */}
@@ -125,14 +125,14 @@ const ImageFullscreenModal: React.FC = () => {
                   className="absolute left-4 top-1/2 -translate-y-1/2 p-4 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors z-10"
                   aria-label={t("previousImage")}
                 >
-                  <FaChevronLeft className="w-8 h-8" />
+                  <ChevronLeft className="w-8 h-8" />
                 </button>
                 <button
                   onClick={nextImage}
                   className="absolute right-4 top-1/2 -translate-y-1/2 p-4 bg-black/50 hover:bg-black/70 text-white rounded-full transition-colors z-10"
                   aria-label={t("nextImage")}
                 >
-                  <FaChevronRight className="w-8 h-8" />
+                  <ChevronRight className="w-8 h-8" />
                 </button>
               </>
             )}

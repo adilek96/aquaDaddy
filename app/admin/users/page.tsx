@@ -18,12 +18,12 @@ export default async function AdminUsersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-white font-mono uppercase tracking-tighter">User Directory</h1>
+        <h1 className="font-mono text-xl font-bold uppercase tracking-tight text-white sm:text-2xl">User Directory</h1>
         <p className="text-slate-400 mt-2">Manage user accounts and monitor platform growth metrics.</p>
       </div>
 
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
-        <table className="w-full text-left border-collapse">
+      <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-900 shadow-2xl">
+        <table className="w-full min-w-[720px] border-collapse text-left">
           <thead>
             <tr className="border-b border-slate-800 bg-slate-950/40">
               <th className="p-4 font-semibold text-slate-400 uppercase text-[10px] tracking-widest leading-none">Avatar / User</th>

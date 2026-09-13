@@ -1,8 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { FiCheckCircle, FiXCircle, FiInfo, FiAlertTriangle, FiX } from "react-icons/fi";
+import { AlertTriangle, CheckCircle2, Info, X, XCircle } from "lucide-react";
 
 type ToastType = "success" | "error" | "info" | "warning";
 
@@ -10,55 +9,110 @@ interface Toast {
   id: string;
   message: string;
   type: ToastType;
+  leaving?: boolean;
 }
 
 interface ToastContextType {
   showToast: (message: string, type?: ToastType) => void;
 }
 
-const ToastContext = React.createContext<ToastContextType | undefined>(undefined);
+const ToastContext = React.createContext<ToastContextType | undefined>(
+  undefined
+);
 
+const VISIBLE_MS = 5000;
+const EXIT_MS = 180;
+
+/**
+ * Тосты. Раньше провайдер тянул motion/AnimatePresence, а так как он живёт в
+ * корневом layout, рантайм анимаций попадал в бандл каждой страницы — включая
+ * те, где ни одного тоста не показывается. Появление и уход теперь на CSS.
+ *
+ * Заодно добавлен aria-live: без него сообщение вообще не доходило до
+ * скринридера, а таймеры автозакрытия не очищались при размонтировании.
+ */
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = React.useState<Toast[]>([]);
+  const timers = React.useRef<Map<string, ReturnType<typeof setTimeout>[]>>(
+    new Map()
+  );
 
-  const showToast = React.useCallback((message: string, type: ToastType = "info") => {
-    const id = Math.random().toString(36).substring(7);
-    setToasts((prev) => [...prev, { id, message, type }]);
-
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((toast) => toast.id !== id));
-    }, 5000);
+  const clearTimers = React.useCallback((id: string) => {
+    timers.current.get(id)?.forEach(clearTimeout);
+    timers.current.delete(id);
   }, []);
 
-  const removeToast = (id: string) => {
-    setToasts((prev) => prev.filter((toast) => toast.id !== id));
-  };
+  const removeToast = React.useCallback(
+    (id: string) => {
+      clearTimers(id);
+      // Сначала помечаем уходящим — CSS проигрывает исчезновение,
+      // и только потом убираем из списка
+      setToasts((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, leaving: true } : t))
+      );
+      const t = setTimeout(
+        () => setToasts((prev) => prev.filter((x) => x.id !== id)),
+        EXIT_MS
+      );
+      timers.current.set(id, [t]);
+    },
+    [clearTimers]
+  );
+
+  const showToast = React.useCallback(
+    (message: string, type: ToastType = "info") => {
+      const id = Math.random().toString(36).substring(2, 9);
+      setToasts((prev) => [...prev, { id, message, type }]);
+      const t = setTimeout(() => removeToast(id), VISIBLE_MS);
+      timers.current.set(id, [t]);
+    },
+    [removeToast]
+  );
+
+  // Снимаем все таймеры при размонтировании провайдера
+  React.useEffect(() => {
+    const map = timers.current;
+    return () => {
+      map.forEach((list) => list.forEach(clearTimeout));
+      map.clear();
+    };
+  }, []);
+
+  const value = React.useMemo(() => ({ showToast }), [showToast]);
 
   return (
-    <ToastContext.Provider value={{ showToast }}>
+    <ToastContext.Provider value={value}>
       {children}
-      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm">
-        <AnimatePresence>
-          {toasts.map((toast) => (
-            <motion.div
-              key={toast.id}
-              initial={{ opacity: 0, y: 50, scale: 0.3 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
-              className={`flex items-center gap-3 p-4 rounded-lg shadow-lg backdrop-blur-md border ${getToastStyles(toast.type)}`}
+
+      <div
+        // role=status + aria-live: сообщение зачитывается, но фокус не крадётся
+        role="status"
+        aria-live="polite"
+        aria-atomic="false"
+        className="pointer-events-none fixed inset-x-4 bottom-4 z-toast flex flex-col gap-2 sm:inset-x-auto sm:right-4 sm:max-w-sm"
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      >
+        {toasts.map((toast) => (
+          <div
+            key={toast.id}
+            className={`pointer-events-auto flex items-start gap-3 rounded-xl border p-4 shadow-raised backdrop-blur-xl ${getToastStyles(
+              toast.type
+            )} ${toast.leaving ? "animate-out fade-out zoom-out-95" : "animate-fade-in-up"}`}
+          >
+            {getToastIcon(toast.type)}
+            <p className="flex-1 text-sm font-semibold text-foreground">
+              {toast.message}
+            </p>
+            <button
+              type="button"
+              onClick={() => removeToast(toast.id)}
+              className="-m-1.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg opacity-70 transition-opacity hover:opacity-100"
+              aria-label="Close"
             >
-              {getToastIcon(toast.type)}
-              <p className="flex-1 text-sm font-medium">{toast.message}</p>
-              <button
-                onClick={() => removeToast(toast.id)}
-                className="text-current opacity-70 hover:opacity-100 transition-opacity"
-                aria-label="Close"
-              >
-                <FiX className="w-4 h-4" />
-              </button>
-            </motion.div>
-          ))}
-        </AnimatePresence>
+              <X className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
+        ))}
       </div>
     </ToastContext.Provider>
   );
@@ -74,29 +128,31 @@ export function useToast() {
 
 function getToastStyles(type: ToastType): string {
   switch (type) {
+    // Цвета берём из семантических токенов: они настроены отдельно
+    // для светлой и тёмной темы и проходят по контрасту в обеих
     case "success":
-      return "bg-green-500/20 border-green-500/50 text-green-700 dark:text-green-300";
+      return "border-success/40 bg-success/10 text-success";
     case "error":
-      return "bg-red-500/20 border-red-500/50 text-red-700 dark:text-red-300";
+      return "border-destructive/40 bg-destructive/10 text-destructive";
     case "warning":
-      return "bg-yellow-500/20 border-yellow-500/50 text-yellow-700 dark:text-yellow-300";
+      return "border-warning/40 bg-warning/10 text-warning";
     case "info":
     default:
-      return "bg-blue-500/20 border-blue-500/50 text-blue-700 dark:text-blue-300";
+      return "border-primary/40 bg-primary/10 text-primary";
   }
 }
 
 function getToastIcon(type: ToastType) {
-  const className = "w-5 h-5 flex-shrink-0";
+  const className = "h-5 w-5 shrink-0";
   switch (type) {
     case "success":
-      return <FiCheckCircle className={className} />;
+      return <CheckCircle2 className={className} aria-hidden="true" />;
     case "error":
-      return <FiXCircle className={className} />;
+      return <XCircle className={className} aria-hidden="true" />;
     case "warning":
-      return <FiAlertTriangle className={className} />;
+      return <AlertTriangle className={className} aria-hidden="true" />;
     case "info":
     default:
-      return <FiInfo className={className} />;
+      return <Info className={className} aria-hidden="true" />;
   }
 }

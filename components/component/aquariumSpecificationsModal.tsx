@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { X } from "lucide-react";
 import { useAquariumEditStore } from "@/store/aquariumEditStore";
 import { measurCalcGal } from "@/components/helpers/mesurCalcGal";
+import { useModalDismiss } from "@/lib/useModalDismiss";
 
 export default function AquariumSpecificationsModal() {
   const t = useTranslations("AquariumForm");
@@ -270,6 +271,9 @@ export default function AquariumSpecificationsModal() {
   const handleClose = () => {
     closeSpecificationsModal();
   };
+
+  // Escape закрывает окно, фон под ним не прокручивается
+  useModalDismiss(isSpecificationsModalOpen, handleClose);
 
   const renderFieldsByShape = () => {
     const shape = selectedAquarium?.shape;
@@ -814,12 +818,12 @@ export default function AquariumSpecificationsModal() {
 
   return (
     <div
-      className={`w-full h-full ${
+      className={`fixed inset-0 z-modal overflow-y-auto overscroll-contain bg-scrim/60 p-4 backdrop-blur-sm ${
         isSpecificationsModalOpen ? "flex" : "hidden"
-      } justify-center items-center fixed top-0 left-0 z-50 backdrop-blur-md transition-all duration-700`}
+      } items-start justify-center sm:items-center`}
       style={{ overflow: "visible" }}
     >
-      <Card className="w-[98%] min-w-[300px] max-w-md mx-auto bg-[#01EBFF]/5  dark:bg-black/50  backdrop-blur-3xl border border-muted z-50 mt-20">
+      <Card className="surface-panel-raised my-auto w-full max-w-md">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             {tDetails("editSpecifications")}
@@ -844,8 +848,8 @@ export default function AquariumSpecificationsModal() {
 
           {/* Информационные надписи для разных типов аквариумов */}
           {selectedAquarium?.type === "PALUDARIUM" && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-              <p className="text-sm text-blue-800">
+            <div className="bg-primary/10 border border-primary/25 rounded-lg p-3 mb-4">
+              <p className="text-sm text-foreground">
                 <strong>{t("volumeInfoPaludariumBold")}</strong>
                 <br />
                 {t("volumeInfoPaludarium")}
@@ -857,8 +861,8 @@ export default function AquariumSpecificationsModal() {
           )}
 
           {selectedAquarium?.type === "FRESHWATER" && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-              <p className="text-sm text-blue-800">
+            <div className="bg-primary/10 border border-primary/25 rounded-lg p-3 mb-4">
+              <p className="text-sm text-foreground">
                 <strong>{t("volumeInfoFreshwaterBold")}</strong>
                 <br />
                 {t("volumeInfoFreshwater")}
@@ -870,8 +874,8 @@ export default function AquariumSpecificationsModal() {
           )}
 
           {selectedAquarium?.type === "SALTWATER" && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-              <p className="text-sm text-blue-800">
+            <div className="bg-primary/10 border border-primary/25 rounded-lg p-3 mb-4">
+              <p className="text-sm text-foreground">
                 <strong>{t("volumeInfoSaltBold")}</strong>
                 <br />
                 {t("volumeInfoSalt")}

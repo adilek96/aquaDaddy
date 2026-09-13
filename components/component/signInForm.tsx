@@ -1,105 +1,123 @@
 "use client";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { useTranslations } from "next-intl";
-import useIsAppleDevice from "@/app/hooks/useIsAppleDevice";
-import { Button } from "../ui/button";
 import { useState, SVGProps } from "react";
 import { signIn } from "next-auth/react";
+import { useTranslations } from "next-intl";
+import { Fish } from "lucide-react";
+import useIsAppleDevice from "@/app/hooks/useIsAppleDevice";
+import { Button } from "../ui/button";
 
-export default function SignInForm() {
+export default function SignInForm({
+  appleEnabled = false,
+}: {
+  appleEnabled?: boolean;
+}) {
   const t = useTranslations("Sign");
   const isApple = useIsAppleDevice();
   const [toggleMethod, setToggleMethod] = useState(false);
+  const [pending, setPending] = useState<null | "google" | "apple">(null);
 
   const withApple = (
     <Button
       type="button"
-      variant="ghost"
-      className="rounded-md bg-[00EBFF] h-full backdrop-blur-3xl gap-3"
+      variant="outline"
+      size="lg"
+      className="w-full justify-center"
+      disabled={pending !== null}
+      onClick={() => {
+        setPending("apple");
+        signIn("apple", { redirectTo: "/" });
+      }}
     >
-      <AppleIcon />
+      <AppleIcon className="h-5 w-5" aria-hidden="true" />
       <span>{t("signInWithApple")}</span>
-      <span className="sr-only">Signin with Apple Id</span>
     </Button>
   );
 
   const withGoogle = (
     <Button
       type="button"
-      variant="ghost"
-      className="rounded-md bg-[00EBFF]  h-full  backdrop-blur-3xl gap-3 "
-      onClick={() => signIn("google", { redirectTo: "/" })}
+      variant="outline"
+      size="lg"
+      className="w-full justify-center"
+      disabled={pending !== null}
+      onClick={() => {
+        // Кнопка блокируется на время редиректа, иначе по ней успевают
+        // нажать несколько раз подряд
+        setPending("google");
+        signIn("google", { redirectTo: "/" });
+      }}
     >
-      <GoogleIcon />
+      <GoogleIcon className="h-5 w-5" aria-hidden="true" />
       <span>{t("signInWithGoogle")}</span>
-
-      <span className="sr-only">Signin with Google</span>
     </Button>
   );
 
-  return (
-    <>
-      <Card className="w-[98%] max-w-md  mx-auto  backdrop-blur-md border border-muted bg-[#00EBFF]/5 dark:bg-black/30 z-40 mt-20">
-        <CardHeader>
-          <CardTitle>{t("signIn")}</CardTitle>
-          <CardDescription>{t("signIn-Message")}</CardDescription>
-        </CardHeader>
-        <form>
-          <CardContent className="space-y-4">
-            <CardDescription className="flex justify-center">
-              {t("signIn-Type")}
-            </CardDescription>
-            <div className="flex justify-center">
-              {!toggleMethod
-                ? isApple
-                  ? withApple
-                  : withGoogle
-                : isApple
-                ? withGoogle
-                : withApple}
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col">
-            <CardDescription className="flex justify-center">
-              {t("signIn-Or")}
-            </CardDescription>
+  // Основной способ — «родной» для устройства, второй прячется за
+  // переключателем. Если Apple не настроен, остаётся только Google.
+  const preferApple = appleEnabled && isApple;
+  const primary = !appleEnabled
+    ? withGoogle
+    : !toggleMethod
+      ? preferApple
+        ? withApple
+        : withGoogle
+      : preferApple
+        ? withGoogle
+        : withApple;
 
-            <Button
-              variant="ghost"
-              type="button"
-              className="rounded-md bg-[00EBFF]  backdrop-blur-3xl mt-2"
-              onClick={() => setToggleMethod(!toggleMethod)}
-            >
-              {t("signIn-Other")}
-              <span className="sr-only">Toggle signin method</span>
-            </Button>
-          </CardFooter>
-        </form>
-      </Card>
-    </>
+  return (
+    <div className="app-container flex min-h-[70dvh] items-center justify-center py-10">
+      <div className="surface-panel-raised w-full max-w-md animate-scale-in p-6 sm:p-8">
+        <div className="mb-7 flex flex-col items-center text-center">
+          <span className="mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-glow">
+            <Fish className="h-7 w-7" aria-hidden="true" />
+          </span>
+          <h1 className="mb-2 text-2xl sm:text-3xl">{t("signIn")}</h1>
+          <p className="measure text-sm text-muted-foreground">
+            {t("signIn-Message")}
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          <p className="text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            {t("signIn-Type")}
+          </p>
+
+          {primary}
+
+          {appleEnabled && (
+            <>
+              <div className="flex items-center gap-3 py-1">
+                <span className="h-px flex-1 bg-border" />
+                <span className="text-xs text-muted-foreground">
+                  {t("signIn-Or")}
+                </span>
+                <span className="h-px flex-1 bg-border" />
+              </div>
+
+              <Button
+                variant="ghost"
+                type="button"
+                className="w-full"
+                onClick={() => setToggleMethod((v) => !v)}
+              >
+                {t("signIn-Other")}
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 
-function GoogleIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
+function GoogleIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
       xmlns="http://www.w3.org/2000/svg"
-      width="50"
-      height="50"
       viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      fill="currentColor"
     >
       <path
         fillRule="evenodd"
@@ -110,19 +128,13 @@ function GoogleIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   );
 }
 
-function AppleIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
+function AppleIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
       xmlns="http://www.w3.org/2000/svg"
-      width="50"
-      height="50"
       viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      fill="currentColor"
     >
       <path d="M17.537 12.625a4.421 4.421 0 0 0 2.684 4.047 10.96 10.96 0 0 1-1.384 2.845c-.834 1.218-1.7 2.432-3.062 2.457-1.34.025-1.77-.794-3.3-.794-1.531 0-2.01.769-3.275.82-1.316.049-2.317-1.318-3.158-2.532-1.72-2.484-3.032-7.017-1.27-10.077A4.9 4.9 0 0 1 8.91 6.884c1.292-.025 2.51.869 3.3.869.789 0 2.27-1.075 3.828-.917a4.67 4.67 0 0 1 3.66 1.984 4.524 4.524 0 0 0-2.16 3.805m-2.52-7.432A4.4 4.4 0 0 0 16.06 2a4.482 4.482 0 0 0-2.945 1.516 4.185 4.185 0 0 0-1.061 3.093 3.708 3.708 0 0 0 2.967-1.416Z" />
     </svg>

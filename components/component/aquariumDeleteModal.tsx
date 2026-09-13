@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { X, AlertTriangle } from "lucide-react";
 import { useAquariumEditStore } from "@/store/aquariumEditStore";
 import { useRouter } from "next/navigation";
+import { useModalDismiss } from "@/lib/useModalDismiss";
 
 export default function AquariumDeleteModal() {
   const t = useTranslations("AquariumDetails");
@@ -47,6 +48,9 @@ export default function AquariumDeleteModal() {
     setConfirmName("");
   };
 
+  // Escape закрывает окно, фон под ним не прокручивается
+  useModalDismiss(isDeleteModalOpen, handleClose);
+
   // Очищаем поле при открытии/закрытии модального окна
   useEffect(() => {
     if (!isDeleteModalOpen) {
@@ -60,16 +64,16 @@ export default function AquariumDeleteModal() {
 
   return (
     <div
-      className={`w-full h-full ${
+      className={`fixed inset-0 z-modal overflow-y-auto overscroll-contain bg-scrim/60 p-4 backdrop-blur-sm ${
         isDeleteModalOpen ? "flex" : "hidden"
-      } justify-center items-center fixed top-0 left-0 z-50 backdrop-blur-md transition-all duration-700`}
+      } items-start justify-center sm:items-center`}
       style={{ overflow: "visible" }}
     >
-      <Card className="w-[98%] min-w-[300px] max-w-md mx-auto bg-[#01EBFF]/5 dark:bg-black/50 backdrop-blur-3xl border border-muted z-50 mt-20">
+      <Card className="surface-panel-raised my-auto w-full max-w-md">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-red-500" />
+              <AlertTriangle className="h-5 w-5 text-destructive" />
               {t("deleteAquariumTitle")}
             </div>
             <Button variant="ghost" size="sm" onClick={handleClose}>
@@ -79,8 +83,8 @@ export default function AquariumDeleteModal() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-3">
-            <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
-              <p className="text-sm font-medium text-red-600 dark:text-red-400">
+            <div className="p-3 bg-destructive/10 border border-destructive/25 rounded-lg">
+              <p className="text-sm font-medium text-destructive">
                 {t("deleteAquariumWarning")}
               </p>
             </div>
@@ -105,7 +109,7 @@ export default function AquariumDeleteModal() {
                 }`}
               />
               {confirmName && !isNameMatch && (
-                <p className="text-xs text-red-500">
+                <p className="text-xs text-destructive">
                   {t("deleteAquariumNameMismatch")}
                 </p>
               )}

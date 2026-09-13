@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useModalDismiss } from "@/lib/useModalDismiss";
 
 interface WaterParameters {
   pH?: number | null;
@@ -39,6 +40,9 @@ export function WaterParametersForm({
   title = "Параметры воды",
 }: WaterParametersFormProps) {
   const t = useTranslations("AquariumForm");
+
+  // Escape закрывает окно, фон под ним не прокручивается
+  useModalDismiss(isOpen, onClose);
   const [params, setParams] = useState({
     pH: "",
     temperatureC: "",
@@ -165,9 +169,9 @@ export function WaterParametersForm({
 
   return (
     <div
-      className={`w-full h-full ${
+      className={`fixed inset-0 z-modal overflow-y-auto overscroll-contain bg-scrim/60 p-4 backdrop-blur-sm ${
         isOpen ? "flex" : "hidden"
-      } justify-center items-center fixed top-0 left-0 z-50 backdrop-blur-md transition-all duration-700`}
+      } items-start justify-center sm:items-center`}
       style={{ overflow: "visible" }}
     >
       <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">

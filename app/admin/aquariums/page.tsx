@@ -21,12 +21,12 @@ export default async function AdminAquariumsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-white">Aquarium Management</h1>
+        <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">Aquarium Management</h1>
         <p className="text-slate-400 mt-2">Monitor and moderate all user-created aquariums on the platform.</p>
       </div>
 
-      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
-        <table className="w-full text-left border-collapse">
+      <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900 shadow-2xl">
+        <table className="w-full min-w-[760px] border-collapse text-left">
           <thead>
             <tr className="border-b border-slate-800 bg-slate-950/50">
               <th className="p-4 font-medium text-slate-400">Name / ID</th>

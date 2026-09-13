@@ -1,22 +1,13 @@
-import AppLogo from "@/components/ui/AppLogo";
-import UserCard from "@/components/component/userCard";
-
+/**
+ * Раньше здесь было три вложенных стеклянных контейнера (w-[95%] внутри
+ * w-[95%] внутри flex-обёрток) с жёстким mt-20 под шапку. Отступ под
+ * фиксированную шапку теперь задаёт .app-page в корневом layout, а ширину —
+ * общий .app-container, поэтому поля совпадают со всеми остальными страницами.
+ */
 export default function MyTanksLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <>
-      <div className="w-[95%] mx-auto dark:bg-black/10  bg-[#00EBFF]/5 rounded-xl backdrop-blur-md  border border-muted z-40 mt-20">
-        <div className="w-full h-fit  flex flex-row flex-wrap">
-          <div className=" w-full h-full flex justify-center  mx-auto">
-            <div className="w-[95%] h-fit border border-mutted bg-white/60 dark:bg-black/60 my-12 px-5 rounded-xl">
-              {children}
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
+  return <>{children}</>;
 }

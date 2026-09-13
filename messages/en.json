@@ -16,6 +16,14 @@
       "twitterImageAlt": "AquaDaddy - Aquarium Management Platform"
     },
     "HomePage": {
+      "heroTitle": "Your aquariums, under control",
+      "heroSubtitle": "Track water parameters, plan maintenance and share your tanks with the community.",
+      "heroCta": "Open my aquariums",
+      "heroCtaSecondary": "Explore community",
+      "statAquariums": "Aquariums",
+      "statUpcoming": "Upcoming service",
+      "statSpecies": "Species in wiki",
+      "sectionShortcuts": "Where to go",
       "discovery-title": "Discovery",
       "aquariums-title": "My aquariums",
       "wiki-title": "Encyclopedia",
@@ -89,12 +97,20 @@
       "temp": "Temperature scales"
     },
     "Header": {
+      "home": "Home",
+      "nav": "Main navigation",
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu",
+      "back": "Back",
+      "brand": "AquaDaddy",
       "settings": "Settings",
       "signIn": "SignIn",
       "logout": "Log out",
       "profile": "Profile"
     },
     "Profile": {
+      "edit": "Edit",
+      "cancel": "Cancel",
       "title": "Edit Profile",
       "subtitle": "Update your personal information",
       "username": "Username",
@@ -332,6 +348,7 @@
       "loading": "Loading..."
     },
     "Discovery": {
+      "sortBy": "Sort by",
       "title": "Discovery",
       "subtitle": "Explore amazing aquariums from the community",
       "searchPlaceholder": "Search aquariums...",

@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { Label } from "@/components/ui/label";
-import { ChevronLeft, ChevronRight, Plus, X, RefreshCw } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, RefreshCw, Rocket, X } from "lucide-react";
 import Link from "next/link";
 
 import LoadingBlock from "@/components/ui/loadingBlock";
@@ -155,16 +155,16 @@ export default function MaintenancePageClient({ id }: { id: string }) {
 
     switch (status) {
       case "COMPLETED":
-        return "bg-yellow-500";
+        return "bg-warning";
       case "CANCELLED":
         return "bg-black";
       case "SKIPPED":
         return isPast ? "border-2 border-red-500" : "border-2 border-red-300";
       case "PENDING":
         if (isToday) {
-          return "bg-green-500"; // Сегодняшняя дата с PENDING статусом должна быть зеленой
+          return "bg-success"; // Сегодняшняя дата с PENDING статусом должна быть зеленой
         }
-        return isPast ? "bg-red-500" : "bg-green-500";
+        return isPast ? "bg-destructive" : "bg-success";
       default:
         return "";
     }
@@ -587,7 +587,7 @@ export default function MaintenancePageClient({ id }: { id: string }) {
     // Добавляем пустые ячейки для начала месяца
     for (let i = 0; i < startingDayOfWeek; i++) {
       days.push(
-        <div key={`empty-${i}`} className="h-16 border border-gray-200"></div>
+        <div key={`empty-${i}`} className="h-16 rounded-md border border-border/50"></div>
       );
     }
 
@@ -607,42 +607,45 @@ export default function MaintenancePageClient({ id }: { id: string }) {
         clickedDate && clickedDate.toDateString() === date.toDateString();
 
       days.push(
-        <motion.div
+        // Ячейка дня. Раньше каждая из 31 была motion.div со ступенчатой
+        // задержкой — рантайм анимаций ради появления сетки. Цвета были
+        // захардкожены под светлую тему (gray-200 / blue-100 / purple-50),
+        // в тёмной календарь становился нечитаемым.
+        <button
+          type="button"
           key={day}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{
-            duration: 0.2,
-            delay: day * 0.01,
-            ease: "easeOut",
-          }}
-          whileHover={{
-            scale: 1.02,
-            transition: { duration: 0.1 },
-          }}
-          whileTap={{ scale: 0.98 }}
-          className={`h-16 border border-gray-200 p-1 relative cursor-pointer transition-colors ${
-            isToday ? "bg-blue-100" : ""
-          } ${isFuture && !hasMaintenance ? "hover:bg-green-50" : ""} ${
-            isAquariumStartDate ? "border-2 border-purple-500 bg-purple-50" : ""
-          } ${isClickedDate ? "ring-2 ring-blue-500 ring-offset-2" : ""}`}
           onClick={() => handleDateClick(date)}
+          aria-label={date.toLocaleDateString()}
+          aria-current={isToday ? "date" : undefined}
+          className={`group relative flex h-16 flex-col items-stretch rounded-md border p-1 text-left transition-colors duration-fast active:scale-[0.97] ${
+            isToday ? "border-primary/40 bg-primary/10" : "border-border"
+          } ${isFuture && !hasMaintenance ? "hover:bg-primary/5" : ""} ${
+            isAquariumStartDate ? "border-2 border-chart-5 bg-chart-5/10" : ""
+          } ${isClickedDate ? "ring-2 ring-ring ring-offset-2 ring-offset-background" : ""}`}
         >
-          <div
-            className={`text-xs font-medium mb-1 ${
-              isAquariumStartDate ? "text-purple-700 font-bold" : ""
+          <span
+            className={`mb-1 text-xs font-semibold ${
+              isAquariumStartDate ? "text-chart-5" : ""
             }`}
+            data-numeric
           >
             {day}
-            {isAquariumStartDate && (
-              <div className="text-xs text-purple-600 mt-1">🚀</div>
-            )}
-          </div>
-          <div className="space-y-0.5">
+          </span>
+
+          {/* Старт аквариума: иконка вместо эмодзи 🚀 — эмодзи выглядит
+              по-разному в разных системах и не поддаётся темизации */}
+          {isAquariumStartDate && (
+            <Rocket
+              className="absolute right-1 top-1 h-3 w-3 text-chart-5"
+              aria-hidden="true"
+            />
+          )}
+
+          <span className="flex flex-wrap items-center justify-center gap-0.5">
             {maintenanceForDay.map((maintenance) => (
-              <div
+              <span
                 key={maintenance.id}
-                className={`w-2 h-2 rounded-full mx-auto ${getStatusColor(
+                className={`h-2 w-2 rounded-full ${getStatusColor(
                   maintenance.status,
                   date
                 )}`}
@@ -650,12 +653,15 @@ export default function MaintenancePageClient({ id }: { id: string }) {
               />
             ))}
             {isFuture && !hasMaintenance && (
-              <div className="text-xs text-green-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Plus className="w-3 h-3 inline" />
-              </div>
+              // group теперь есть на самой ячейке — до этого group-hover
+              // ссылался в пустоту и плюс не показывался никогда
+              <Plus
+                className="h-3 w-3 text-primary opacity-0 transition-opacity duration-fast group-hover:opacity-100"
+                aria-hidden="true"
+              />
             )}
-          </div>
-        </motion.div>
+          </span>
+        </button>
       );
     }
 
@@ -729,54 +735,45 @@ export default function MaintenancePageClient({ id }: { id: string }) {
 
   return (
     <>
-      <motion.div
-        className="flex flex-col sm:flex-row sm:justify-between sm:items-center px-4 sm:px-6 lg:px-8"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <motion.h2
-          className="text-2xl sm:text-3xl md:text-4xl font-bold my-6 sm:my-10 font-bebas leading-none tracking-wide cursor-default inline-flex flex-wrap"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-        >
-          <span className="relative group transition-all duration-700 text-nowrap">
-            <Link
-              href={"/myTanks"}
-              className="relative z-10 after:content-[''] after:absolute after:bottom-0 after:right-0 after:left-0 after:h-[3px] after:bg-current after:scale-x-0 after:origin-right after:transition-transform after:duration-500 group-hover:after:scale-x-100"
-            >
-              {t("aquariums-title")}
-            </Link>
-
-            <span className="text-nowrap"> &nbsp; | &nbsp;</span>
-          </span>
-          {aquarium ? (
-            <span className="relative group transition-all duration-700 text-nowrap">
+      {/* Три уровня хлебных крошек вместо одной длинной строки
+          «Мои аквариумы | Название | Календарь», которая на телефоне
+          переносилась по разделителям */}
+      <div className="app-container pt-6 sm:pt-8">
+        <nav aria-label="Breadcrumb" className="mb-2">
+          <ol className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm font-semibold text-muted-foreground">
+            <li>
               <Link
-                href={"../" + id}
-                className="relative z-10 after:content-[''] after:absolute after:bottom-0 after:right-0 after:left-0 after:h-[3px] after:bg-current after:scale-x-0 after:origin-right after:transition-transform after:duration-500 group-hover:after:scale-x-100"
+                href="/myTanks"
+                className="transition-colors duration-fast hover:text-primary"
               >
-                {aquarium.name}
+                {t("aquariums-title")}
               </Link>
-              <span className="text-nowrap"> &nbsp; | &nbsp;</span>
-            </span>
-          ) : (
-            <div className="inline-block h-6 sm:h-8 w-32 sm:w-40 rounded bg-muted animate-pulse" />
-          )}
+            </li>
+            <li aria-hidden="true" className="opacity-50">
+              /
+            </li>
+            <li className="min-w-0">
+              {aquarium ? (
+                <Link
+                  href={`/myTanks/${id}`}
+                  className="block truncate transition-colors duration-fast hover:text-primary"
+                >
+                  {aquarium.name}
+                </Link>
+              ) : (
+                <span className="skeleton inline-block h-4 w-28 align-middle" />
+              )}
+            </li>
+          </ol>
+        </nav>
 
-          {aquarium ? (
-            <span className="text-wrap">{tDetails("maintenanceCalendar")}</span>
-          ) : (
-            <div className="inline-block h-6 sm:h-8 w-32 sm:w-40 rounded bg-muted animate-pulse" />
-          )}
-        </motion.h2>
-      </motion.div>
+        <h1>{tDetails("maintenanceCalendar")}</h1>
+      </div>
       {isLoading ? (
         <LoadingBlock translate={t("loading")} />
       ) : (
-        <div className="flex w-full flex-wrap justify-between">
-          <div className="mb-6 lg:w-[48%] w-full">
+        <div className="app-container grid grid-cols-1 items-start gap-6 py-6 sm:py-8 lg:grid-cols-2">
+          <div className="min-w-0">
             <motion.div
               className="flex flex-wrap gap-2 my-4"
               initial={{ opacity: 0, y: 20 }}
@@ -788,7 +785,7 @@ export default function MaintenancePageClient({ id }: { id: string }) {
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.2 }}
               >
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-success rounded-full"></div>
                 <span className="text-sm">{tDetails("pending")}</span>
               </motion.div>
               <motion.div
@@ -796,7 +793,7 @@ export default function MaintenancePageClient({ id }: { id: string }) {
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.2 }}
               >
-                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                <div className="h-3 w-3 rounded-full bg-warning"></div>
                 <span className="text-sm">{tDetails("completed")}</span>
               </motion.div>
               <motion.div
@@ -820,7 +817,7 @@ export default function MaintenancePageClient({ id }: { id: string }) {
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.2 }}
               >
-                <div className="w-3 h-3 border-2 border-purple-500 bg-purple-50 rounded"></div>
+                <div className="h-3 w-3 rounded border-2 border-chart-5 bg-chart-5/10"></div>
                 <span className="text-sm">{tDetails("startDateLegend")}</span>
               </motion.div>
             </motion.div>
@@ -913,7 +910,7 @@ export default function MaintenancePageClient({ id }: { id: string }) {
                   stiffness: 300,
                   damping: 30,
                 }}
-                className="my-6 lg:w-[48%] w-full"
+                className="min-w-0"
               >
                 <Card>
                   <CardHeader>
@@ -959,7 +956,7 @@ export default function MaintenancePageClient({ id }: { id: string }) {
                           {selectedMaintenance.type.map((type) => (
                             <span
                               key={type}
-                              className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs"
+                              className="rounded-full border border-primary/25 bg-primary/10 px-2 py-1 text-xs font-semibold text-primary"
                             >
                               {getMaintenanceTypeLabel(type)}
                             </span>
@@ -974,11 +971,11 @@ export default function MaintenancePageClient({ id }: { id: string }) {
                         <div
                           className={`flex px-2 py-1 rounded text-xs w-fit text-white ${
                             selectedMaintenance.status === "PENDING"
-                              ? "bg-green-500"
+                              ? "bg-success"
                               : selectedMaintenance.status === "COMPLETED"
-                              ? "bg-yellow-500"
+                              ? "bg-warning"
                               : selectedMaintenance.status === "SKIPPED"
-                              ? "bg-red-500"
+                              ? "bg-destructive"
                               : "bg-black"
                           }`}
                         >
@@ -1007,7 +1004,7 @@ export default function MaintenancePageClient({ id }: { id: string }) {
                             <Label className="text-xs uppercase tracking-widest mb-1 font-semibold">
                               {tDetails("waterParameters")}
                             </Label>
-                            <div className="text-xs text-gray-500 mb-2">
+                            <div className="mb-2 text-xs text-muted-foreground">
                               Debug: {selectedMaintenance.WaterLog.length}{" "}
                               {tDetails("parameters")}
                             </div>
@@ -1050,7 +1047,7 @@ export default function MaintenancePageClient({ id }: { id: string }) {
                                       tDetails("waterParamsTitle")
                                     )
                                   }
-                                  className="bg-green-600 hover:bg-green-700"
+                                  className=""
                                 >
                                   {tDetails("completeWithParams")}
                                 </Button>
@@ -1062,7 +1059,7 @@ export default function MaintenancePageClient({ id }: { id: string }) {
                               >
                                 <Button
                                   onClick={handleCompleteWithoutParams}
-                                  className="bg-green-600 hover:bg-green-700"
+                                  className=""
                                 >
                                   {tDetails("complete")}
                                 </Button>
@@ -1092,7 +1089,7 @@ export default function MaintenancePageClient({ id }: { id: string }) {
                   stiffness: 300,
                   damping: 30,
                 }}
-                className="my-6 lg:w-[48%] w-full"
+                className="min-w-0"
               >
                 <Card>
                   <CardHeader>
@@ -1125,7 +1122,7 @@ export default function MaintenancePageClient({ id }: { id: string }) {
                         <Label className="font-medium">
                           {tDetails("startDateLabel")}
                         </Label>
-                        <p className="text-purple-700 font-semibold">
+                        <p className="font-semibold text-chart-5">
                           {new Date(aquarium.startDate).toLocaleDateString(
                             "ru-RU"
                           )}
@@ -1139,8 +1136,8 @@ export default function MaintenancePageClient({ id }: { id: string }) {
                         <p>{aquarium.name}</p>
                       </div>
 
-                      <div className="bg-purple-50 p-4 rounded-lg">
-                        <p className="text-sm text-purple-800">
+                      <div className="rounded-lg border border-chart-5/25 bg-chart-5/10 p-4">
+                        <p className="text-sm text-foreground">
                           {tDetails("startDateMessage")} аквариум &ldquo;
                           {aquarium.name}&ldquo;.{" "}
                           {tDetails("startDateMessageEnd")}

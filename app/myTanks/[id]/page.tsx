@@ -1,13 +1,13 @@
 "use client";
 import { fetchUserAquarium } from "@/app/actions/aquariumFetch";
-import LoadingBlock from "@/components/ui/loadingBlock";
+import { SectionHeading } from "@/components/ui/section-heading";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState, use } from "react";
 import { measurCalcInch } from "@/components/helpers/measurCalcInch";
 import { measurCalcGal } from "@/components/helpers/mesurCalcGal";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { ChevronLeft, Trash2 } from "lucide-react";
 import { useAquariumEditStore } from "@/store/aquariumEditStore";
 import { deleteAquarium } from "@/app/actions/aquariumDeleteAction";
 import WaterParametersCards from "@/components/component/waterParametersCards";
@@ -20,7 +20,6 @@ import {
   updateWaterParameters,
 } from "@/app/actions/aquariumUpdateAction";
 
-import { motion } from "motion/react";
 import ImageUploader from "@/components/component/imageUploader";
 import ImageSlider from "@/components/component/imageSlider";
 
@@ -92,7 +91,7 @@ const MaintenanceCard = ({
 
   return (
     <div
-      className={`p-4 border ${maintenanceStyle} hover:bg-green-500/40 border-muted rounded-xl shadow-sm transition-colors duration-200 cursor-pointer`}
+      className={`p-4 border ${maintenanceStyle} hover:border-primary/40 border-muted rounded-xl shadow-sm transition-colors duration-200 cursor-pointer`}
       style={{ borderColor: "hsl(var(--border))" }}
     >
       <div className="text-xs uppercase tracking-widest mb-2">
@@ -735,67 +734,57 @@ export default function UserAquarium({
 
   return (
     <>
-      <motion.div
-        className="flex flex-col sm:flex-row sm:justify-between sm:items-center px-4 sm:px-6 lg:px-8"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <motion.h2
-          className="text-2xl sm:text-3xl md:text-4xl font-bold my-6 sm:my-10 font-bebas leading-none tracking-wide cursor-default inline-flex flex-wrap"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-        >
-          <span className="relative group transition-all duration-700 text-nowrap">
-            <Link
-              href={"/myTanks"}
-              className="relative z-10 after:content-[''] after:absolute after:bottom-0 after:right-0 after:left-0 after:h-[3px] after:bg-current after:scale-x-0 after:origin-right after:transition-transform after:duration-500 group-hover:after:scale-x-100"
-            >
-              {t("aquariums-title")}
-            </Link>
-            <span className="text-nowrap"> &nbsp; | &nbsp;</span>
-          </span>
+      {/* Хлебные крошки + заголовок. Раньше это была одна строка вида
+          «Мои аквариумы | Название», которая на телефоне переносилась
+          посередине и читалась как один заголовок */}
+      <div className="app-container pt-6 sm:pt-8">
+        <nav aria-label="Breadcrumb" className="mb-2">
+          <Link
+            href="/myTanks"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground transition-colors duration-fast hover:text-primary"
+          >
+            <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+            {t("aquariums-title")}
+          </Link>
+        </nav>
 
-          {aquarium ? (
-            <div className="flex items-center gap-4">
-              <span className="text-wrap">{aquarium.name}</span>
-            </div>
-          ) : (
-            <div className="inline-block h-6 sm:h-8 w-32 sm:w-40 rounded bg-muted animate-pulse" />
-          )}
-        </motion.h2>
-      </motion.div>
+        {aquarium ? (
+          <h1 className="text-balance">{aquarium.name}</h1>
+        ) : (
+          <div className="skeleton h-9 w-56 sm:h-11 sm:w-72" />
+        )}
+      </div>
       {/* Подробная информация об аквариуме */}
       {isLoading ? (
-        <LoadingBlock translate={t("loading")} />
+        <div className="app-container py-6 sm:py-8" aria-busy="true">
+          <span className="sr-only">{t("loading")}</span>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 sm:gap-8">
+            <div className="space-y-6 lg:col-span-8">
+              <div className="skeleton h-40 w-full" />
+              <div className="skeleton h-56 w-full" />
+              <div className="skeleton h-72 w-full" />
+            </div>
+            <div className="hidden space-y-6 lg:col-span-4 lg:block">
+              <div className="skeleton h-52 w-full" />
+              <div className="skeleton h-40 w-full" />
+            </div>
+          </div>
+        </div>
       ) : (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 cursor-default">
+        <div className="app-container py-6 sm:py-8">
           {/* Main Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
             {/* Mobile Overview and Maintenance - Show first on mobile */}
             <div className="lg:hidden space-y-8 sm:space-y-12">
               {/* Quick Stats */}
-              <div className="p-4 sm:p-6 rounded-none border">
-                <div className="text-sm sm:text-base lg:text-xl w-full font-bebas uppercase leading-none tracking-wide mb-4 sm:mb-6 border-b pb-2 font-bold flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                  <span>{tDetails("overview")}</span>
-                  <button
-                    type="button"
-                    id="editAquariumOverview"
-                    onClick={() =>
-                      openOverviewModal(aquarium, handleSaveOverview)
-                    }
-                    disabled={loadingStates.overview}
-                    className="mt-2 sm:mt-0 sm:mr-5 p-2 rounded-lg hover:translate-y-0.5 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
-                    title={tDetails("editAquarium")}
-                  >
-                    {loadingStates.overview ? (
-                      <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                    ) : (
-                      <FaEdit className="w-4 h-4 sm:w-5 sm:h-5" />
-                    )}
-                  </button>
-                </div>
+              <div className="surface-panel p-4 sm:p-5">
+                <SectionHeading
+                  title={tDetails("overview")}
+                  onEdit={() =>
+                      openOverviewModal(aquarium, handleSaveOverview)}
+                  loading={loadingStates.overview}
+                  editLabel={tDetails("editAquarium")}
+                />
                 <div className="space-y-3 sm:space-y-4">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2 border-b last:border-0 gap-1 sm:gap-0">
                     <span className="text-sm">{t("type")}</span>
@@ -827,9 +816,7 @@ export default function UserAquarium({
 
               {/* Maintenance */}
               <div>
-                <div className="text-sm sm:text-base lg:text-xl font-bebas uppercase leading-none tracking-wide mb-4 sm:mb-6 border-b pb-2 font-bold">
-                  {tDetails("maintenance")}
-                </div>
+                <SectionHeading title={tDetails("maintenance")} />
                 <div className="space-y-4">
                   <Link href={`/myTanks/${id}/maintenance`}>
                     <MaintenanceCard aquarium={aquarium} tDetails={tDetails} />
@@ -842,25 +829,13 @@ export default function UserAquarium({
             <div className="lg:col-span-8 space-y-8 sm:space-y-12">
               {/* Description */}
               <div>
-                <h2 className="text-sm sm:text-base lg:text-xl w-full font-bebas uppercase leading-none tracking-wide mb-4 sm:mb-6 border-b pb-2 font-bold flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                  <span>{tDetails("description")}</span>
-                  <button
-                    type="button"
-                    id="editAquariumDescription"
-                    onClick={() =>
-                      openDescriptionModal(aquarium, handleSaveDescription)
-                    }
-                    disabled={loadingStates.description}
-                    className="mt-2 sm:mt-0 sm:mr-5 p-2 rounded-lg hover:translate-y-0.5 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
-                    title={tDetails("editAquarium")}
-                  >
-                    {loadingStates.description ? (
-                      <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                    ) : (
-                      <FaEdit className="w-4 h-4 sm:w-5 sm:h-5" />
-                    )}
-                  </button>
-                </h2>
+                <SectionHeading
+                  title={tDetails("description")}
+                  onEdit={() =>
+                      openDescriptionModal(aquarium, handleSaveDescription)}
+                  loading={loadingStates.description}
+                  editLabel={tDetails("editAquarium")}
+                />
                 <p className="text-sm sm:text-base leading-relaxed">
                   {aquarium.description || t("noDescription")}
                 </p>
@@ -868,52 +843,28 @@ export default function UserAquarium({
 
               {/* Dimensions Grid */}
               <div>
-                <h2 className="text-sm sm:text-base lg:text-xl w-full font-bebas uppercase leading-none tracking-wide mb-4 sm:mb-6 border-b pb-2 font-bold flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                  <span>{tDetails("specifications")}</span>
-                  <button
-                    type="button"
-                    id="editAquariumSpecifications"
-                    onClick={() =>
+                <SectionHeading
+                  title={tDetails("specifications")}
+                  onEdit={() =>
                       openSpecificationsModal(
                         aquarium,
                         handleSaveSpecifications
-                      )
-                    }
-                    disabled={loadingStates.specifications}
-                    className="mt-2 sm:mt-0 sm:mr-5 p-2 rounded-lg hover:translate-y-0.5 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
-                    title={tDetails("editAquarium")}
-                  >
-                    {loadingStates.specifications ? (
-                      <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                    ) : (
-                      <FaEdit className="w-4 h-4 sm:w-5 sm:h-5" />
-                    )}
-                  </button>
-                </h2>
+                      )}
+                  loading={loadingStates.specifications}
+                  editLabel={tDetails("editAquarium")}
+                />
                 {renderDimensions()}
               </div>
 
               {/* Content */}
               <div className="cursor-default">
-                <h2 className="text-sm sm:text-base lg:text-xl w-full font-bebas uppercase leading-none tracking-wide mb-4 sm:mb-6 border-b pb-2 font-bold flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                  <span>{t("inhabitants")}</span>
-                  <button
-                    type="button"
-                    id="editAquariumInhabitants"
-                    onClick={() =>
-                      openInhabitantsModal(aquarium, handleSaveInhabitants)
-                    }
-                    disabled={loadingStates.inhabitants}
-                    className="mt-2 sm:mt-0 sm:mr-5 p-2 rounded-lg hover:translate-y-0.5 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
-                    title={tDetails("editAquarium")}
-                  >
-                    {loadingStates.inhabitants ? (
-                      <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                    ) : (
-                      <FaEdit className="w-4 h-4 sm:w-5 sm:h-5" />
-                    )}
-                  </button>
-                </h2>
+                <SectionHeading
+                  title={t("inhabitants")}
+                  onEdit={() =>
+                      openInhabitantsModal(aquarium, handleSaveInhabitants)}
+                  loading={loadingStates.inhabitants}
+                  editLabel={tDetails("editAquarium")}
+                />
                 <div className="text-sm font-medium transition-colors">
                   {aquarium.inhabitants && aquarium.inhabitants.length > 0
                     ? aquarium.inhabitants
@@ -926,25 +877,13 @@ export default function UserAquarium({
                 </div>
               </div>
               <div>
-                <h2 className="text-sm sm:text-base lg:text-xl w-full font-bebas uppercase leading-none tracking-wide mb-4 sm:mb-6 border-b pb-2 font-bold flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                  <span>{t("waterParams")}</span>
-                  <button
-                    type="button"
-                    id="editAquariumWaterParams"
-                    onClick={() =>
-                      openWaterParamsModal(aquarium, handleSaveWaterParams)
-                    }
-                    disabled={loadingStates.waterParams}
-                    className="mt-2 sm:mt-0 sm:mr-5 p-2 rounded-lg hover:translate-y-0.5 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
-                    title={tDetails("editAquarium")}
-                  >
-                    {loadingStates.waterParams ? (
-                      <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                    ) : (
-                      <FaEdit className="w-4 h-4 sm:w-5 sm:h-5" />
-                    )}
-                  </button>
-                </h2>
+                <SectionHeading
+                  title={t("waterParams")}
+                  onEdit={() =>
+                      openWaterParamsModal(aquarium, handleSaveWaterParams)}
+                  loading={loadingStates.waterParams}
+                  editLabel={tDetails("editAquarium")}
+                />
                 <div className="text-sm font-medium transition-colors">
                   {aquarium.waterParams &&
                   Object.keys(aquarium.waterParams).some(
@@ -977,25 +916,13 @@ export default function UserAquarium({
                 </div>
               </div>
               <div>
-                <h2 className="text-sm sm:text-base lg:text-xl w-full font-bebas uppercase leading-none tracking-wide mb-4 sm:mb-6 border-b pb-2 font-bold flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                  <span>{t("reminders")}</span>
-                  <button
-                    type="button"
-                    id="editAquariumReminders"
-                    onClick={() =>
-                      openRemindersModal(aquarium, handleSaveReminders)
-                    }
-                    disabled={loadingStates.reminders}
-                    className="mt-2 sm:mt-0 sm:mr-5 p-2 rounded-lg hover:translate-y-0.5 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
-                    title={tDetails("editAquarium")}
-                  >
-                    {loadingStates.reminders ? (
-                      <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                    ) : (
-                      <FaEdit className="w-4 h-4 sm:w-5 sm:h-5" />
-                    )}
-                  </button>
-                </h2>
+                <SectionHeading
+                  title={t("reminders")}
+                  onEdit={() =>
+                      openRemindersModal(aquarium, handleSaveReminders)}
+                  loading={loadingStates.reminders}
+                  editLabel={tDetails("editAquarium")}
+                />
                 <div className="text-sm font-medium transition-colors">
                   {aquarium.reminders && aquarium.reminders.length > 0
                     ? aquarium.reminders
@@ -1010,34 +937,22 @@ export default function UserAquarium({
                 </div>
               </div>
               <div>
-                <h2 className="text-sm sm:text-base lg:text-xl w-full font-bebas uppercase leading-none tracking-wide mb-4 sm:mb-6 border-b pb-2 font-bold flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                  <span>{tDetails("timeline")}</span>
-                  <button
-                    type="button"
-                    id="editAquariumTimeline"
-                    onClick={() =>
-                      openTimelineModal(aquarium, handleSaveTimeline)
-                    }
-                    disabled={loadingStates.timeline}
-                    className="mt-2 sm:mt-0 sm:mr-5 p-2 rounded-lg hover:translate-y-0.5 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
-                    title={tDetails("editAquarium")}
-                  >
-                    {loadingStates.timeline ? (
-                      <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                    ) : (
-                      <FaEdit className="w-4 h-4 sm:w-5 sm:h-5" />
-                    )}
-                  </button>
-                </h2>
+                <SectionHeading
+                  title={tDetails("timeline")}
+                  onEdit={() =>
+                      openTimelineModal(aquarium, handleSaveTimeline)}
+                  loading={loadingStates.timeline}
+                  editLabel={tDetails("editAquarium")}
+                />
                 <div className="space-y-4 sm:space-y-6">
                   <div className="flex items-center space-x-3 sm:space-x-4">
-                    <div className="w-2 h-2 bg-gray-200 rounded-full flex-shrink-0"></div>
+                    <div className="h-2 w-2 shrink-0 rounded-full bg-border"></div>
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
-                        <span className="text-sm font-medium text-gray-500">
+                        <span className="text-sm font-medium text-muted-foreground">
                           {tDetails("startDate")}
                         </span>
-                        <span className="text-xs font-mono text-gray-400">
+                        <span className="font-mono text-xs text-muted-foreground" data-numeric>
                           {aquarium.startDate
                             ? new Date(aquarium.startDate).toLocaleDateString()
                             : t("notAssigned")}
@@ -1050,9 +965,7 @@ export default function UserAquarium({
 
               {/* Images */}
               <div>
-                <h2 className="text-sm sm:text-base lg:text-xl w-full font-bebas uppercase leading-none tracking-wide mb-4 sm:mb-6 border-b pb-2 font-bold">
-                  <span>{tDetails("images")}</span>
-                </h2>
+                <SectionHeading title={tDetails("images")} />
 
                 {/* Image Slider */}
                 <div className="mb-8">
@@ -1076,26 +989,14 @@ export default function UserAquarium({
             {/* Right Column - Sidebar */}
             <div className="hidden lg:block lg:col-span-4 space-y-8 sm:space-y-12">
               {/* Quick Stats */}
-              <div className="p-4 sm:p-6 rounded-none border">
-                <div className="text-sm sm:text-base lg:text-xl w-full font-bebas uppercase leading-none tracking-wide mb-4 sm:mb-6 border-b pb-2 font-bold flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                  <span>{tDetails("overview")}</span>
-                  <button
-                    type="button"
-                    id="editAquariumOverview"
-                    onClick={() =>
-                      openOverviewModal(aquarium, handleSaveOverview)
-                    }
-                    disabled={loadingStates.overview}
-                    className="mt-2 sm:mt-0 sm:mr-5 p-2 rounded-lg hover:translate-y-0.5 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
-                    title={tDetails("editAquarium")}
-                  >
-                    {loadingStates.overview ? (
-                      <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                    ) : (
-                      <FaEdit className="w-4 h-4 sm:w-5 sm:h-5" />
-                    )}
-                  </button>
-                </div>
+              <div className="surface-panel p-4 sm:p-5">
+                <SectionHeading
+                  title={tDetails("overview")}
+                  onEdit={() =>
+                      openOverviewModal(aquarium, handleSaveOverview)}
+                  loading={loadingStates.overview}
+                  editLabel={tDetails("editAquarium")}
+                />
                 <div className="space-y-3 sm:space-y-4">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2 border-b last:border-0 gap-1 sm:gap-0">
                     <span className="text-sm">{t("type")}</span>
@@ -1128,9 +1029,7 @@ export default function UserAquarium({
               {/* Sidebar Image Slider */}
               {aquarium.images && aquarium.images.length > 0 && (
                 <div>
-                  <div className="text-sm sm:text-base lg:text-xl font-bebas uppercase leading-none tracking-wide mb-4 sm:mb-6 border-b pb-2 font-bold">
-                    {tDetails("gallery")}
-                  </div>
+                  <SectionHeading title={tDetails("gallery")} />
                   <ImageSlider
                     images={aquarium.images}
                     className="aspect-square"
@@ -1140,9 +1039,7 @@ export default function UserAquarium({
 
               {/* Maintenance */}
               <div>
-                <div className="text-sm sm:text-base lg:text-xl font-bebas uppercase leading-none tracking-wide mb-4 sm:mb-6 border-b pb-2 font-bold">
-                  {tDetails("maintenance")}
-                </div>
+                <SectionHeading title={tDetails("maintenance")} />
                 <div className="space-y-4 ">
                   <Link href={`/myTanks/${id}/maintenance`}>
                     <MaintenanceCard aquarium={aquarium} tDetails={tDetails} />
@@ -1151,23 +1048,20 @@ export default function UserAquarium({
               </div>
               {/* Delete Button */}
               <div>
-                <div className="text-sm sm:text-base lg:text-xl font-bebas uppercase leading-none tracking-wide mb-4 sm:mb-6 border-b pb-2 font-bold">
-                  {tDetails("deleteAquarium")}
-                </div>
+                <SectionHeading title={tDetails("deleteAquarium")} />
                 <div className="space-y-4">
-                  <motion.button
-                    className={`w-full flex items-center justify-between gap-2 p-4 border  hover:bg-green-500/40 hover:text-red-500 border-muted rounded-xl shadow-sm transition-colors duration-200 cursor-pointer`}
-                    style={{ borderColor: "hsl(var(--border))" }}
+                  {/* Опасное действие: раньше подсвечивалось зелёным фоном
+                      с красным текстом — цвет не соответствовал смыслу */}
+                  <button
+                    type="button"
                     onClick={() =>
                       openDeleteModal(aquarium, handleDeleteAquarium)
                     }
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    className="flex w-full items-center justify-between gap-2 rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm font-semibold text-destructive transition-colors duration-fast hover:bg-destructive/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/50 active:scale-[0.99]"
                   >
                     {tDetails("deleteAquarium")}
-
-                    <FaTrash className="w-4 h-4" />
-                  </motion.button>
+                    <Trash2 className="h-4 w-4" aria-hidden="true" />
+                  </button>
                 </div>
               </div>
             </div>
