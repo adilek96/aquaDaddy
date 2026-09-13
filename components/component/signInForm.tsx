@@ -1,8 +1,8 @@
 "use client";
 import { useState, SVGProps } from "react";
 import { signIn } from "next-auth/react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { Fish } from "lucide-react";
 import useIsAppleDevice from "@/app/hooks/useIsAppleDevice";
 import { Button } from "../ui/button";
 
@@ -69,9 +69,14 @@ export default function SignInForm({
     <div className="app-container flex min-h-[70dvh] items-center justify-center py-10">
       <div className="surface-panel-raised w-full max-w-md animate-scale-in p-6 sm:p-8">
         <div className="mb-7 flex flex-col items-center text-center">
-          <span className="mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-glow">
-            <Fish className="h-7 w-7" aria-hidden="true" />
-          </span>
+          <Image
+            src="/app-logo.svg"
+            alt="AquaDaddy"
+            width={72}
+            height={72}
+            priority
+            className="mb-4 h-16 w-16"
+          />
           <h1 className="mb-2 text-2xl sm:text-3xl">{t("signIn")}</h1>
           <p className="measure text-sm text-muted-foreground">
             {t("signIn-Message")}

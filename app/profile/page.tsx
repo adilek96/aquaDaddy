@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 import { Pencil, Save, X, Fish, Globe2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -63,11 +64,17 @@ export default function Profile() {
   return (
     <div className="app-container max-w-3xl py-6 sm:py-10">
       <div className="surface-panel-raised animate-fade-in-up overflow-hidden">
-        {/* Тонкая цветная полоса вместо баннера на 230px */}
-        <div
-          aria-hidden="true"
-          className="h-24 bg-gradient-to-r from-primary via-secondary to-accent sm:h-28"
-        />
+        {/* Тонкая полоса вместо прежнего баннера на 230px, но фирменный
+            знак с него сохранён */}
+        <div className="relative flex h-24 items-center justify-end bg-gradient-to-r from-primary via-secondary to-accent px-6 sm:h-28 sm:px-8">
+          <Image
+            src="/app-logo.svg"
+            alt=""
+            width={64}
+            height={64}
+            className="h-14 w-14 opacity-90 sm:h-16 sm:w-16"
+          />
+        </div>
 
         <div className="px-5 pb-6 sm:px-8 sm:pb-8">
           {/* Аватар заходит на полосу — компактно и на телефоне, и на десктопе */}

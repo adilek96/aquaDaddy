@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Fish, Compass, BookOpen, Menu, X } from "lucide-react";
 import LanguageToggle from "./languageToggle";
@@ -74,17 +75,20 @@ export function Header() {
       >
         {/* Логотип-ссылка домой заменяет прежнюю кнопку «домой/назад»,
             которая вычисляла маршрут через pathname.substring(4) */}
+        {/* Фирменный знак проекта из /public/app-logo.svg */}
         <Link
           href="/"
-          className="group flex shrink-0 items-center gap-2 rounded-lg px-1 py-1"
+          className="group flex shrink-0 items-center rounded-lg p-1"
           aria-label={tHeader("home")}
         >
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-primary text-primary-foreground shadow-soft transition-transform duration-fast ease-out-soft group-hover:scale-105">
-            <Fish className="h-5 w-5" aria-hidden="true" />
-          </span>
-          <span className="hidden font-display text-lg font-extrabold tracking-tight sm:inline">
-            Aqua<span className="text-primary">Daddy</span>
-          </span>
+          <Image
+            src="/app-logo.svg"
+            alt="AquaDaddy"
+            width={40}
+            height={40}
+            priority
+            className="h-10 w-10 transition-transform duration-fast ease-out-soft group-hover:scale-105"
+          />
         </Link>
 
         {/* Десктопная навигация */}
