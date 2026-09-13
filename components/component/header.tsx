@@ -84,10 +84,12 @@ export function Header() {
           <Image
             src="/app-logo.svg"
             alt="AquaDaddy"
-            width={40}
-            height={40}
+            width={48}
+            height={48}
             priority
-            className="h-10 w-10 transition-transform duration-fast ease-out-soft group-hover:scale-105"
+            // 48px в шапке высотой 64: внутри SVG есть собственные поля,
+            // поэтому видимый знак заметно меньше самого бокса
+            className="h-12 w-12 transition-transform duration-fast ease-out-soft group-hover:scale-105"
           />
         </Link>
 
