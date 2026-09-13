@@ -185,12 +185,21 @@ export function NeonSchool({ className }: { className?: string }) {
     };
 
     const step = () => {
-      // Курсора не было или его нет как класса устройства —
-      // ведём стайку по медленной восьмёрке
+      // Курсора не было или его нет как класса устройства — водим стайку
+      // по орбите вокруг центра. Раньше это была восьмёрка, которая
+      // проходила ровно через середину блока, и в покое рыбы зависали
+      // поверх заголовка, мешая его читать.
       if (!pointerSeen || !hasPointer) {
-        drift.t += 0.004;
-        target.x = width * (0.5 + 0.32 * Math.sin(drift.t));
-        target.y = height * (0.5 + 0.26 * Math.sin(drift.t * 1.7));
+        // Орбита широкая и смещена вниз: большую часть времени стайка
+        // держится по краям, а середину пересекает ниже подзаголовка.
+        //
+        // Шаг подобран так, чтобы цель ползла медленнее, чем рыба успевает
+        // плыть (maxSpeed ниже по коду). При 0.0035 точка обгоняла стаю,
+        // та вечно отставала и в итоге топталась в центре орбиты — то есть
+        // ровно поверх заголовка.
+        drift.t += 0.0016;
+        target.x = width * (0.5 + 0.42 * Math.cos(drift.t));
+        target.y = height * (0.62 + 0.28 * Math.sin(drift.t));
       }
 
       for (let i = 0; i < school.length; i++) {
@@ -247,8 +256,8 @@ export function NeonSchool({ className }: { className?: string }) {
         const tx = target.x - fish.x;
         const ty = target.y - fish.y;
         const tDist = Math.hypot(tx, ty) || 1;
-        ax += (tx / tDist) * 0.06;
-        ay += (ty / tDist) * 0.06;
+        ax += (tx / tDist) * 0.1;
+        ay += (ty / tDist) * 0.1;
 
         // Мягко отворачиваем от краёв, чтобы стая не залипала в углу
         const margin = 70;

@@ -4,8 +4,6 @@ import { Fish, Compass, BookOpen, CalendarClock, ArrowRight } from "lucide-react
 import { Button } from "@/components/ui/button";
 import { auth } from "@/auth";
 import { fetchHomeStats } from "@/app/actions/homeStatsFetch";
-import Image from "next/image";
-import heroTank from "@/public/hero-tank.jpg";
 import { CardIllustration, WaveDivider } from "@/components/illustrations/decor";
 import { NeonSchool } from "@/components/illustrations/neonSchool";
 
@@ -56,96 +54,71 @@ export async function MainPage() {
       <section className="relative overflow-hidden">
         {/* Стайка неонов в фоне. Лежит первой в разметке и без z-index,
             поэтому оказывается под контентом, у которого z-raised */}
-        <NeonSchool className="absolute inset-0 h-full w-full" />
+        <NeonSchool className="absolute inset-0 h-full w-full opacity-60" />
 
-        <div className="app-container relative grid items-center gap-6 pb-16 pt-6 sm:gap-8 sm:pb-20 sm:pt-8 lg:grid-cols-[1.05fr_1fr] lg:gap-12 lg:pb-24">
-          {/* --- Текстовая колонка --- */}
-          <div className="relative z-raised max-w-xl">
-            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
-              <span className="grid h-1.5 w-1.5 place-items-center rounded-full bg-primary" />
-              AquaDaddy
-            </p>
+        {/* Картинки в hero больше нет: колонка одна, содержимое по центру.
+            Визуальную работу берёт на себя фоновая стайка неонов, которой
+            теперь досталась вся ширина блока. */}
+        <div className="app-container relative flex flex-col items-center pb-20 pt-10 text-center sm:pb-24 sm:pt-16 lg:pb-28 lg:pt-20">
+          <p className="relative z-raised mb-5 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+            AquaDaddy
+          </p>
 
-            <h1 className="mb-4">{t("heroTitle")}</h1>
+          {/* max-w держит длину строки в читаемых пределах — без него
+              заголовок на широком мониторе растянулся бы во всю ширину */}
+          <h1 className="relative z-raised mb-5 max-w-3xl text-balance">
+            {t("heroTitle")}
+          </h1>
 
-            <p className="measure mb-8 text-base text-muted-foreground sm:text-lg">
-              {t("heroSubtitle")}
-            </p>
+          <p className="relative z-raised mb-9 max-w-2xl text-pretty text-base text-muted-foreground sm:text-lg">
+            {t("heroSubtitle")}
+          </p>
 
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <Button asChild size="lg">
-                <Link href={isAuthed ? "/myTanks" : "/signIn"}>
-                  {isAuthed ? t("heroCta") : t("signInToView")}
-                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link href="/discovery">{t("heroCtaSecondary")}</Link>
-              </Button>
-            </div>
-
-            {/* Сводка — только для авторизованных, иначе цифры пустые */}
-            {isAuthed && (
-              <dl className="mt-9 grid max-w-md grid-cols-2 gap-3 sm:gap-4">
-                <div className="surface-panel p-4">
-                  <dt className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    <Fish className="h-4 w-4 text-primary" aria-hidden="true" />
-                    {t("statAquariums")}
-                  </dt>
-                  <dd
-                    data-numeric
-                    className="mt-1 font-display text-3xl font-extrabold"
-                  >
-                    {stats.aquariums ?? 0}
-                  </dd>
-                </div>
-                <div className="surface-panel p-4">
-                  <dt className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    <CalendarClock
-                      className="h-4 w-4 text-warning"
-                      aria-hidden="true"
-                    />
-                    {t("statUpcoming")}
-                  </dt>
-                  <dd
-                    data-numeric
-                    className="mt-1 font-display text-3xl font-extrabold"
-                  >
-                    {stats.upcomingMaintenance ?? 0}
-                  </dd>
-                </div>
-              </dl>
-            )}
+          <div className="relative z-raised flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
+            <Button asChild size="lg">
+              <Link href={isAuthed ? "/myTanks" : "/signIn"}>
+                {isAuthed ? t("heroCta") : t("signInToView")}
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link href="/discovery">{t("heroCtaSecondary")}</Link>
+            </Button>
           </div>
 
-          {/* --- Фотография аквариума ---
-              На телефоне идёт под текстом: она украшает экран, но не должна
-              отодвигать кнопки за первый экран */}
-          <div className="relative z-raised mx-auto w-full max-w-xl lg:max-w-none">
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 -z-10 translate-y-6 rounded-3xl bg-primary/25 blur-3xl"
-            />
-            <div className="relative overflow-hidden rounded-2xl border border-surface-border shadow-raised">
-              {/* Статический импорт: Next сам знает размеры (нет сдвига
-                  вёрстки) и сам делает размытую заглушку на время загрузки.
-                  priority — картинка и есть LCP-элемент страницы. */}
-              <Image
-                src={heroTank}
-                alt={t("heroImageAlt")}
-                priority
-                placeholder="blur"
-                sizes="(max-width: 1023px) 92vw, 46vw"
-                className="h-auto w-full"
-              />
-              {/* Лёгкий блик по стеклу, чтобы фотография не выглядела
-                  инородной плашкой среди стеклянных панелей интерфейса */}
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/0 to-white/15"
-              />
-            </div>
-          </div>
+          {/* Сводка — только для авторизованных, иначе цифры пустые */}
+          {isAuthed && (
+            <dl className="relative z-raised mt-10 grid w-full max-w-md grid-cols-2 gap-3 text-left sm:gap-4">
+              <div className="surface-panel p-4">
+                <dt className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <Fish className="h-4 w-4 text-primary" aria-hidden="true" />
+                  {t("statAquariums")}
+                </dt>
+                <dd
+                  data-numeric
+                  className="mt-1 font-display text-3xl font-extrabold"
+                >
+                  {stats.aquariums ?? 0}
+                </dd>
+              </div>
+              <div className="surface-panel p-4">
+                <dt className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <CalendarClock
+                    className="h-4 w-4 text-warning"
+                    aria-hidden="true"
+                  />
+                  {t("statUpcoming")}
+                </dt>
+                <dd
+                  data-numeric
+                  className="mt-1 font-display text-3xl font-extrabold"
+                >
+                  {stats.upcomingMaintenance ?? 0}
+                </dd>
+              </div>
+            </dl>
+          )}
         </div>
 
         {/* Волна отделяет hero от остальной страницы */}
