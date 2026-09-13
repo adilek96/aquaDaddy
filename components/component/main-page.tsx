@@ -4,7 +4,8 @@ import { Fish, Compass, BookOpen, CalendarClock, ArrowRight } from "lucide-react
 import { Button } from "@/components/ui/button";
 import { auth } from "@/auth";
 import { fetchHomeStats } from "@/app/actions/homeStatsFetch";
-import { AquariumScene } from "@/components/illustrations/aquariumScene";
+import Image from "next/image";
+import heroTank from "@/public/hero-tank.jpg";
 import { CardIllustration, WaveDivider } from "@/components/illustrations/decor";
 import { NeonSchool } from "@/components/illustrations/neonSchool";
 
@@ -117,15 +118,33 @@ export async function MainPage() {
             )}
           </div>
 
-          {/* --- Иллюстрация ---
-              На телефоне идёт под текстом и ужимается: она украшает экран,
-              но не должна отодвигать кнопки за первый экран */}
-          <div className="relative z-raised mx-auto w-full max-w-md lg:max-w-none">
+          {/* --- Фотография аквариума ---
+              На телефоне идёт под текстом: она украшает экран, но не должна
+              отодвигать кнопки за первый экран */}
+          <div className="relative z-raised mx-auto w-full max-w-xl lg:max-w-none">
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-0 -z-10 translate-y-6 rounded-full bg-primary/20 blur-3xl"
+              className="pointer-events-none absolute inset-0 -z-10 translate-y-6 rounded-3xl bg-primary/25 blur-3xl"
             />
-            <AquariumScene className="h-auto w-full drop-shadow-xl" />
+            <div className="relative overflow-hidden rounded-2xl border border-surface-border shadow-raised">
+              {/* Статический импорт: Next сам знает размеры (нет сдвига
+                  вёрстки) и сам делает размытую заглушку на время загрузки.
+                  priority — картинка и есть LCP-элемент страницы. */}
+              <Image
+                src={heroTank}
+                alt={t("heroImageAlt")}
+                priority
+                placeholder="blur"
+                sizes="(max-width: 1023px) 92vw, 46vw"
+                className="h-auto w-full"
+              />
+              {/* Лёгкий блик по стеклу, чтобы фотография не выглядела
+                  инородной плашкой среди стеклянных панелей интерфейса */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-white/0 to-white/15"
+              />
+            </div>
           </div>
         </div>
 
