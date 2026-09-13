@@ -1,4 +1,6 @@
 import Link from "next/link";
+import Image from "next/image";
+import appLogo from "@/public/app-logo.svg";
 import { getTranslations } from "next-intl/server";
 import { Fish, Compass, BookOpen, CalendarClock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -52,19 +54,35 @@ export async function MainPage() {
     <div className="flex flex-col gap-10 pb-4 sm:gap-12">
       {/* ================= Hero ================= */}
       <section className="relative overflow-hidden">
-        {/* Стайка неонов в фоне. Лежит первой в разметке и без z-index,
-            поэтому оказывается под контентом, у которого z-raised */}
+        {/* Логотип водяным знаком за всем блоком. Идёт первым в разметке
+            и без z-index, поэтому лежит глубже стайки, а та — глубже текста.
+            Декоративный, поэтому aria-hidden и пустой alt: название бренда
+            и так есть в шапке, дублировать его скринридеру незачем. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 flex items-center justify-center"
+        >
+          <Image
+            src={appLogo}
+            alt=""
+            priority={false}
+            // В тёмной теме бирюза на тёмно-синем теряется сильнее,
+            // поэтому там знак чуть плотнее
+            // Размер задаём по высоте секции: знак квадратный, а hero
+            // низкий, и при ширине в 78% он вылезал за края и обрезался —
+            // на фоне оставался нечитаемый обрывок. object-contain
+            // страхует, когда узкий экран ограничивает ещё и ширину.
+            className="h-[88%] max-h-[440px] w-auto max-w-[82%] object-contain opacity-[0.07] dark:opacity-[0.12]"
+          />
+        </div>
+
+        {/* Стайка неонов. Лежит выше знака, но ниже контента с z-raised */}
         <NeonSchool className="absolute inset-0 h-full w-full opacity-60" />
 
         {/* Картинки в hero больше нет: колонка одна, содержимое по центру.
             Визуальную работу берёт на себя фоновая стайка неонов, которой
             теперь досталась вся ширина блока. */}
         <div className="app-container relative flex flex-col items-center pb-20 pt-10 text-center sm:pb-24 sm:pt-16 lg:pb-28 lg:pt-20">
-          <p className="relative z-raised mb-5 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-            AquaDaddy
-          </p>
-
           {/* max-w держит длину строки в читаемых пределах — без него
               заголовок на широком мониторе растянулся бы во всю ширину */}
           <h1 className="relative z-raised mb-5 max-w-3xl text-balance">
