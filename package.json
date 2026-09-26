@@ -27,6 +27,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "google-auth-library": "^10.6.2",
+    "ioredis": "^6.0.0",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.414.0",
     "minio": "^8.0.5",

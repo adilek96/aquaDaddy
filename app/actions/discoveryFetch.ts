@@ -1,8 +1,23 @@
 "use server";
 import { prisma } from "@/lib/prisma";
 import { refreshImageUrls } from "@/lib/minio";
+import { cacheGet, cacheSet, cacheVersion, bumpCacheVersion } from "@/lib/redis";
 
 export type SortType = "newest" | "rating";
+
+/** Пространство имён кэша раздела «Сообщество». */
+const NS = "discovery";
+
+// Живёт недолго: лента публичная и меняется от чужих действий — оценок,
+// комментариев, новых аквариумов. Полторы минуты снимают основную нагрузку
+// при пролистывании, но лента не выглядит замороженной.
+const LIST_TTL = 90;
+const ITEM_TTL = 60;
+
+/** Сбрасывает кэш ленты и карточек. Зовётся из действий, меняющих данные. */
+export async function invalidateDiscoveryCache(): Promise<void> {
+  await bumpCacheVersion(NS);
+}
 
 export async function fetchPublicAquariums({
   search = "",
@@ -19,6 +34,36 @@ export async function fetchPublicAquariums({
 }) {
   const skip = (page - 1) * limit;
 
+  // Ключ включает все параметры выборки и номер версии пространства имён:
+  // при изменении данных версия растёт, старые ключи перестают находиться
+  // и отмирают по TTL. Перебирать ключи (KEYS/SCAN) не приходится.
+  const version = await cacheVersion(NS);
+  const cacheKey = `${NS}:list:v${version}:${JSON.stringify({ search, sort, page, limit, type })}`;
+
+  const hit = await cacheGet<PublicAquariumsPage>(cacheKey);
+  if (hit) return hit;
+
+  const result = await queryPublicAquariums({ search, sort, limit, type, skip });
+  await cacheSet(cacheKey, result, LIST_TTL);
+  return result;
+}
+
+type PublicAquariumsPage = Awaited<ReturnType<typeof queryPublicAquariums>>;
+
+/** Сам запрос, без кэша — вынесен, чтобы обёртка осталась читаемой. */
+async function queryPublicAquariums({
+  search,
+  sort,
+  limit,
+  type,
+  skip,
+}: {
+  search: string;
+  sort: SortType;
+  limit: number;
+  type?: string;
+  skip: number;
+}) {
   const where: any = {
     isPublic: true,
   };
@@ -109,6 +154,20 @@ export async function fetchPublicAquariums({
 }
 
 export async function fetchAquariumDetails(aquariumId: string) {
+  const version = await cacheVersion(NS);
+  const cacheKey = `${NS}:item:v${version}:${aquariumId}`;
+
+  const hit = await cacheGet<Awaited<ReturnType<typeof queryAquariumDetails>>>(cacheKey);
+  if (hit) return hit;
+
+  const result = await queryAquariumDetails(aquariumId);
+  // null тоже кладём: иначе запросы на несуществующий аквариум каждый раз
+  // уходят в базу
+  await cacheSet(cacheKey, result, ITEM_TTL);
+  return result;
+}
+
+async function queryAquariumDetails(aquariumId: string) {
   const aquarium = await prisma.aquarium.findUnique({
     where: {
       id: aquariumId,
