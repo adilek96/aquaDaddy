@@ -124,6 +124,8 @@
       "button": "Yadda saxla"
     },
     "AquariumForm": {
+      "inhabitantsPlaceholder": "Balıq və bitkiləri sadalayın...",
+      "remindersPlaceholder": "Baxım xatırlatmaları...",
       "aquariums-title": "Mənim akvariumlarım",
       "title": "Yeni akvarium əlavə et",
       "subtitle": "Akvariumunuz haqqında daha çox məlumat əlavə edin",
