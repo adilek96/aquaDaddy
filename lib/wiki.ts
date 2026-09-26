@@ -4,6 +4,7 @@ import {
   SECTION_KEYS,
   type InhabitantProfile,
   type InhabitantSections,
+  type SectionKey,
 } from "@/lib/wikiTemplate";
 
 /**
@@ -48,9 +49,20 @@ export type WikiInhabitant = {
   articleUrl: string;
   profile: InhabitantProfile | null;
   gallery?: { url: string; credit?: string; sourceUrl?: string }[];
+  /** id вида, если это подвид или порода. */
+  parentId?: string | null;
+  varietyCount?: number;
 };
 
-export type WikiInhabitantDetails = WikiInhabitant & { sections: InhabitantSections };
+export type WikiRelative = { id: string; title: string; imageUrl: string };
+
+export type WikiInhabitantDetails = WikiInhabitant & {
+  sections: InhabitantSections;
+  parent?: WikiRelative | null;
+  varieties?: WikiRelative[];
+  /** Разделы, которые у подвида пустые и взяты у вида. */
+  inheritedSections?: SectionKey[];
+};
 
 async function getJson<T>(path: string): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
@@ -148,7 +160,8 @@ export async function getInhabitants(
   type?: AquariumType
 ): Promise<WikiInhabitant[]> {
   const load = (l: string) =>
-    getJson<InhabitantsResponse>(`/inhabitants?${query({ locale: l, type })}`).then(
+    // parents=1: в списке энциклопедии только виды, подвиды — на странице вида
+    getJson<InhabitantsResponse>(`/inhabitants?${query({ locale: l, type, parents: "1" })}`).then(
       (r) => r.inhabitants
     );
 
@@ -157,8 +170,37 @@ export async function getInhabitants(
   return withFallback(items, fallback, mergeInhabitant);
 }
 
-/** Обитатель со статьёй; пустые разделы берутся из русской версии. */
+/**
+ * Обитатель со статьёй. Пустые разделы берутся из русской версии, а у подвида
+ * пустые поля паспорта и разделы — у вида: подвиду достаточно описать отличия.
+ */
 export async function getInhabitant(
+  id: string,
+  locale: string
+): Promise<WikiInhabitantDetails | null> {
+  const item = await getLocalizedInhabitant(id, locale);
+  if (!item?.parentId) return item;
+
+  const parent = await getLocalizedInhabitant(item.parentId, locale);
+  if (!parent) return item;
+
+  const inheritedSections = SECTION_KEYS.filter(
+    (key) => !item.sections[key] && parent.sections[key]
+  );
+  const sections = Object.fromEntries(
+    SECTION_KEYS.map((key) => [key, item.sections[key] || parent.sections[key] || null])
+  ) as InhabitantSections;
+
+  return {
+    ...item,
+    profile: { ...(parent.profile ?? {}), ...(item.profile ?? {}) },
+    sections,
+    inheritedSections,
+    parent: item.parent ? { ...item.parent, title: item.parent.title || parent.title } : null,
+  };
+}
+
+async function getLocalizedInhabitant(
   id: string,
   locale: string
 ): Promise<WikiInhabitantDetails | null> {
@@ -180,7 +222,18 @@ export async function getInhabitant(
     SECTION_KEYS.map((key) => [key, item.sections?.[key] || base.sections?.[key] || null])
   ) as InhabitantSections;
 
-  return { ...item, title: item.title || base.title, sections };
+  const baseTitles = new Map(
+    [base.parent, ...(base.varieties ?? [])].flatMap((r) => (r ? [[r.id, r.title] as const] : []))
+  );
+  const withTitle = (r: WikiRelative) => ({ ...r, title: r.title || baseTitles.get(r.id) || "" });
+
+  return {
+    ...item,
+    title: item.title || base.title,
+    sections,
+    parent: item.parent ? withTitle(item.parent) : item.parent,
+    varieties: item.varieties?.map(withTitle),
+  };
 }
 
 /**

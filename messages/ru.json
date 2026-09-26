@@ -443,6 +443,10 @@
             "STARFISHS": "Морские звёзды"
         },
         "gallery": "Фото",
+        "varieties": "Породы и подвиды",
+        "varietyOf": "Порода вида «{name}»",
+        "inheritedFrom": "Общее для вида «{name}»",
+        "varietyCount": "{n, plural, one {# порода} few {# породы} many {# пород} other {# породы}}",
         "passport": "Паспорт",
         "origin": "Родина",
         "otherNames": "Другие названия",

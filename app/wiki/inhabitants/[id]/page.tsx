@@ -120,8 +120,9 @@ export default async function WikiInhabitantPage({ params }: Props) {
   const inhabitant = await getInhabitant(id, locale);
   if (!inhabitant) notFound();
 
-  const [image, gallery] = await Promise.all([
+  const [image, varietyImages, gallery] = await Promise.all([
     refreshWikiImage(inhabitant.imageUrl),
+    Promise.all((inhabitant.varieties ?? []).map((v) => refreshWikiImage(v.imageUrl))),
     Promise.all(
       (inhabitant.gallery ?? []).map(async (item) => ({
         ...item,
@@ -129,7 +130,19 @@ export default async function WikiInhabitantPage({ params }: Props) {
       }))
     ),
   ]);
-  const photos = gallery.filter((item) => item.src);
+  // Если главное фото лежит и в галерее — это способ указать его автора:
+  // подпись идёт под главным фото, а в сетке галереи снимок не повторяется.
+  // Сравниваем ключ объекта: подписи у ссылок каждый раз разные
+  const objectPath = (url?: string | null) => {
+    try {
+      return url ? new URL(url).pathname : null;
+    } catch {
+      return null;
+    }
+  };
+  const mainPath = objectPath(inhabitant.imageUrl);
+  const mainCredit = gallery.find((item) => mainPath && objectPath(item.url) === mainPath);
+  const photos = gallery.filter((item) => item.src && item !== mainCredit);
   const ctx: TemplateContext = { subtype: inhabitant.subtype, types: inhabitant.type };
   const profile = inhabitant.profile ?? {};
   const { sections } = inhabitant;
@@ -153,24 +166,53 @@ export default async function WikiInhabitantPage({ params }: Props) {
   );
 
   const subtypeKey = `subtype.${inhabitant.subtype}` as "subtype.FISHS";
+  const { parent } = inhabitant;
+  const varieties = inhabitant.varieties ?? [];
+  const inherited = new Set(inhabitant.inheritedSections ?? []);
 
   return (
     <article className="app-container max-w-4xl py-6 sm:py-10">
       <Link
-        href="/wiki?tab=inhabitants"
+        href={parent ? `/wiki/inhabitants/${parent.id}` : "/wiki?tab=inhabitants"}
         className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-        {t("backInhabitants")}
+        {parent ? parent.title : t("backInhabitants")}
       </Link>
 
       <header className="mb-8 grid animate-fade-in-up gap-6 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:items-center">
-        <div className="surface-panel aspect-square overflow-hidden">
-          <WikiImage src={image} alt={inhabitant.title} />
-        </div>
+        <figure>
+          <div className="surface-panel aspect-square overflow-hidden">
+            <WikiImage src={image} alt={inhabitant.title} />
+          </div>
+          {mainCredit?.credit && (
+            <figcaption className="mt-2 text-xs text-muted-foreground">
+              {mainCredit.sourceUrl ? (
+                <a
+                  href={mainCredit.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline-offset-2 hover:underline"
+                >
+                  {mainCredit.credit}
+                </a>
+              ) : (
+                mainCredit.credit
+              )}
+            </figcaption>
+          )}
+        </figure>
         <div>
           <p className="mb-2 text-sm font-medium text-accent">
-            {t.has(subtypeKey) ? t(subtypeKey) : inhabitant.subtype}
+            {parent ? (
+              <Link href={`/wiki/inhabitants/${parent.id}`} className="hover:underline">
+                {t("varietyOf", { name: parent.title })}
+              </Link>
+            ) : t.has(subtypeKey) ? (
+              t(subtypeKey)
+            ) : (
+              inhabitant.subtype
+            )}
           </p>
           <h1 className="mb-1">{inhabitant.title || t("untitled")}</h1>
           {scientificName && (
@@ -234,6 +276,35 @@ export default async function WikiInhabitantPage({ params }: Props) {
         </section>
       )}
 
+      {varieties.length > 0 && (
+        <section aria-labelledby="varieties" className="mb-10">
+          <h2 id="varieties" className="mb-4 text-xl font-bold">
+            {t("varieties")}
+          </h2>
+          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {varieties.map((variety, index) => (
+              <li key={variety.id}>
+                <Link
+                  href={`/wiki/inhabitants/${variety.id}`}
+                  className="surface-panel surface-interactive group flex h-full flex-col overflow-hidden"
+                >
+                  <div className="aspect-square overflow-hidden bg-muted">
+                    <WikiImage
+                      src={varietyImages[index]}
+                      alt={variety.title}
+                      className="transition-transform duration-slow ease-out-soft group-hover:scale-[1.04]"
+                    />
+                  </div>
+                  <span className="p-3 text-sm font-semibold leading-snug">
+                    {variety.title || t("untitled")}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       {photos.length > 0 && (
         <section aria-labelledby="gallery" className="mb-10">
           <h2 id="gallery" className="mb-4 text-xl font-bold">
@@ -277,6 +348,11 @@ export default async function WikiInhabitantPage({ params }: Props) {
             return (
               <section key={section.key}>
                 <h2>{t(`sections.${labelKey}` as "sections.overview")}</h2>
+                {parent && inherited.has(section.key) && (
+                  <p className="text-sm italic text-muted-foreground">
+                    {t("inheritedFrom", { name: parent.title })}
+                  </p>
+                )}
                 {renderText(sections[section.key] as string)}
               </section>
             );

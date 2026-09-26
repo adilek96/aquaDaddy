@@ -264,6 +264,11 @@ export default async function Wiki({
                           {t(`options.difficulty.${difficulty}` as "options.difficulty.EASY")}
                         </span>
                       )}
+                      {item.varietyCount ? (
+                        <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium">
+                          {t("varietyCount", { n: item.varietyCount })}
+                        </span>
+                      ) : null}
                       {item.type.map((value) => (
                         <span
                           key={value}

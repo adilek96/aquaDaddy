@@ -427,6 +427,10 @@
             "STARFISHS": "Starfish"
         },
         "gallery": "Photos",
+        "varieties": "Varieties",
+        "varietyOf": "Variety of {name}",
+        "inheritedFrom": "Shared with the species: {name}",
+        "varietyCount": "{n, plural, one {# variety} other {# varieties}}",
         "passport": "Fact sheet",
         "origin": "Origin",
         "otherNames": "Also known as",
