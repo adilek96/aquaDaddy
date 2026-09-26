@@ -1,5 +1,10 @@
 import sanitizeHtml from "sanitize-html";
 import { getMinioClient, PRESIGNED_TTL_SECONDS } from "@/lib/minio";
+import {
+  SECTION_KEYS,
+  type InhabitantProfile,
+  type InhabitantSections,
+} from "@/lib/wikiTemplate";
 
 /**
  * Клиент aquaWikiBackend. Энциклопедию наполняют через aquaDashboard,
@@ -41,7 +46,10 @@ export type WikiInhabitant = {
   title: string;
   imageUrl: string;
   articleUrl: string;
+  profile: InhabitantProfile | null;
 };
+
+export type WikiInhabitantDetails = WikiInhabitant & { sections: InhabitantSections };
 
 async function getJson<T>(path: string): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
@@ -146,6 +154,32 @@ export async function getInhabitants(
   if (locale === FALLBACK_LOCALE) return load(locale);
   const [items, fallback] = await Promise.all([load(locale), load(FALLBACK_LOCALE)]);
   return withFallback(items, fallback, mergeInhabitant);
+}
+
+/** Обитатель со статьёй; пустые разделы берутся из русской версии. */
+export async function getInhabitant(
+  id: string,
+  locale: string
+): Promise<WikiInhabitantDetails | null> {
+  const load = async (l: string) => {
+    const res = await fetch(
+      `${API_URL}/inhabitants/inhabitant/${encodeURIComponent(id)}?${query({ locale: l })}`,
+      { next: { revalidate: REVALIDATE_SECONDS } }
+    );
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error(`Wiki API inhabitant ${id}: ${res.status}`);
+    return ((await res.json()) as { inhabitant: WikiInhabitantDetails }).inhabitant;
+  };
+
+  if (locale === FALLBACK_LOCALE) return load(locale);
+  const [item, base] = await Promise.all([load(locale), load(FALLBACK_LOCALE)]);
+  if (!item || !base) return item;
+
+  const sections = Object.fromEntries(
+    SECTION_KEYS.map((key) => [key, item.sections?.[key] || base.sections?.[key] || null])
+  ) as InhabitantSections;
+
+  return { ...item, title: item.title || base.title, sections };
 }
 
 /**

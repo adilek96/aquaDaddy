@@ -441,6 +441,127 @@
             "CRABS": "Крабы",
             "SNAILS": "Улитки",
             "STARFISHS": "Морские звёзды"
+        },
+        "passport": "Паспорт",
+        "origin": "Родина",
+        "otherNames": "Другие названия",
+        "backInhabitants": "Все обитатели",
+        "noArticle": "Статья об этом обитателе пока не написана.",
+        "yes": "Да",
+        "no": "Нет",
+        "from": "от {value}",
+        "to": "до {value}",
+        "profile": {
+            "size": "Размер",
+            "height": "Высота",
+            "lifespan": "Продолжительность жизни",
+            "minVolume": "Минимальный объём",
+            "minVolumeTerra": "Объём террариума",
+            "temperature": "Температура",
+            "waterTemperature": "Температура воды",
+            "ph": "pH",
+            "gh": "Жёсткость GH",
+            "kh": "Жёсткость KH",
+            "salinity": "Солёность",
+            "calcium": "Кальций",
+            "magnesium": "Магний",
+            "temperament": "Характер",
+            "social": "Образ жизни",
+            "groupSize": "Количество",
+            "swimZone": "Зона обитания",
+            "diet": "Питание",
+            "jumps": "Выпрыгивает",
+            "eatsPlants": "Ест растения",
+            "copperSensitive": "Чувствителен к меди",
+            "light": "Освещение",
+            "co2": "CO₂",
+            "growth": "Скорость роста",
+            "placement": "Расположение",
+            "flow": "Течение",
+            "stinging": "Жалит соседей",
+            "coralFeeding": "Кормление",
+            "airTemperature": "Температура воздуха",
+            "humidity": "Влажность",
+            "needsLand": "Нужна суша",
+            "uvb": "УФ-лампа"
+        },
+        "options": {
+            "difficulty": {
+                "EASY": "Для новичков",
+                "MEDIUM": "Средняя сложность",
+                "HARD": "Для опытных"
+            },
+            "temperament": {
+                "PEACEFUL": "Мирный",
+                "SEMI_AGGRESSIVE": "Полуагрессивный",
+                "AGGRESSIVE": "Агрессивный",
+                "PREDATOR": "Хищник"
+            },
+            "social": {
+                "SOLITARY": "Одиночный",
+                "PAIR": "Парами",
+                "HAREM": "Гаремом",
+                "SCHOOL": "Стайный"
+            },
+            "swimZone": {
+                "BOTTOM": "Дно",
+                "MIDDLE": "Средние слои",
+                "TOP": "Поверхность"
+            },
+            "diet": {
+                "OMNIVORE": "Всеядный",
+                "CARNIVORE": "Хищник",
+                "HERBIVORE": "Растительноядный"
+            },
+            "level": {
+                "LOW": "Низкое",
+                "MEDIUM": "Среднее",
+                "HIGH": "Высокое"
+            },
+            "co2": {
+                "NONE": "Не нужен",
+                "RECOMMENDED": "Желателен",
+                "REQUIRED": "Обязателен"
+            },
+            "growth": {
+                "SLOW": "Медленная",
+                "MEDIUM": "Средняя",
+                "FAST": "Быстрая"
+            },
+            "placement": {
+                "FOREGROUND": "Передний план",
+                "MIDGROUND": "Средний план",
+                "BACKGROUND": "Задний план",
+                "FLOATING": "Плавающее",
+                "EPIPHYTE": "На коряге или камне"
+            },
+            "coralFeeding": {
+                "PHOTOSYNTHETIC": "Только свет",
+                "SUPPLEMENTAL": "Желательна подкормка",
+                "REQUIRED": "Обязательна подкормка"
+            }
+        },
+        "units": {
+            "cm": "{n} см",
+            "liters": "{n} л",
+            "years": "{n, plural, one {# год} few {# года} many {# лет} other {# года}}",
+            "individuals": "от {n, plural, one {# особи} other {# особей}}"
+        },
+        "symbols": {
+            "celsius": "°C",
+            "dh": "°dH",
+            "mgl": "мг/л",
+            "percent": "%"
+        },
+        "sections": {
+            "overview": "Общие сведения",
+            "appearance": "Внешний вид",
+            "care": "Содержание",
+            "feeding": "Кормление",
+            "fertilizing": "Удобрения и подкормки",
+            "compatibility": "Совместимость",
+            "breeding": "Размножение",
+            "facts": "Интересные факты"
         }
     }
 }

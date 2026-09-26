@@ -425,6 +425,127 @@
             "CRABS": "Crabs",
             "SNAILS": "Snails",
             "STARFISHS": "Starfish"
+        },
+        "passport": "Fact sheet",
+        "origin": "Origin",
+        "otherNames": "Also known as",
+        "backInhabitants": "All inhabitants",
+        "noArticle": "There is no article about this inhabitant yet.",
+        "yes": "Yes",
+        "no": "No",
+        "from": "from {value}",
+        "to": "up to {value}",
+        "profile": {
+            "size": "Size",
+            "height": "Height",
+            "lifespan": "Lifespan",
+            "minVolume": "Minimum tank size",
+            "minVolumeTerra": "Enclosure size",
+            "temperature": "Temperature",
+            "waterTemperature": "Water temperature",
+            "ph": "pH",
+            "gh": "Hardness GH",
+            "kh": "Hardness KH",
+            "salinity": "Salinity",
+            "calcium": "Calcium",
+            "magnesium": "Magnesium",
+            "temperament": "Temperament",
+            "social": "Social behavior",
+            "groupSize": "Group size",
+            "swimZone": "Swimming zone",
+            "diet": "Diet",
+            "jumps": "Jumps out",
+            "eatsPlants": "Eats plants",
+            "copperSensitive": "Copper sensitive",
+            "light": "Lighting",
+            "co2": "CO₂",
+            "growth": "Growth rate",
+            "placement": "Placement",
+            "flow": "Water flow",
+            "stinging": "Stings neighbors",
+            "coralFeeding": "Feeding",
+            "airTemperature": "Air temperature",
+            "humidity": "Humidity",
+            "needsLand": "Needs land area",
+            "uvb": "UVB lamp"
+        },
+        "options": {
+            "difficulty": {
+                "EASY": "Beginner",
+                "MEDIUM": "Intermediate",
+                "HARD": "Expert"
+            },
+            "temperament": {
+                "PEACEFUL": "Peaceful",
+                "SEMI_AGGRESSIVE": "Semi-aggressive",
+                "AGGRESSIVE": "Aggressive",
+                "PREDATOR": "Predator"
+            },
+            "social": {
+                "SOLITARY": "Solitary",
+                "PAIR": "In pairs",
+                "HAREM": "Harem",
+                "SCHOOL": "Schooling"
+            },
+            "swimZone": {
+                "BOTTOM": "Bottom",
+                "MIDDLE": "Middle",
+                "TOP": "Top"
+            },
+            "diet": {
+                "OMNIVORE": "Omnivore",
+                "CARNIVORE": "Carnivore",
+                "HERBIVORE": "Herbivore"
+            },
+            "level": {
+                "LOW": "Low",
+                "MEDIUM": "Medium",
+                "HIGH": "High"
+            },
+            "co2": {
+                "NONE": "Not needed",
+                "RECOMMENDED": "Recommended",
+                "REQUIRED": "Required"
+            },
+            "growth": {
+                "SLOW": "Slow",
+                "MEDIUM": "Medium",
+                "FAST": "Fast"
+            },
+            "placement": {
+                "FOREGROUND": "Foreground",
+                "MIDGROUND": "Midground",
+                "BACKGROUND": "Background",
+                "FLOATING": "Floating",
+                "EPIPHYTE": "On wood or rock"
+            },
+            "coralFeeding": {
+                "PHOTOSYNTHETIC": "Light only",
+                "SUPPLEMENTAL": "Supplemental feeding",
+                "REQUIRED": "Feeding required"
+            }
+        },
+        "units": {
+            "cm": "{n} cm",
+            "liters": "{n} L",
+            "years": "{n, plural, one {# year} other {# years}}",
+            "individuals": "{n}+ individuals"
+        },
+        "symbols": {
+            "celsius": "°C",
+            "dh": "°dH",
+            "mgl": "mg/L",
+            "percent": "%"
+        },
+        "sections": {
+            "overview": "Overview",
+            "appearance": "Appearance",
+            "care": "Care",
+            "feeding": "Feeding",
+            "fertilizing": "Fertilizing",
+            "compatibility": "Compatibility",
+            "breeding": "Breeding",
+            "facts": "Fun facts"
         }
     }
 }

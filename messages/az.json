@@ -439,6 +439,127 @@
             "CRABS": "Krablar",
             "SNAILS": "İlbizlər",
             "STARFISHS": "Dəniz ulduzları"
+        },
+        "passport": "Pasport",
+        "origin": "Vətəni",
+        "otherNames": "Digər adları",
+        "backInhabitants": "Bütün sakinlər",
+        "noArticle": "Bu sakin haqqında məqalə hələ yazılmayıb.",
+        "yes": "Bəli",
+        "no": "Xeyr",
+        "from": "{value}-dən",
+        "to": "{value}-ə qədər",
+        "profile": {
+            "size": "Ölçü",
+            "height": "Hündürlük",
+            "lifespan": "Ömür müddəti",
+            "minVolume": "Minimum həcm",
+            "minVolumeTerra": "Terrarium həcmi",
+            "temperature": "Temperatur",
+            "waterTemperature": "Su temperaturu",
+            "ph": "pH",
+            "gh": "Codluq GH",
+            "kh": "Codluq KH",
+            "salinity": "Duzluluq",
+            "calcium": "Kalsium",
+            "magnesium": "Maqnezium",
+            "temperament": "Xasiyyət",
+            "social": "Həyat tərzi",
+            "groupSize": "Say",
+            "swimZone": "Yaşayış zonası",
+            "diet": "Qidalanma",
+            "jumps": "Sudan tullanır",
+            "eatsPlants": "Bitkiləri yeyir",
+            "copperSensitive": "Misə həssasdır",
+            "light": "İşıqlandırma",
+            "co2": "CO₂",
+            "growth": "Böyümə sürəti",
+            "placement": "Yerləşmə",
+            "flow": "Axın",
+            "stinging": "Qonşularını sancır",
+            "coralFeeding": "Qidalanma",
+            "airTemperature": "Hava temperaturu",
+            "humidity": "Rütubət",
+            "needsLand": "Quru sahə lazımdır",
+            "uvb": "UV lampa"
+        },
+        "options": {
+            "difficulty": {
+                "EASY": "Yeni başlayanlar üçün",
+                "MEDIUM": "Orta çətinlik",
+                "HARD": "Təcrübəlilər üçün"
+            },
+            "temperament": {
+                "PEACEFUL": "Sülhsevər",
+                "SEMI_AGGRESSIVE": "Yarıaqressiv",
+                "AGGRESSIVE": "Aqressiv",
+                "PREDATOR": "Yırtıcı"
+            },
+            "social": {
+                "SOLITARY": "Tək",
+                "PAIR": "Cüt",
+                "HAREM": "Hərəm",
+                "SCHOOL": "Sürü"
+            },
+            "swimZone": {
+                "BOTTOM": "Dib",
+                "MIDDLE": "Orta qatlar",
+                "TOP": "Səth"
+            },
+            "diet": {
+                "OMNIVORE": "Hərşeyyeyən",
+                "CARNIVORE": "Ətyeyən",
+                "HERBIVORE": "Bitkiyeyən"
+            },
+            "level": {
+                "LOW": "Aşağı",
+                "MEDIUM": "Orta",
+                "HIGH": "Yüksək"
+            },
+            "co2": {
+                "NONE": "Lazım deyil",
+                "RECOMMENDED": "Arzuolunandır",
+                "REQUIRED": "Mütləqdir"
+            },
+            "growth": {
+                "SLOW": "Yavaş",
+                "MEDIUM": "Orta",
+                "FAST": "Sürətli"
+            },
+            "placement": {
+                "FOREGROUND": "Ön plan",
+                "MIDGROUND": "Orta plan",
+                "BACKGROUND": "Arxa plan",
+                "FLOATING": "Üzən",
+                "EPIPHYTE": "Kötük və ya daş üzərində"
+            },
+            "coralFeeding": {
+                "PHOTOSYNTHETIC": "Yalnız işıq",
+                "SUPPLEMENTAL": "Əlavə qidalanma arzuolunandır",
+                "REQUIRED": "Əlavə qidalanma mütləqdir"
+            }
+        },
+        "units": {
+            "cm": "{n} sm",
+            "liters": "{n} l",
+            "years": "{n} il",
+            "individuals": "{n} fərddən"
+        },
+        "symbols": {
+            "celsius": "°C",
+            "dh": "°dH",
+            "mgl": "mq/l",
+            "percent": "%"
+        },
+        "sections": {
+            "overview": "Ümumi məlumat",
+            "appearance": "Xarici görünüş",
+            "care": "Saxlanma",
+            "feeding": "Qidalanma",
+            "fertilizing": "Gübrələr",
+            "compatibility": "Uyğunluq",
+            "breeding": "Çoxalma",
+            "facts": "Maraqlı faktlar"
         }
     }
 }

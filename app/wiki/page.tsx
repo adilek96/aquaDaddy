@@ -228,33 +228,56 @@ export default async function Wiki({
         )
       ) : inhabitants.length > 0 ? (
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 xl:grid-cols-5">
-          {inhabitants.map((item, index) => (
-            <li
-              key={item.id}
-              className="surface-panel flex animate-fade-in-up flex-col overflow-hidden"
-              style={{ animationDelay: `${Math.min(index * 40, 320)}ms` }}
-            >
-              <div className="relative aspect-square w-full overflow-hidden bg-muted">
-                <WikiImage src={item.image} alt={item.title} />
-              </div>
-              <div className="flex flex-1 flex-col gap-2 p-3 sm:p-4">
-                <h2 className="line-clamp-2 text-sm font-bold leading-snug sm:text-base">
-                  {item.title || t("untitled")}
-                </h2>
-                <p className="text-xs text-muted-foreground">{subtypeLabel(item.subtype)}</p>
-                <div className="mt-auto flex flex-wrap gap-1.5">
-                  {item.type.map((value) => (
-                    <span
-                      key={value}
-                      className="rounded-full bg-accent/10 px-2 py-0.5 text-xs font-medium text-accent"
-                    >
-                      {typeLabel(value)}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </li>
-          ))}
+          {inhabitants.map((item, index) => {
+            const scientificName = item.profile?.scientificName as string | undefined;
+            const difficulty = item.profile?.difficulty as string | undefined;
+            return (
+              <li
+                key={item.id}
+                className="animate-fade-in-up"
+                style={{ animationDelay: `${Math.min(index * 40, 320)}ms` }}
+              >
+                <Link
+                  href={`/wiki/inhabitants/${item.id}`}
+                  className="surface-panel surface-interactive group flex h-full flex-col overflow-hidden"
+                >
+                  <div className="relative aspect-square w-full overflow-hidden bg-muted">
+                    <WikiImage
+                      src={item.image}
+                      alt={item.title}
+                      className="transition-transform duration-slow ease-out-soft group-hover:scale-[1.04]"
+                    />
+                  </div>
+                  <div className="flex flex-1 flex-col gap-1 p-3 sm:p-4">
+                    <h2 className="line-clamp-2 text-sm font-bold leading-snug sm:text-base">
+                      {item.title || t("untitled")}
+                    </h2>
+                    {scientificName && (
+                      <p className="line-clamp-1 text-xs italic text-muted-foreground">
+                        {scientificName}
+                      </p>
+                    )}
+                    <p className="text-xs text-muted-foreground">{subtypeLabel(item.subtype)}</p>
+                    <div className="mt-auto flex flex-wrap gap-1.5 pt-2">
+                      {difficulty && (
+                        <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium">
+                          {t(`options.difficulty.${difficulty}` as "options.difficulty.EASY")}
+                        </span>
+                      )}
+                      {item.type.map((value) => (
+                        <span
+                          key={value}
+                          className="rounded-full bg-accent/10 px-2 py-0.5 text-xs font-medium text-accent"
+                        >
+                          {typeLabel(value)}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       ) : (
         <EmptyState
