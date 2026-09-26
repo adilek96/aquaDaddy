@@ -89,7 +89,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         role="status"
         aria-live="polite"
         aria-atomic="false"
-        className="pointer-events-none fixed inset-x-4 bottom-4 z-toast flex flex-col gap-2 sm:inset-x-auto sm:right-4 sm:max-w-sm"
+        className="scrollbar-compensate pointer-events-none fixed inset-x-4 bottom-4 z-toast flex flex-col gap-2 sm:inset-x-auto sm:right-4 sm:max-w-sm"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         {toasts.map((toast) => (

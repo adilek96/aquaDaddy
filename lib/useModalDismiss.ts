@@ -26,13 +26,23 @@ export function useModalDismiss(open: boolean, onClose: () => void) {
     const prevPadding = document.body.style.paddingRight;
 
     document.body.style.overflow = "hidden";
-    if (scrollbar > 0) document.body.style.paddingRight = `${scrollbar}px`;
+    if (scrollbar > 0) {
+      document.body.style.paddingRight = `${scrollbar}px`;
+      // Та же переменная, что публикует react-remove-scroll внутри Radix.
+      // По ней фиксированные элементы (шапка, тосты) сдвигаются на столько же,
+      // иначе их содержимое прыгает: отступ body до них не доходит.
+      document.body.style.setProperty(
+        "--removed-body-scroll-bar-size",
+        `${scrollbar}px`
+      );
+    }
     document.addEventListener("keydown", onKeyDown);
 
     return () => {
       document.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = prevOverflow;
       document.body.style.paddingRight = prevPadding;
+      document.body.style.removeProperty("--removed-body-scroll-bar-size");
     };
   }, [open, onClose]);
 }

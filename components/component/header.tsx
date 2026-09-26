@@ -62,7 +62,10 @@ export function Header() {
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-header border-b transition-[background-color,box-shadow,border-color] duration-base ease-out-soft",
+        // scrollbar-compensate: при открытии выпадающего списка прокрутка
+        // страницы блокируется, скроллбар исчезает и окно становится шире.
+        // Без компенсации содержимое шапки прыгает вправо.
+        "scrollbar-compensate fixed inset-x-0 top-0 z-header border-b transition-[background-color,box-shadow,border-color] duration-base ease-out-soft",
         scrolled
           ? "border-surface-border bg-background/80 shadow-soft backdrop-blur-xl"
           : "border-transparent bg-background/50 backdrop-blur-md"
