@@ -57,6 +57,22 @@ export function objectKeyFromUrl(storedUrl: string): string | null {
  * Нужна потому, что срок жизни подписи — 7 дней, а ссылка хранится в базе
  * постоянно: без обновления все картинки перестают открываться через неделю.
  */
+/**
+ * Дата, от которой считается подпись, округлённая до начала суток UTC.
+ *
+ * Без округления каждая подпись уникальна, потому что в неё входит текущее
+ * время. Ссылка на одну и ту же картинку менялась на каждом запросе, браузер
+ * считал её новым файлом и скачивал заново — картинки «перерисовывались»
+ * при каждом обновлении страницы. С округлением ссылка одинакова в течение
+ * суток, и кэш браузера наконец работает.
+ */
+function signingDate(): Date {
+  const now = new Date();
+  return new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+  );
+}
+
 export async function refreshImageUrl(storedUrl: string): Promise<string> {
   const key = objectKeyFromUrl(storedUrl);
   if (!key) return storedUrl;
@@ -64,7 +80,10 @@ export async function refreshImageUrl(storedUrl: string): Promise<string> {
   return getMinioClient().presignedGetObject(
     getMinioBucket(),
     key,
-    PRESIGNED_TTL_SECONDS
+    PRESIGNED_TTL_SECONDS,
+    // Разрешаем браузеру держать картинку в кэше сутки
+    { "response-cache-control": "public, max-age=86400, immutable" },
+    signingDate()
   );
 }
 
