@@ -151,6 +151,13 @@ export async function updateWaterParameters(tankId: string, waterParameters: {
 // Обновление контента аквариума
 export async function updateAquariumContent(tankId: string, content: {
   inhabitants?: string;
+  /**
+   * Готовый список обитателей. Строка «Вид (2), Вид (1)» разбирается ниже
+   * по запятым, поэтому название с запятой внутри разваливалось на две
+   * записи. Окно редактирования присылает список отдельными полями, и
+   * разбор строки остаётся только для старых вызовов.
+   */
+  inhabitantsList?: Array<{ species: string; count: number }>;
   reminders?: string;
 }) {
   try {
@@ -191,27 +198,35 @@ export async function updateAquariumContent(tankId: string, content: {
       return inhabitants;
     };
 
+    // Готовый список имеет приоритет над строкой
+    const inhabitantsToSave = content.inhabitantsList
+      ? content.inhabitantsList
+          .map((item) => ({
+            species: String(item.species ?? "").trim(),
+            count: Number.isFinite(item.count) ? Math.max(1, Math.trunc(item.count)) : 1,
+          }))
+          .filter((item) => item.species.length > 0)
+      : content.inhabitants !== undefined
+        ? parseInhabitants(content.inhabitants)
+        : null;
+
     // Обновляем аквариум с транзакцией для всех связанных данных
     const updatedAquarium = await prisma.$transaction(async (tx) => {
       // Обновляем обитателей
-      if (content.inhabitants !== undefined) {
+      if (inhabitantsToSave) {
         // Удаляем старых обитателей
         await tx.inhabitant.deleteMany({
           where: { aquariumId: tankId }
         });
 
-        // Если есть новые обитатели, создаем записи
-        if (content.inhabitants.trim()) {
-          const inhabitants = parseInhabitants(content.inhabitants);
-          for (const inhabitant of inhabitants) {
-            await tx.inhabitant.create({
-              data: {
-                aquariumId: tankId,
-                species: inhabitant.species,
-                count: inhabitant.count,
-              }
-            });
-          }
+        for (const inhabitant of inhabitantsToSave) {
+          await tx.inhabitant.create({
+            data: {
+              aquariumId: tankId,
+              species: inhabitant.species,
+              count: inhabitant.count,
+            }
+          });
         }
       }
 

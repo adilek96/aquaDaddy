@@ -278,6 +278,7 @@ export default function UserAquarium({
     try {
       const result = await updateAquariumContent(id, {
         inhabitants: data.inhabitants,
+        inhabitantsList: data.inhabitantsList,
       });
       if (result.success && result.data) {
         setAquarium((prev: any) => ({

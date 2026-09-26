@@ -218,6 +218,15 @@
       "volumeCalcAuto": "Рассчитывается автоматически",
       "lastUpdatedLabel": "Последнее обновление:",
       "salinity": "Cоленость",
+      "addFromWiki": "Добавить из энциклопедии",
+      "searchInhabitantPlaceholder": "Начните вводить название вида",
+      "addCustomInhabitant": "Добавить «{name}»",
+      "noInhabitantsFound": "Ничего не найдено",
+      "noInhabitantsYet": "Обитателей пока нет — найдите вид выше",
+      "count": "Количество",
+      "increaseCount": "На одного больше",
+      "decreaseCount": "На одного меньше",
+      "removeInhabitant": "Удалить",
       "inhabitantsFormat": "Формат: \"Вид рыбы (количество), Вид растения (количество)\""
       
     

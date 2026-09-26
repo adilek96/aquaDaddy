@@ -157,13 +157,20 @@ export async function getArticle(
 
 export async function getInhabitants(
   locale: string,
-  type?: AquariumType
+  type?: AquariumType,
+  options?: { includeVarieties?: boolean }
 ): Promise<WikiInhabitant[]> {
   const load = (l: string) =>
-    // parents=1: в списке энциклопедии только виды, подвиды — на странице вида
-    getJson<InhabitantsResponse>(`/inhabitants?${query({ locale: l, type, parents: "1" })}`).then(
-      (r) => r.inhabitants
-    );
+    // parents=1: в списке энциклопедии только виды, подвиды — на странице вида.
+    // При выборе обитателей в аквариум подвиды, наоборот, нужны: в банке
+    // живёт «гуппи Эндлера», а не «гуппи вообще».
+    getJson<InhabitantsResponse>(
+      `/inhabitants?${query({
+        locale: l,
+        type,
+        parents: options?.includeVarieties ? undefined : "1",
+      })}`
+    ).then((r) => r.inhabitants);
 
   if (locale === FALLBACK_LOCALE) return load(locale);
   const [items, fallback] = await Promise.all([load(locale), load(FALLBACK_LOCALE)]);

@@ -38,7 +38,7 @@ interface AquariumEditStore {
   // Callback функции для сохранения
   onSaveDescription: ((data: { description: string }) => Promise<void>) | null;
   onSaveSpecifications: ((data: any) => Promise<void>) | null;
-  onSaveInhabitants: ((data: { inhabitants: string }) => Promise<void>) | null;
+  onSaveInhabitants: ((data: { inhabitants: string; inhabitantsList?: Array<{ species: string; count: number }> }) => Promise<void>) | null;
   onSaveWaterParams: ((data: { waterParameters: any }) => Promise<void>) | null;
   onSaveReminders: ((data: { reminders: string }) => Promise<void>) | null;
   onSaveTimeline: ((data: { startDate: string }) => Promise<void>) | null;
@@ -48,7 +48,7 @@ interface AquariumEditStore {
   // Методы для открытия модальных окон
   openDescriptionModal: (aquarium: AquariumData, onSave: (data: { description: string }) => Promise<void>) => void;
   openSpecificationsModal: (aquarium: AquariumData, onSave: (data: any) => Promise<void>) => void;
-  openInhabitantsModal: (aquarium: AquariumData, onSave: (data: { inhabitants: string }) => Promise<void>) => void;
+  openInhabitantsModal: (aquarium: AquariumData, onSave: (data: { inhabitants: string; inhabitantsList?: Array<{ species: string; count: number }> }) => Promise<void>) => void;
   openWaterParamsModal: (aquarium: AquariumData, onSave: (data: { waterParameters: any }) => Promise<void>) => void;
   openRemindersModal: (aquarium: AquariumData, onSave: (data: { reminders: string }) => Promise<void>) => void;
   openTimelineModal: (aquarium: AquariumData, onSave: (data: { startDate: string }) => Promise<void>) => void;
@@ -105,7 +105,7 @@ export const useAquariumEditStore = create<AquariumEditStore>((set) => ({
     });
   },
 
-  openInhabitantsModal: (aquarium: AquariumData, onSave: (data: { inhabitants: string }) => Promise<void>) => {
+  openInhabitantsModal: (aquarium: AquariumData, onSave: (data: { inhabitants: string; inhabitantsList?: Array<{ species: string; count: number }> }) => Promise<void>) => {
     set({
       isInhabitantsModalOpen: true,
       selectedAquarium: aquarium,

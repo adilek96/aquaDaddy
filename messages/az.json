@@ -219,6 +219,15 @@
       "volumeCalcAuto": "Avtomatik hesablanır",
       "lastUpdatedLabel": "Son dəyişim:",
       "salinity": "Duzluluq",
+      "addFromWiki": "Ensiklopediyadan əlavə et",
+      "searchInhabitantPlaceholder": "Növün adını yazmağa başlayın",
+      "addCustomInhabitant": "«{name}» əlavə et",
+      "noInhabitantsFound": "Heç nə tapılmadı",
+      "noInhabitantsYet": "Hələ sakin yoxdur — yuxarıda növ tapın",
+      "count": "Say",
+      "increaseCount": "Bir dənə çox",
+      "decreaseCount": "Bir dənə az",
+      "removeInhabitant": "Sil",
       "inhabitantsFormat": "Format: \"Balıq növü (miqdarı), Bitki növü (miqdarı)\""
     
     
