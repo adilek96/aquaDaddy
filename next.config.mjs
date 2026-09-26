@@ -20,6 +20,8 @@ const nextConfig = {
       // Новый сервер — s3.169-58-147-171.sslip.io (за Traefik, только https).
       // Старый хост оставлен: в базе лежат ссылки, выданные им.
       { protocol: "https", hostname: "s3.169-58-147-171.sslip.io" },
+      // С 26.09.2026 хранилище отдаёт ссылки на собственный домен
+      { protocol: "https", hostname: "s3.aquadaddy.app" },
       { protocol: "http", hostname: "194.163.151.112" },
       { protocol: "https", hostname: "194.163.151.112" },
     ],

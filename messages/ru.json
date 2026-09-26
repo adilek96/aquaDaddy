@@ -415,5 +415,32 @@
     "cancel": "Отмена",
     "save": "Сохранить",
     "saving": "Сохранение...",
-    "lastUpdatedLabel": "Последнее обновление:"
-  }
+    "lastUpdatedLabel": "Последнее обновление:",
+    "Wiki": {
+        "tabArticles": "Статьи",
+        "tabInhabitants": "Обитатели",
+        "all": "Все",
+        "untitled": "Без названия",
+        "back": "Вся энциклопедия",
+        "noContent": "Текст статьи ещё не написан.",
+        "noArticles": "Статей пока нет",
+        "noInhabitants": "Обитателей пока нет",
+        "emptyDescription": "Раздел пополняется — загляните позже.",
+        "unavailableTitle": "Энциклопедия временно недоступна",
+        "unavailableDescription": "Не удалось загрузить данные. Попробуйте обновить страницу через пару минут.",
+        "subtype": {
+            "FISHS": "Рыбы",
+            "REPTILES": "Рептилии",
+            "AMPHIBIANS": "Амфибии",
+            "TURTLES": "Черепахи",
+            "FROGS": "Лягушки",
+            "CORALS": "Кораллы",
+            "PLANTS": "Растения",
+            "SHRIMPS": "Креветки",
+            "CRAYFISH": "Раки",
+            "CRABS": "Крабы",
+            "SNAILS": "Улитки",
+            "STARFISHS": "Морские звёзды"
+        }
+    }
+}

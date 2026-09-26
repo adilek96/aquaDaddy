@@ -413,5 +413,32 @@
     "cancel": "Ləğv et",
     "save": "Yadda saxla",
     "saving": "Yadda saxlanılır...",
-    "lastUpdatedLabel": "Son dəyişim:"
-  }
+    "lastUpdatedLabel": "Son dəyişim:",
+    "Wiki": {
+        "tabArticles": "Məqalələr",
+        "tabInhabitants": "Sakinlər",
+        "all": "Hamısı",
+        "untitled": "Adsız",
+        "back": "Ensiklopediyaya qayıt",
+        "noContent": "Məqalənin mətni hələ yazılmayıb.",
+        "noArticles": "Hələ məqalə yoxdur",
+        "noInhabitants": "Hələ sakin yoxdur",
+        "emptyDescription": "Bölmə doldurulur — bir az sonra baxın.",
+        "unavailableTitle": "Ensiklopediya müvəqqəti əlçatan deyil",
+        "unavailableDescription": "Məlumatları yükləmək mümkün olmadı. Bir neçə dəqiqədən sonra səhifəni yeniləyin.",
+        "subtype": {
+            "FISHS": "Balıqlar",
+            "REPTILES": "Sürünənlər",
+            "AMPHIBIANS": "Suda-quruda yaşayanlar",
+            "TURTLES": "Tısbağalar",
+            "FROGS": "Qurbağalar",
+            "CORALS": "Mərcanlar",
+            "PLANTS": "Bitkilər",
+            "SHRIMPS": "Krevetlər",
+            "CRAYFISH": "Xərçənglər",
+            "CRABS": "Krablar",
+            "SNAILS": "İlbizlər",
+            "STARFISHS": "Dəniz ulduzları"
+        }
+    }
+}

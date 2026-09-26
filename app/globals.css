@@ -319,6 +319,44 @@
     @apply not-sr-only fixed left-4 top-4 z-[120] rounded-lg bg-primary px-4 py-2
            text-sm font-semibold text-primary-foreground shadow-lg;
   }
+
+  /* Текст статьи энциклопедии: HTML из редактора дашборда, без классов */
+  .wiki-content {
+    @apply text-base leading-relaxed;
+  }
+  .wiki-content > * + * {
+    @apply mt-4;
+  }
+  .wiki-content h2 {
+    @apply mt-8 text-2xl font-bold;
+  }
+  .wiki-content h3 {
+    @apply mt-6 text-xl font-bold;
+  }
+  .wiki-content h4 {
+    @apply mt-5 text-lg font-semibold;
+  }
+  .wiki-content ul {
+    @apply list-disc space-y-1 pl-6;
+  }
+  .wiki-content ol {
+    @apply list-decimal space-y-1 pl-6;
+  }
+  .wiki-content blockquote {
+    @apply border-l-4 border-accent/40 pl-4 italic text-muted-foreground;
+  }
+  .wiki-content a {
+    @apply text-primary underline underline-offset-2;
+  }
+  .wiki-content img {
+    @apply my-6 h-auto max-w-full rounded-2xl;
+  }
+  .wiki-content figcaption {
+    @apply mt-2 text-center text-sm text-muted-foreground;
+  }
+  .wiki-content pre {
+    @apply overflow-x-auto rounded-xl bg-muted p-4 text-sm;
+  }
 }
 
 @layer utilities {

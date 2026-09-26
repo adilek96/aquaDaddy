@@ -399,5 +399,32 @@
       "showReplies": "Show replies",
       "hideReplies": "Hide replies",
       "cancel": "Cancel"
+    },
+    "Wiki": {
+        "tabArticles": "Articles",
+        "tabInhabitants": "Inhabitants",
+        "all": "All",
+        "untitled": "Untitled",
+        "back": "Back to encyclopedia",
+        "noContent": "This article has no text yet.",
+        "noArticles": "No articles yet",
+        "noInhabitants": "No inhabitants yet",
+        "emptyDescription": "This section is growing — check back soon.",
+        "unavailableTitle": "Encyclopedia is temporarily unavailable",
+        "unavailableDescription": "We could not load the data. Try refreshing the page in a couple of minutes.",
+        "subtype": {
+            "FISHS": "Fish",
+            "REPTILES": "Reptiles",
+            "AMPHIBIANS": "Amphibians",
+            "TURTLES": "Turtles",
+            "FROGS": "Frogs",
+            "CORALS": "Corals",
+            "PLANTS": "Plants",
+            "SHRIMPS": "Shrimp",
+            "CRAYFISH": "Crayfish",
+            "CRABS": "Crabs",
+            "SNAILS": "Snails",
+            "STARFISHS": "Starfish"
+        }
     }
-  }
+}
