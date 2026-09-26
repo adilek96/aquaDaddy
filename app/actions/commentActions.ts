@@ -2,6 +2,7 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
+import { bumpCacheVersion } from "@/lib/redis";
 
 export async function addComment(aquariumId: string, text: string, parentId?: string) {
   try {
@@ -109,6 +110,8 @@ export async function deleteComment(commentId: string) {
     // revalidatePath("/discovery");
     // revalidatePath(`/discovery/${comment.aquariumId}`);
 
+    // Публичные данные изменились — обнуляем кэш ленты
+    await bumpCacheVersion("discovery");
     return { success: true };
   } catch (error) {
     console.error("Error deleting comment:", error);

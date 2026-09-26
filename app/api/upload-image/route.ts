@@ -6,6 +6,7 @@ import {
   getMinioBucket,
   getMinioClient,
 } from "@/lib/minio";
+import { bumpCacheVersion } from "@/lib/redis";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
@@ -109,6 +110,9 @@ export async function POST(request: NextRequest) {
     const savedImage = await prisma.aquariumImage.create({
       data: { aquariumId, url: imageUrl },
     });
+
+    // Публичные данные изменились — обнуляем кэш ленты
+    await bumpCacheVersion("discovery");
 
     return NextResponse.json({
       success: true,

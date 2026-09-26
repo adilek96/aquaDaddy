@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { getMessages } from "next-intl/server";
 import { measurCalcInch } from "@/components/helpers/measurCalcInch";
 import { measurCalcGal } from "@/components/helpers/mesurCalcGal";
+import { bumpCacheVersion } from "@/lib/redis";
 
 // Схема валидации для формы добавления аквариума
 const AquariumSchema = z.object({
@@ -154,6 +155,9 @@ export async function aquariumAddingAction(
 
     // Обновляем кэш страницы
     revalidatePath("/myTanks");
+
+    // Публичные данные изменились — обнуляем кэш ленты
+    await bumpCacheVersion("discovery");
 
     return {
       data: aquarium,

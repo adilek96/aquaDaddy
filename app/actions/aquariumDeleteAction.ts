@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
+import { bumpCacheVersion } from "@/lib/redis";
 
 export async function deleteAquarium(tankId: string) {
   try {
@@ -29,6 +30,8 @@ export async function deleteAquarium(tankId: string) {
       },
     });
 
+    // Публичные данные изменились — обнуляем кэш ленты
+    await bumpCacheVersion("discovery");
     return { success: true };
   } catch (error) {
     console.error("Error deleting aquarium:", error);

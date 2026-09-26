@@ -2,6 +2,7 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
+import { bumpCacheVersion } from "@/lib/redis";
 
 export async function addOrUpdateRating(aquariumId: string, value: number) {
   try {
@@ -56,6 +57,8 @@ export async function addOrUpdateRating(aquariumId: string, value: number) {
     // revalidatePath("/discovery");
     // revalidatePath(`/discovery/${aquariumId}`);
 
+    // Публичные данные изменились — обнуляем кэш ленты
+    await bumpCacheVersion("discovery");
     return { success: true, data: rating };
   } catch (error) {
     console.error("Error adding/updating rating:", error);

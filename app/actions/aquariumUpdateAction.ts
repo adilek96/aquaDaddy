@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
+import { bumpCacheVersion } from "@/lib/redis";
 
 // Обновление описания аквариума
 export async function updateAquariumDescription(tankId: string, description: string) {
@@ -36,6 +37,8 @@ export async function updateAquariumDescription(tankId: string, description: str
       }
     });
 
+    // Публичные данные изменились — обнуляем кэш ленты
+    await bumpCacheVersion("discovery");
     return { success: true, data: updatedAquarium };
   } catch (error) {
     console.error("Error updating aquarium description:", error);
@@ -82,6 +85,8 @@ export async function updateAquariumSpecifications(tankId: string, specification
       }
     });
 
+    // Публичные данные изменились — обнуляем кэш ленты
+    await bumpCacheVersion("discovery");
     return { success: true, data: updatedAquarium };
   } catch (error) {
     console.error("Error updating aquarium specifications:", error);
@@ -134,6 +139,8 @@ export async function updateWaterParameters(tankId: string, waterParameters: {
       },
     });
 
+    // Публичные данные изменились — обнуляем кэш ленты
+    await bumpCacheVersion("discovery");
     return { success: true, data: updatedWaterParams };
   } catch (error) {
     console.error("Error updating water parameters:", error);
@@ -239,6 +246,8 @@ export async function updateAquariumContent(tankId: string, content: {
       });
     });
 
+    // Публичные данные изменились — обнуляем кэш ленты
+    await bumpCacheVersion("discovery");
     return { success: true, data: updatedAquarium };
   } catch (error) {
     console.error("Error updating aquarium content:", error);
@@ -290,6 +299,8 @@ export async function updateAquariumTimeline(tankId: string, startDate: string) 
       }
     });
 
+    // Публичные данные изменились — обнуляем кэш ленты
+    await bumpCacheVersion("discovery");
     return { success: true, data: updatedAquarium };
   } catch (error: unknown) {
     if (error instanceof z.ZodError) {
@@ -355,6 +366,8 @@ export async function updateAquariumOverview(tankId: string, overview: {
       }
     });
 
+    // Публичные данные изменились — обнуляем кэш ленты
+    await bumpCacheVersion("discovery");
     return { success: true, data: updatedAquarium };
   } catch (error) {
     console.error("Error updating aquarium overview:", error);

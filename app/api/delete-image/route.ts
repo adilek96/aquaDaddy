@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getApiUser } from "@/lib/apiAuth";
 import { getMinioBucket, getMinioClient, objectKeyFromUrl } from "@/lib/minio";
+import { bumpCacheVersion } from "@/lib/redis";
 
 export async function DELETE(request: NextRequest) {
   try {
@@ -63,6 +64,9 @@ export async function DELETE(request: NextRequest) {
     }
 
     await prisma.aquariumImage.delete({ where: { id: imageId } });
+
+    // Публичные данные изменились — обнуляем кэш ленты
+    await bumpCacheVersion("discovery");
 
     return NextResponse.json({
       success: true,
