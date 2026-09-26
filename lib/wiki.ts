@@ -47,6 +47,7 @@ export type WikiInhabitant = {
   imageUrl: string;
   articleUrl: string;
   profile: InhabitantProfile | null;
+  gallery?: { url: string; credit?: string; sourceUrl?: string }[];
 };
 
 export type WikiInhabitantDetails = WikiInhabitant & { sections: InhabitantSections };

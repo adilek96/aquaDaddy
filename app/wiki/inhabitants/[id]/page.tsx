@@ -120,7 +120,16 @@ export default async function WikiInhabitantPage({ params }: Props) {
   const inhabitant = await getInhabitant(id, locale);
   if (!inhabitant) notFound();
 
-  const image = await refreshWikiImage(inhabitant.imageUrl);
+  const [image, gallery] = await Promise.all([
+    refreshWikiImage(inhabitant.imageUrl),
+    Promise.all(
+      (inhabitant.gallery ?? []).map(async (item) => ({
+        ...item,
+        src: await refreshWikiImage(item.url),
+      }))
+    ),
+  ]);
+  const photos = gallery.filter((item) => item.src);
   const ctx: TemplateContext = { subtype: inhabitant.subtype, types: inhabitant.type };
   const profile = inhabitant.profile ?? {};
   const { sections } = inhabitant;
@@ -222,6 +231,42 @@ export default async function WikiInhabitantPage({ params }: Props) {
               </div>
             ))}
           </dl>
+        </section>
+      )}
+
+      {photos.length > 0 && (
+        <section aria-labelledby="gallery" className="mb-10">
+          <h2 id="gallery" className="mb-4 text-xl font-bold">
+            {t("gallery")}
+          </h2>
+          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {photos.map((photo) => (
+              <li key={photo.url}>
+                <figure className="surface-panel overflow-hidden">
+                  <div className="aspect-[4/3] bg-muted">
+                    <WikiImage src={photo.src} alt={inhabitant.title} />
+                  </div>
+                  {/* Для CC BY / CC BY-SA подпись с автором обязательна */}
+                  {photo.credit && (
+                    <figcaption className="px-3 py-2 text-xs text-muted-foreground">
+                      {photo.sourceUrl ? (
+                        <a
+                          href={photo.sourceUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline-offset-2 hover:underline"
+                        >
+                          {photo.credit}
+                        </a>
+                      ) : (
+                        photo.credit
+                      )}
+                    </figcaption>
+                  )}
+                </figure>
+              </li>
+            ))}
+          </ul>
         </section>
       )}
 
