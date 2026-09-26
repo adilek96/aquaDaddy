@@ -183,6 +183,55 @@
     @apply font-body leading-relaxed;
   }
 
+  /* Текст в интерфейсе не должен выглядеть как редактируемый: по умолчанию
+     курсор — обычная стрелка, а не «балка» для набора. Выделять и копировать
+     текст это не мешает, меняется только вид указателя. */
+  body {
+    cursor: default;
+  }
+
+  /* Поля ввода — наоборот, «балка»: она подсказывает, что сюда можно писать */
+  input,
+  textarea,
+  [contenteditable="true"] {
+    cursor: text;
+  }
+
+  select,
+  input[type="checkbox"],
+  input[type="radio"],
+  input[type="range"],
+  input[type="file"],
+  input[type="color"] {
+    cursor: pointer;
+  }
+
+  /* Кликабельное — указатель. Ссылкам его даёт сам браузер, но кнопкам нет:
+     у них по умолчанию та же стрелка, что и у текста. */
+  button,
+  a[href],
+  summary,
+  [role="button"],
+  [role="tab"],
+  [role="option"],
+  [role="link"],
+  [role="switch"],
+  [role="checkbox"],
+  [role="radio"],
+  [role="menuitem"],
+  [role="menuitemcheckbox"],
+  [role="menuitemradio"],
+  label[for] {
+    cursor: pointer;
+  }
+
+  /* Недоступное не должно выглядеть нажимаемым */
+  button:disabled,
+  [aria-disabled="true"],
+  [data-disabled] {
+    cursor: not-allowed;
+  }
+
   /* Видимый фокус — обязателен для клавиатурной навигации */
   :focus-visible {
     @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
