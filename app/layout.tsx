@@ -10,6 +10,7 @@ import { cookies } from "next/headers";
 import { ToastProvider } from "@/components/ui/toast";
 import GlobalModals from "@/components/component/globalModals";
 import Settings from "@/components/component/settings";
+import CountryPromptGate from "@/components/component/countryPromptGate";
 
 /**
  * Раньше подключались три семейства Google Fonts (Libre Franklin, Tektur,
@@ -169,6 +170,7 @@ export default async function RootLayout({
 
                 <Settings />
                 <GlobalModals />
+                <CountryPromptGate />
               </ToastProvider>
             </SessionProvider>
           </NextIntlClientProvider>

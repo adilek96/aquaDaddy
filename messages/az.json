@@ -416,6 +416,15 @@
     "save": "Yadda saxla",
     "saving": "Yadda saxlanılır...",
     "lastUpdatedLabel": "Son dəyişim:",
+    "CountryPrompt": {
+        "title": "Haradansınız?",
+        "description": "Ölkənizi seçin — bayrağı «Kəşf» bölməsində akvariumlarınızın yanında görünəcək.",
+        "searchPlaceholder": "Ölkə axtar",
+        "nothingFound": "Heç nə tapılmadı",
+        "later": "Sonra",
+        "saved": "Ölkə yadda saxlanıldı",
+        "error": "Ölkəni saxlamaq alınmadı. Yenidən cəhd edin."
+    },
     "Wiki": {
         "tabArticles": "Məqalələr",
         "tabInhabitants": "Sakinlər",

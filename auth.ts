@@ -64,12 +64,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: "/signIn",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id as string;
         token.country = (user as any).country;
         token.role = (user as any).role;
       }
+
+      // Страна в токене проставляется при входе, а меняют её уже в профиле.
+      // Без этой ветки выбранная страна появилась бы только после
+      // перелогина — токен живёт двое суток.
+      if (trigger === "update" && session && typeof session === "object") {
+        const country = (session as { country?: unknown }).country;
+        if (typeof country === "string") token.country = country;
+      }
+
       return token;
     },
     async session({ session, token }) {

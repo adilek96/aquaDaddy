@@ -400,6 +400,15 @@
       "hideReplies": "Hide replies",
       "cancel": "Cancel"
     },
+    "CountryPrompt": {
+        "title": "Where are you from?",
+        "description": "Pick your country — a flag will show next to your tanks in Discovery.",
+        "searchPlaceholder": "Search country",
+        "nothingFound": "No matches",
+        "later": "Maybe later",
+        "saved": "Country saved",
+        "error": "Could not save the country. Try again."
+    },
     "Wiki": {
         "tabArticles": "Articles",
         "tabInhabitants": "Inhabitants",
