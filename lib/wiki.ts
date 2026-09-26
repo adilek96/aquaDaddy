@@ -1,5 +1,5 @@
 import sanitizeHtml from "sanitize-html";
-import { getMinioClient, PRESIGNED_TTL_SECONDS } from "@/lib/minio";
+import { getMinioClient, PRESIGNED_TTL_SECONDS, signingDate } from "@/lib/minio";
 import {
   SECTION_KEYS,
   type InhabitantProfile,
@@ -276,11 +276,15 @@ export async function refreshWikiImage(
   const [bucket, ...keyParts] = parsed.pathname.split("/").filter(Boolean);
   if (bucket === WIKI_BUCKET && keyParts.length > 0) {
     try {
-      // Подпись считается локально, в хранилище не ходит (регион задан)
+      // Подпись считается локально, в хранилище не ходит (регион задан).
+      // Дата округлена до суток, иначе ссылка меняется в каждом ответе и
+      // браузер качает одну и ту же картинку заново.
       return await getMinioClient().presignedGetObject(
         WIKI_BUCKET,
         keyParts.map(decodeURIComponent).join("/"),
-        PRESIGNED_TTL_SECONDS
+        PRESIGNED_TTL_SECONDS,
+        { "response-cache-control": "public, max-age=86400, immutable" },
+        signingDate()
       );
     } catch {
       return null;

@@ -66,7 +66,7 @@ export function objectKeyFromUrl(storedUrl: string): string | null {
  * при каждом обновлении страницы. С округлением ссылка одинакова в течение
  * суток, и кэш браузера наконец работает.
  */
-function signingDate(): Date {
+export function signingDate(): Date {
   const now = new Date();
   return new Date(
     Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
