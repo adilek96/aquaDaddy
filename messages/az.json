@@ -219,7 +219,6 @@
       "volumeCalcAuto": "Avtomatik hesablanır",
       "lastUpdatedLabel": "Son dəyişim:",
       "salinity": "Duzluluq",
-      "addFromWiki": "Ensiklopediyadan əlavə et",
       "searchInhabitantPlaceholder": "Növün adını yazmağa başlayın",
       "addCustomInhabitant": "«{name}» əlavə et",
       "noInhabitantsFound": "Heç nə tapılmadı",
@@ -228,6 +227,16 @@
       "increaseCount": "Bir dənə çox",
       "decreaseCount": "Bir dənə az",
       "removeInhabitant": "Sil",
+      "chooseCategory": "Kateqoriya seçin",
+      "allCategories": "Kateqoriyalar",
+      "speciesCount": "{count, plural, one {# növ} other {# növ}}",
+      "addedInhabitants": "Bu akvariumda",
+      "alreadyAdded": "əlavə edilib",
+      "pageOf": "{total} səhifədən {page}",
+      "previousPage": "Əvvəlki səhifə",
+      "nextPage": "Sonrakı səhifə",
+      "wikiUnavailable": "Ensiklopediya hazırda əlçatan deyil",
+      "otherInhabitants": "Digər",
       "inhabitantsFormat": "Format: \"Balıq növü (miqdarı), Bitki növü (miqdarı)\""
     
     

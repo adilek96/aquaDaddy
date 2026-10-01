@@ -18,6 +18,7 @@ import CommentThread from "@/components/component/commentThread";
 import Link from "next/link";
 import { useToast } from "@/components/ui/toast";
 import { useRouter } from "next/navigation";
+import { InhabitantList } from "@/components/component/inhabitantList";
 
 export default function DiscoveryDetailPage({
   params,
@@ -331,14 +332,7 @@ export default function DiscoveryDetailPage({
               <CardTitle>{t("inhabitants")}</CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2">
-                {aquarium.inhabitants.map((inhabitant: any) => (
-                  <li key={inhabitant.id} className="flex justify-between">
-                    <span>{inhabitant.species}</span>
-                    <span className="text-muted-foreground">×{inhabitant.count}</span>
-                  </li>
-                ))}
-              </ul>
+              <InhabitantList inhabitants={aquarium.inhabitants} emptyText="" />
             </CardContent>
           </Card>
         )}

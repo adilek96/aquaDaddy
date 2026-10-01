@@ -110,6 +110,9 @@ model Inhabitant {
   species    String
   count      Int
   addedAt    DateTime @default(now())
+  /// id вида в энциклопедии. По нему берутся название на языке интерфейса,
+  /// фотография и категория; у записей, введённых вручную, пустой.
+  wikiId     String?
   aquarium   Aquarium @relation(fields: [aquariumId], references: [id], onDelete: Cascade)
 }
 

@@ -16,6 +16,8 @@ export type InhabitantOption = {
   id: string;
   title: string;
   imageUrl: string;
+  /** Категория: FISHS, PLANTS, SHRIMPS… Названия лежат в переводах Wiki.subtype. */
+  subtype: string;
 };
 
 const NS = "wiki-options";
@@ -46,6 +48,7 @@ export async function fetchInhabitantOptions(
         id: item.id,
         title: item.title,
         imageUrl: item.imageUrl,
+        subtype: item.subtype,
       }))
       .sort((a, b) => a.title.localeCompare(b.title, locale));
 

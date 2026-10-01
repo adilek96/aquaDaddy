@@ -218,7 +218,6 @@
       "volumeCalcAuto": "Рассчитывается автоматически",
       "lastUpdatedLabel": "Последнее обновление:",
       "salinity": "Cоленость",
-      "addFromWiki": "Добавить из энциклопедии",
       "searchInhabitantPlaceholder": "Начните вводить название вида",
       "addCustomInhabitant": "Добавить «{name}»",
       "noInhabitantsFound": "Ничего не найдено",
@@ -227,6 +226,16 @@
       "increaseCount": "На одного больше",
       "decreaseCount": "На одного меньше",
       "removeInhabitant": "Удалить",
+      "chooseCategory": "Выберите категорию",
+      "allCategories": "Категории",
+      "speciesCount": "{count, plural, one {# вид} few {# вида} many {# видов} other {# вида}}",
+      "addedInhabitants": "В этом аквариуме",
+      "alreadyAdded": "добавлен",
+      "pageOf": "{page} из {total}",
+      "previousPage": "Предыдущая страница",
+      "nextPage": "Следующая страница",
+      "wikiUnavailable": "Энциклопедия сейчас недоступна",
+      "otherInhabitants": "Прочее",
       "inhabitantsFormat": "Формат: \"Вид рыбы (количество), Вид растения (количество)\""
       
     

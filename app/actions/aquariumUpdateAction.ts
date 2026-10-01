@@ -157,7 +157,7 @@ export async function updateAquariumContent(tankId: string, content: {
    * записи. Окно редактирования присылает список отдельными полями, и
    * разбор строки остаётся только для старых вызовов.
    */
-  inhabitantsList?: Array<{ species: string; count: number }>;
+  inhabitantsList?: Array<{ species: string; count: number; wikiId?: string | null }>;
   reminders?: string;
 }) {
   try {
@@ -177,7 +177,8 @@ export async function updateAquariumContent(tankId: string, content: {
 
     // Функция для парсинга обитателей
     const parseInhabitants = (inhabitantsStr: string) => {
-      const inhabitants: Array<{species: string, count: number}> = [];
+      // wikiId у разобранных из строки записей нет: вид по названию не опознать
+      const inhabitants: Array<{species: string, count: number, wikiId: string | null}> = [];
       const pairs = inhabitantsStr.split(',').map(pair => pair.trim());
       
       pairs.forEach(pair => {
@@ -185,12 +186,14 @@ export async function updateAquariumContent(tankId: string, content: {
         if (match) {
           inhabitants.push({
             species: match[1].trim(),
-            count: parseInt(match[2])
+            count: parseInt(match[2]),
+            wikiId: null,
           });
         } else if (pair.trim()) {
           inhabitants.push({
             species: pair.trim(),
-            count: 1
+            count: 1,
+            wikiId: null,
           });
         }
       });
@@ -204,6 +207,7 @@ export async function updateAquariumContent(tankId: string, content: {
           .map((item) => ({
             species: String(item.species ?? "").trim(),
             count: Number.isFinite(item.count) ? Math.max(1, Math.trunc(item.count)) : 1,
+            wikiId: item.wikiId ? String(item.wikiId) : null,
           }))
           .filter((item) => item.species.length > 0)
       : content.inhabitants !== undefined
@@ -225,6 +229,7 @@ export async function updateAquariumContent(tankId: string, content: {
               aquariumId: tankId,
               species: inhabitant.species,
               count: inhabitant.count,
+              wikiId: inhabitant.wikiId,
             }
           });
         }

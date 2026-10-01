@@ -22,6 +22,7 @@ import {
 
 import ImageUploader from "@/components/component/imageUploader";
 import ImageSlider from "@/components/component/imageSlider";
+import { InhabitantList } from "@/components/component/inhabitantList";
 
 // Компонент для отображения карточки обслуживания
 const MaintenanceCard = ({
@@ -866,16 +867,10 @@ export default function UserAquarium({
                   loading={loadingStates.inhabitants}
                   editLabel={tDetails("editAquarium")}
                 />
-                <div className="text-sm font-medium transition-colors">
-                  {aquarium.inhabitants && aquarium.inhabitants.length > 0
-                    ? aquarium.inhabitants
-                        .map(
-                          (inhabitant: any) =>
-                            `${inhabitant.species} (${inhabitant.count})`
-                        )
-                        .join(", ")
-                    : t("notAssigned")}
-                </div>
+                <InhabitantList
+                  inhabitants={aquarium.inhabitants}
+                  emptyText={t("notAssigned")}
+                />
               </div>
               <div>
                 <SectionHeading
