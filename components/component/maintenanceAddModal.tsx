@@ -120,7 +120,7 @@ export default function MaintenanceAddModal() {
               <SelectTrigger>
                 <SelectValue placeholder={tDetails("selectMaintenanceType")} />
               </SelectTrigger>
-              <SelectContent className="z-[60]">
+              <SelectContent>
                 {maintenanceTypes.map((type) => (
                   <SelectItem key={type.value} value={type.value}>
                     {tDetails(type.label)}

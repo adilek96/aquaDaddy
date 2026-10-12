@@ -460,4 +460,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reminderWhen => 'Remind at';
+
+  @override
+  String get deleteAquarium => 'Delete aquarium';
+
+  @override
+  String get deleteAquariumMessage =>
+      'Delete this aquarium along with all its data? This action cannot be undone.';
+
+  @override
+  String get country => 'Country';
+
+  @override
+  String get countryNotSet => 'Not set';
+
+  @override
+  String get selectCountry => 'Select country';
+
+  @override
+  String get searchCountryHint => 'Search by code';
+
+  @override
+  String get countryUpdated => 'Country updated';
 }

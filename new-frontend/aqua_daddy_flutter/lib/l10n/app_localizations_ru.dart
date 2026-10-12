@@ -461,4 +461,26 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get reminderWhen => 'Напомнить';
+
+  @override
+  String get deleteAquarium => 'Удалить аквариум';
+
+  @override
+  String get deleteAquariumMessage =>
+      'Удалить этот аквариум вместе со всеми данными? Это действие необратимо.';
+
+  @override
+  String get country => 'Страна';
+
+  @override
+  String get countryNotSet => 'Не указана';
+
+  @override
+  String get selectCountry => 'Выберите страну';
+
+  @override
+  String get searchCountryHint => 'Поиск по коду';
+
+  @override
+  String get countryUpdated => 'Страна обновлена';
 }

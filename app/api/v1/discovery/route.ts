@@ -20,6 +20,7 @@ export async function GET(req: Request) {
           id: true,
           name: true,
           image: true,
+          country: true,
         },
       },
       ratings: true,

@@ -5,6 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:aqua_daddy_flutter/features/auth/auth_provider.dart';
 import 'package:aqua_daddy_flutter/core/locale_provider.dart';
 import 'package:aqua_daddy_flutter/core/app_header.dart';
+import 'package:aqua_daddy_flutter/core/api_error.dart';
+import 'package:aqua_daddy_flutter/core/countries.dart';
+import 'package:aqua_daddy_flutter/core/country_flag.dart';
 import 'package:aqua_daddy_flutter/l10n/app_localizations.dart';
 import 'package:aqua_daddy_flutter/features/dashboard/aquarium_provider.dart';
 
@@ -26,6 +29,7 @@ class ProfileScreen extends ConsumerWidget {
     final name = user?['name'] as String? ?? 'aquaDaddy User';
     final email = user?['email'] as String? ?? '';
     final image = user?['image'] as String?;
+    final country = user?['country'] as String?;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -81,6 +85,18 @@ class ProfileScreen extends ConsumerWidget {
                               style: GoogleFonts.montserrat(fontSize: 12, color: const Color(0xFF6A8A90)),
                               overflow: TextOverflow.ellipsis,
                             ),
+                          if (isKnownCountryCode(country)) ...[
+                            const SizedBox(height: 6),
+                            CountryFlag(
+                              code: country!,
+                              height: 14,
+                              codeStyle: GoogleFonts.montserrat(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF6A8A90),
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                     ),
@@ -98,6 +114,52 @@ class ProfileScreen extends ConsumerWidget {
                 ),
                 loading: () => const SizedBox.shrink(),
                 error: (_, __) => const SizedBox.shrink(),
+              ),
+              const SizedBox(height: 24),
+
+              // Country section
+              _SectionLabel(label: l10n.country),
+              const SizedBox(height: 8),
+              Container(
+                decoration: BoxDecoration(
+                  color: cardBg,
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 4)),
+                  ],
+                ),
+                child: InkWell(
+                  onTap: () => _showCountryPicker(context, ref),
+                  borderRadius: BorderRadius.circular(14),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        if (isKnownCountryCode(country))
+                          CountryFlag(
+                            code: country!,
+                            height: 16,
+                            codeStyle: GoogleFonts.montserrat(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                              color: isDark ? const Color(0xFFB0C4D0) : const Color(0xFF05222B),
+                            ),
+                          )
+                        else
+                          Text(
+                            l10n.countryNotSet,
+                            style: GoogleFonts.montserrat(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 15,
+                              color: const Color(0xFF6A8A90),
+                            ),
+                          ),
+                        const Icon(Icons.chevron_right_rounded, color: Color(0xFF6A8A90), size: 20),
+                      ],
+                    ),
+                  ),
+                ),
               ),
               const SizedBox(height: 24),
 
@@ -175,6 +237,126 @@ class ProfileScreen extends ConsumerWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Открывает выбор страны и сохраняет её на сервере.
+Future<void> _showCountryPicker(BuildContext context, WidgetRef ref) async {
+  final l10n = AppLocalizations.of(context)!;
+  final code = await showModalBottomSheet<String>(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (_) => const _CountryPickerSheet(),
+  );
+  if (code == null || !context.mounted) return;
+
+  await runWithFeedback(
+    context,
+    () => ref.read(authProvider.notifier).updateCountry(code),
+    successMessage: l10n.countryUpdated,
+  );
+}
+
+/// Список стран «по коду и флагу» с поиском по коду.
+class _CountryPickerSheet extends StatefulWidget {
+  const _CountryPickerSheet();
+
+  @override
+  State<_CountryPickerSheet> createState() => _CountryPickerSheetState();
+}
+
+class _CountryPickerSheetState extends State<_CountryPickerSheet> {
+  String _query = '';
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? const Color(0xFF0A1824) : Colors.white;
+    final textColor = isDark ? const Color(0xFFE2E8F0) : const Color(0xFF05222B);
+    final fieldBg = isDark ? const Color(0xFF0F2030) : const Color(0xFFEAF9FA);
+
+    final q = _query.trim().toUpperCase();
+    final codes = q.isEmpty
+        ? countryCodes
+        : countryCodes.where((c) => c.contains(q)).toList();
+
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.8,
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.only(top: 10),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: const Color(0xFF6A8A90).withValues(alpha: 0.4),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  l10n.selectCountry,
+                  style: GoogleFonts.tektur(fontSize: 20, color: textColor),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: fieldBg,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: TextField(
+                  autofocus: true,
+                  onChanged: (v) => setState(() => _query = v),
+                  style: GoogleFonts.montserrat(fontSize: 14, color: textColor),
+                  decoration: InputDecoration(
+                    hintText: l10n.searchCountryHint,
+                    hintStyle: GoogleFonts.montserrat(color: const Color(0xFF6A8A90), fontSize: 14),
+                    prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF00A8D8), size: 20),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: ListView.builder(
+                itemCount: codes.length,
+                itemBuilder: (context, index) {
+                  final code = codes[index];
+                  return ListTile(
+                    leading: CountryFlag(code: code, showCode: false, height: 20),
+                    title: Text(
+                      code,
+                      style: GoogleFonts.montserrat(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        color: textColor,
+                      ),
+                    ),
+                    onTap: () => Navigator.pop(context, code),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );

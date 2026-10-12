@@ -68,6 +68,21 @@ class _AquariumDetailScreenState extends ConsumerState<AquariumDetailScreen> {
     return result ?? false;
   }
 
+  Future<void> _deleteAquarium() async {
+    final l10n = AppLocalizations.of(context)!;
+    if (!await _confirm(l10n.deleteAquarium, l10n.deleteAquariumMessage)) return;
+    if (!mounted) return;
+
+    final ok = await runWithFeedback(
+      context,
+      () => ref.read(aquariumsProvider.notifier).deleteAquarium(aquariumId),
+      successMessage: l10n.deleted,
+    );
+
+    // После удаления оставаться на экране несуществующего танка нельзя
+    if (ok && mounted) context.go('/dashboard');
+  }
+
   void _showAddPhoto() {
     final l10n = AppLocalizations.of(context)!;
     final urlController = TextEditingController();
@@ -263,13 +278,19 @@ class _AquariumDetailScreenState extends ConsumerState<AquariumDetailScreen> {
                   ),
                 ),
                 actions: [
-                  if (isOwner)
+                  if (isOwner) ...[
                     IconButton(
                       icon: const Icon(Icons.history_edu),
                       onPressed: () =>
                           context.push('/aquarium/${aquarium.id}/log'),
                       tooltip: l10n.logParameters,
                     ),
+                    IconButton(
+                      icon: const Icon(Icons.delete_outline),
+                      onPressed: _deleteAquarium,
+                      tooltip: l10n.deleteAquarium,
+                    ),
+                  ],
                 ],
               ),
               SliverToBoxAdapter(

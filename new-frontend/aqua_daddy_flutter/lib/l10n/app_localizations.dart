@@ -987,6 +987,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remind at'**
   String get reminderWhen;
+
+  /// No description provided for @deleteAquarium.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete aquarium'**
+  String get deleteAquarium;
+
+  /// No description provided for @deleteAquariumMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this aquarium along with all its data? This action cannot be undone.'**
+  String get deleteAquariumMessage;
+
+  /// No description provided for @country.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get country;
+
+  /// No description provided for @countryNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get countryNotSet;
+
+  /// No description provided for @selectCountry.
+  ///
+  /// In en, this message translates to:
+  /// **'Select country'**
+  String get selectCountry;
+
+  /// No description provided for @searchCountryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by code'**
+  String get searchCountryHint;
+
+  /// No description provided for @countryUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Country updated'**
+  String get countryUpdated;
 }
 
 class _AppLocalizationsDelegate

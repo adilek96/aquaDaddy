@@ -170,5 +170,12 @@
   "statusSkipped": "Skipped",
   "statusCancelled": "Cancelled",
   "selectAtLeastOneType": "Pick at least one type",
-  "reminderWhen": "Remind at"
+  "reminderWhen": "Remind at",
+  "deleteAquarium": "Delete aquarium",
+  "deleteAquariumMessage": "Delete this aquarium along with all its data? This action cannot be undone.",
+  "country": "Country",
+  "countryNotSet": "Not set",
+  "selectCountry": "Select country",
+  "searchCountryHint": "Search by code",
+  "countryUpdated": "Country updated"
 }

@@ -136,6 +136,7 @@ export async function POST(request: Request) {
         email: user.email,
         role: user.role,
         image: user.image,
+        country: user.country,
       },
       token: signApiToken({
         id: user.id,

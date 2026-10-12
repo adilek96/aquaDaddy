@@ -170,5 +170,12 @@
   "statusSkipped": "Пропущено",
   "statusCancelled": "Отменено",
   "selectAtLeastOneType": "Выберите хотя бы один тип",
-  "reminderWhen": "Напомнить"
+  "reminderWhen": "Напомнить",
+  "deleteAquarium": "Удалить аквариум",
+  "deleteAquariumMessage": "Удалить этот аквариум вместе со всеми данными? Это действие необратимо.",
+  "country": "Страна",
+  "countryNotSet": "Не указана",
+  "selectCountry": "Выберите страну",
+  "searchCountryHint": "Поиск по коду",
+  "countryUpdated": "Страна обновлена"
 }

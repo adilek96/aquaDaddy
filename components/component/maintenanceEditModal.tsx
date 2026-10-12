@@ -124,7 +124,7 @@ export default function MaintenanceEditModal() {
               <SelectTrigger>
                 <SelectValue placeholder={tDetails("selectMaintenanceType")} />
               </SelectTrigger>
-              <SelectContent className="z-[60]">
+              <SelectContent>
                 {maintenanceTypes.map((type) => (
                   <SelectItem key={type.value} value={type.value}>
                     {tDetails(type.label)}
@@ -190,7 +190,7 @@ export default function MaintenanceEditModal() {
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="z-[60]">
+              <SelectContent>
                 {(() => {
                   // Проверяем, является ли дата обслуживания сегодняшней
                   const today = new Date();

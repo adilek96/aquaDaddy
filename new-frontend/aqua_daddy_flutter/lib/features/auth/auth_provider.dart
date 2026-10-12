@@ -187,6 +187,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  /// Сохраняет страну пользователя на сервере и обновляет локальную копию
+  /// профиля (и в state, и в SharedPreferences), чтобы флаг появился сразу.
+  Future<void> updateCountry(String code) async {
+    final response = await _api.patch('/me', data: {'country': code});
+    final updated = Map<String, dynamic>.from(state.user ?? {});
+    updated['country'] = response.data['country'];
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_data', jsonEncode(updated));
+    state = state.copyWith(user: updated);
+  }
+
   Future<void> logout() async {
     try {
       await _api.post('/auth/logout');

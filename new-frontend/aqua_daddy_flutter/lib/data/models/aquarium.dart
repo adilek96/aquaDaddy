@@ -19,6 +19,11 @@ class Aquarium {
   final List<AquariumImage> images;
   final WaterParameters? waterParams;
 
+  /// Владелец — приходит только из раздела «Обзор» (public), в деталях танка
+  /// сервер его не отдаёт, поэтому поля необязательные.
+  final String? ownerName;
+  final String? ownerCountry;
+
   const Aquarium({
     required this.id,
     required this.userId,
@@ -36,6 +41,8 @@ class Aquarium {
     required this.updatedAt,
     this.images = const [],
     this.waterParams,
+    this.ownerName,
+    this.ownerCountry,
   });
 
   factory Aquarium.fromJson(Map<String, dynamic> json) {
@@ -57,9 +64,12 @@ class Aquarium {
       images: (json['images'] as List? ?? [])
           .map((img) => AquariumImage.fromJson(img))
           .toList(),
-      waterParams: json['waterParams'] != null 
-          ? WaterParameters.fromJson(json['waterParams']) 
+      waterParams: json['waterParams'] != null
+          ? WaterParameters.fromJson(json['waterParams'])
           : null,
+      ownerName: json['user'] is Map ? json['user']['name'] as String? : null,
+      ownerCountry:
+          json['user'] is Map ? json['user']['country'] as String? : null,
     );
   }
 }

@@ -7,6 +7,8 @@ import 'package:aqua_daddy_flutter/core/app_header.dart';
 import 'package:aqua_daddy_flutter/features/discovery/discovery_provider.dart';
 import 'package:aqua_daddy_flutter/features/community/interaction_provider.dart';
 import 'package:aqua_daddy_flutter/data/models/aquarium.dart';
+import 'package:aqua_daddy_flutter/core/countries.dart';
+import 'package:aqua_daddy_flutter/core/country_flag.dart';
 
 class DiscoveryScreen extends ConsumerStatefulWidget {
   const DiscoveryScreen({super.key});
@@ -271,9 +273,23 @@ class DiscoveryCard extends ConsumerWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  Text(
-                    l10n.communityMember,
-                    style: GoogleFonts.montserrat(fontSize: 11, color: const Color(0xFF6A8A90)),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          (aquarium.ownerName?.trim().isNotEmpty ?? false)
+                              ? aquarium.ownerName!.trim()
+                              : l10n.communityMember,
+                          style: GoogleFonts.montserrat(fontSize: 11, color: const Color(0xFF6A8A90)),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (isKnownCountryCode(aquarium.ownerCountry)) ...[
+                        const SizedBox(width: 6),
+                        CountryFlag(code: aquarium.ownerCountry!, height: 12),
+                      ],
+                    ],
                   ),
                 ],
               ),

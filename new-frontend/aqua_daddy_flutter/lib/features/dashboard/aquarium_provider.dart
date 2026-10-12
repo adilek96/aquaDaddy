@@ -39,6 +39,12 @@ class AquariumsNotifier extends AsyncNotifier<List<Aquarium>> {
     await dio.post('/aquariums', data: data);
     await refresh();
   }
+
+  Future<void> deleteAquarium(String id) async {
+    final dio = ref.read(apiClientProvider);
+    await dio.delete('/aquariums/$id');
+    await refresh();
+  }
 }
 
 /// Один аквариум по id. Экран деталей раньше искал его в списке своих

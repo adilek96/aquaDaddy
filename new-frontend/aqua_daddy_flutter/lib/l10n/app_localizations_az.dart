@@ -460,4 +460,26 @@ class AppLocalizationsAz extends AppLocalizations {
 
   @override
   String get reminderWhen => 'Xatırlat';
+
+  @override
+  String get deleteAquarium => 'Akvariumu sil';
+
+  @override
+  String get deleteAquariumMessage =>
+      'Bu akvariumu bütün məlumatları ilə birlikdə silmək istəyirsiniz? Bu əməliyyat geri qaytarıla bilməz.';
+
+  @override
+  String get country => 'Ölkə';
+
+  @override
+  String get countryNotSet => 'Göstərilməyib';
+
+  @override
+  String get selectCountry => 'Ölkə seçin';
+
+  @override
+  String get searchCountryHint => 'Kod üzrə axtarış';
+
+  @override
+  String get countryUpdated => 'Ölkə yeniləndi';
 }

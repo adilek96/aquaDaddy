@@ -170,5 +170,12 @@
   "statusSkipped": "Ötürüldü",
   "statusCancelled": "Ləğv edildi",
   "selectAtLeastOneType": "Ən azı bir növ seçin",
-  "reminderWhen": "Xatırlat"
+  "reminderWhen": "Xatırlat",
+  "deleteAquarium": "Akvariumu sil",
+  "deleteAquariumMessage": "Bu akvariumu bütün məlumatları ilə birlikdə silmək istəyirsiniz? Bu əməliyyat geri qaytarıla bilməz.",
+  "country": "Ölkə",
+  "countryNotSet": "Göstərilməyib",
+  "selectCountry": "Ölkə seçin",
+  "searchCountryHint": "Kod üzrə axtarış",
+  "countryUpdated": "Ölkə yeniləndi"
 }
