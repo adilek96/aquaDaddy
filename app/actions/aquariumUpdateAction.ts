@@ -4,6 +4,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { bumpCacheVersion } from "@/lib/redis";
+import { awardAchievementsSafe } from "@/lib/achievements";
 
 // Обновление описания аквариума
 export async function updateAquariumDescription(tankId: string, description: string) {
@@ -268,6 +269,8 @@ export async function updateAquariumContent(tankId: string, content: {
 
     // Публичные данные изменились — обнуляем кэш ленты
     await bumpCacheVersion("discovery");
+    // Добавленные обитатели могут открыть награды
+    await awardAchievementsSafe(user.id);
     return { success: true, data: updatedAquarium };
   } catch (error) {
     console.error("Error updating aquarium content:", error);

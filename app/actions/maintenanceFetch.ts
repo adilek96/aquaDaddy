@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
+import { awardAchievementsSafe } from "@/lib/achievements";
 
 export async function updateOldPendingMaintenance(tankId: string) {
   try {
@@ -248,10 +249,13 @@ export async function updateMaintenance(data: {
         }
       });
     }
-  
+
+    // Выполненное обслуживание может открыть награду
+    await awardAchievementsSafe(user.id);
+
     return { success: true, data: maintenance };
   } catch (error) {
     console.error("Error updating maintenance:", error);
     return { success: false, error: error instanceof Error ? error.message : "Failed to update maintenance" };
   }
-} 
+}

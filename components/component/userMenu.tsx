@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { LogIn, User as UserIconLucide, UserCircle2 } from "lucide-react";
+import { LogIn, Trophy, User as UserIconLucide, UserCircle2 } from "lucide-react";
 import LogOutButton from "../ui/logOutButton";
 import SettingsWrapper from "./settingsWrapper";
 import { useTranslations } from "next-intl";
@@ -18,6 +18,7 @@ import { useSession } from "next-auth/react";
 
 export function UserMenu() {
   const t = useTranslations("Header");
+  const tAch = useTranslations("Achievements");
   const { data: session } = useSession();
   const [avatarError, setAvatarError] = useState(false);
 
@@ -121,6 +122,13 @@ export function UserMenu() {
           <Link href="/profile" className="flex w-full items-center gap-2.5">
             <UserCircle2 className="h-4 w-4" aria-hidden="true" />
             <span>{t("profile")}</span>
+          </Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem asChild>
+          <Link href="/achievements" className="flex w-full items-center gap-2.5">
+            <Trophy className="h-4 w-4" aria-hidden="true" />
+            <span>{tAch("title")}</span>
           </Link>
         </DropdownMenuItem>
 

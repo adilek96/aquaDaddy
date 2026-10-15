@@ -23,6 +23,21 @@ model User {
   ratings       Rating[]
   sessions      Session[]
   comments      Comment[]
+  achievements  Achievement[]
+}
+
+/// Полученная пользователем награда (геймификация). Каталог наград и пороги
+/// заданы в коде (lib/achievements.ts); здесь хранится только факт получения
+/// по ключу — чтобы помнить дату и не начислять повторно.
+model Achievement {
+  id       String   @id @default(cuid())
+  userId   String
+  key      String
+  earnedAt DateTime @default(now())
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, key])
+  @@index([userId])
 }
 
 model Account {

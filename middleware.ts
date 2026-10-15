@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { auth } from '@/auth';
 
-const PRIVATE_PATHS = ['/myTanks', '/profile'];
+const PRIVATE_PATHS = ['/myTanks', '/profile', '/achievements'];
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -45,5 +45,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/api/:path*', '/myTanks/:path*', '/profile/:path*', '/signIn'],
+  matcher: ['/', '/api/:path*', '/myTanks/:path*', '/profile/:path*', '/achievements/:path*', '/signIn'],
 };
