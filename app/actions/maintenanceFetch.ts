@@ -250,10 +250,10 @@ export async function updateMaintenance(data: {
       });
     }
 
-    // Выполненное обслуживание может открыть награду
-    await awardAchievementsSafe(user.id);
+    // Выполненное обслуживание может открыть награду — вернём для тоста
+    const newAchievements = await awardAchievementsSafe(user.id);
 
-    return { success: true, data: maintenance };
+    return { success: true, data: maintenance, newAchievements };
   } catch (error) {
     console.error("Error updating maintenance:", error);
     return { success: false, error: error instanceof Error ? error.message : "Failed to update maintenance" };

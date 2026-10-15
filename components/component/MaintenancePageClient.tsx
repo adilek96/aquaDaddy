@@ -21,6 +21,7 @@ import { useMaintenanceEditStore } from "@/store/maintenanceEditStore";
 import { useMaintenanceAddStore } from "@/store/maintenanceAddStore";
 import { useWaterParamsStore } from "@/store/waterParamsStore";
 import WaterParametersCards from "@/components/component/waterParametersCards";
+import { useToast } from "@/components/ui/toast";
 
 interface MaintenanceData {
   id: string;
@@ -46,6 +47,21 @@ interface MaintenanceData {
 export default function MaintenancePageClient({ id }: { id: string }) {
   const t = useTranslations("AquariumForm");
   const tDetails = useTranslations("AquariumDetails");
+  const tAch = useTranslations("Achievements");
+  const { showToast } = useToast();
+
+  // Тост на каждую только что открытую награду
+  const notifyNewAchievements = (
+    list?: Array<{ category: string; threshold: number }>
+  ) => {
+    if (!list?.length) return;
+    for (const a of list) {
+      const name = tAch(`item.${a.category}.title` as "item.inhabitants.title", {
+        n: a.threshold,
+      });
+      showToast(tAch("toast", { name }), "success");
+    }
+  };
   const [aquarium, setAquarium] = useState<any>(null);
   const [maintenanceData, setMaintenanceData] = useState<MaintenanceData[]>([]);
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -350,6 +366,9 @@ export default function MaintenancePageClient({ id }: { id: string }) {
       });
 
       if (result.success && result.data) {
+        notifyNewAchievements(
+          (result as { newAchievements?: Array<{ category: string; threshold: number }> }).newAchievements
+        );
         // Обновляем локальное состояние
         setMaintenanceData((prev) =>
           prev.map((item) =>
@@ -402,6 +421,9 @@ export default function MaintenancePageClient({ id }: { id: string }) {
       console.log("Update result:", result);
 
       if (result.success && result.data) {
+        notifyNewAchievements(
+          (result as { newAchievements?: Array<{ category: string; threshold: number }> }).newAchievements
+        );
         // Если сервер не вернул WaterLog, загружаем обновленные данные
         if (!(result.data as any).WaterLog) {
           console.log(
@@ -507,6 +529,9 @@ export default function MaintenancePageClient({ id }: { id: string }) {
       });
 
       if (result.success && result.data) {
+        notifyNewAchievements(
+          (result as { newAchievements?: Array<{ category: string; threshold: number }> }).newAchievements
+        );
         // Обновляем локальное состояние
         setMaintenanceData((prev) =>
           prev.map((item) =>

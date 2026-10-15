@@ -112,12 +112,23 @@ export async function syncAchievements(
   return toCreate;
 }
 
-/** Награда, выданная при действии, не должна ломать само действие. */
-export async function awardAchievementsSafe(userId: string): Promise<void> {
+const ACHIEVEMENT_BY_KEY = new Map(ACHIEVEMENTS.map((a) => [a.key, a]));
+
+/**
+ * Начисляет награды при действии и возвращает только что открытые (для тоста).
+ * Не должна ломать само действие — при ошибке возвращает пустой список.
+ */
+export async function awardAchievementsSafe(
+  userId: string
+): Promise<AchievementDef[]> {
   try {
-    await syncAchievements(userId);
+    const keys = await syncAchievements(userId);
+    return keys
+      .map((k) => ACHIEVEMENT_BY_KEY.get(k))
+      .filter((a): a is AchievementDef => Boolean(a));
   } catch (error) {
     console.error("Не удалось начислить награды:", error);
+    return [];
   }
 }
 

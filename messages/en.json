@@ -609,6 +609,7 @@
         "title": "{n, plural, one {# check-in} other {# check-ins}}",
         "desc": "Complete {n, plural, one {# reminder} other {# reminders}}"
       }
-    }
+    },
+    "toast": "Achievement unlocked: {name}"
   }
 }

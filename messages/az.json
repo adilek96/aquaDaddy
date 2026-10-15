@@ -620,6 +620,7 @@
         "title": "{n} qeyd",
         "desc": "{n} xatırlatmanı tamamla"
       }
-    }
+    },
+    "toast": "Mükafat qazanıldı: {name}"
   }
 }

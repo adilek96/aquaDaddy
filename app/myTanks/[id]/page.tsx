@@ -23,6 +23,7 @@ import {
 import ImageUploader from "@/components/component/imageUploader";
 import ImageSlider from "@/components/component/imageSlider";
 import { InhabitantList } from "@/components/component/inhabitantList";
+import { useToast } from "@/components/ui/toast";
 
 // Компонент для отображения карточки обслуживания
 const MaintenanceCard = ({
@@ -120,7 +121,22 @@ export default function UserAquarium({
   const { id } = use(params);
   const t = useTranslations("AquariumForm");
   const tDetails = useTranslations("AquariumDetails");
+  const tAch = useTranslations("Achievements");
+  const { showToast } = useToast();
   const router = useRouter();
+
+  // Тост на каждую только что открытую награду
+  const notifyNewAchievements = (
+    list?: Array<{ category: string; threshold: number }>
+  ) => {
+    if (!list?.length) return;
+    for (const a of list) {
+      const name = tAch(`item.${a.category}.title` as "item.inhabitants.title", {
+        n: a.threshold,
+      });
+      showToast(tAch("toast", { name }), "success");
+    }
+  };
   const [aquarium, setAquarium] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentMeasurementSystem, setCurrentMeasurementSystem] =
@@ -288,6 +304,9 @@ export default function UserAquarium({
           waterParams: result.data!.waterParams,
           reminders: result.data!.reminders,
         }));
+        notifyNewAchievements(
+          (result as { newAchievements?: Array<{ category: string; threshold: number }> }).newAchievements
+        );
       } else {
         console.error("Failed to save inhabitants:", result.error);
       }
@@ -331,6 +350,9 @@ export default function UserAquarium({
           waterParams: result.data!.waterParams,
           inhabitants: result.data!.inhabitants,
         }));
+        notifyNewAchievements(
+          (result as { newAchievements?: Array<{ category: string; threshold: number }> }).newAchievements
+        );
       } else {
         console.error("Failed to save reminders:", result.error);
       }

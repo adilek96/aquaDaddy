@@ -269,9 +269,9 @@ export async function updateAquariumContent(tankId: string, content: {
 
     // Публичные данные изменились — обнуляем кэш ленты
     await bumpCacheVersion("discovery");
-    // Добавленные обитатели могут открыть награды
-    await awardAchievementsSafe(user.id);
-    return { success: true, data: updatedAquarium };
+    // Добавленные обитатели могут открыть награды — вернём их для тоста
+    const newAchievements = await awardAchievementsSafe(user.id);
+    return { success: true, data: updatedAquarium, newAchievements };
   } catch (error) {
     console.error("Error updating aquarium content:", error);
     return { success: false, error: "Failed to update content" };
