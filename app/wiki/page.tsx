@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
-import { BookOpen, CloudOff, Fish } from "lucide-react";
+import { BookOpen, ChevronLeft, ChevronRight, CloudOff, Fish } from "lucide-react";
 import { generateWikiMetadata } from "@/components/helpers/MetaTags";
 import { EmptyState } from "@/components/ui/empty-state";
 import WikiImage from "@/components/component/wikiImage";
@@ -24,13 +24,18 @@ export async function generateMetadata() {
 
 type Tab = "articles" | "inhabitants";
 
-type SearchParams = { tab?: string; sub?: string; type?: string };
+type SearchParams = { tab?: string; sub?: string; type?: string; page?: string };
 
-function wikiHref(params: { tab: Tab; sub?: string; type?: string }) {
+// Энциклопедия может разрастись до сотен карточек — показываем по 50 на страницу
+const WIKI_PAGE_SIZE = 50;
+
+function wikiHref(params: { tab: Tab; sub?: string; type?: string; page?: number }) {
   const search = new URLSearchParams();
   if (params.tab !== "articles") search.set("tab", params.tab);
   if (params.sub) search.set("sub", params.sub);
   if (params.type) search.set("type", params.type);
+  // Смена вкладки или фильтра идёт без page — список сам вернётся на первую страницу
+  if (params.page && params.page > 1) search.set("page", String(params.page));
   const qs = search.toString();
   return qs ? `/wiki?${qs}` : "/wiki";
 }
@@ -79,28 +84,38 @@ export default async function Wiki({
 
   const tab: Tab = params.tab === "inhabitants" ? "inhabitants" : "articles";
   const type = AQUARIUM_TYPES.find((value) => value === params.type);
+  const page = Math.max(1, Number.parseInt(params.page ?? "1", 10) || 1);
 
   let articles: WikiArticle[] = [];
   let inhabitants: (WikiInhabitant & { image: string | null })[] = [];
   let subCategories: WikiSubCategory[] = [];
+  let totalItems = 0;
   let failed = false;
 
   try {
     if (tab === "articles") {
-      [articles, subCategories] = await Promise.all([
+      const [allArticles, subs] = await Promise.all([
         getArticles(locale, params.sub),
         getSubCategories(locale),
       ]);
+      subCategories = subs;
+      totalItems = allArticles.length;
+      // Фото обновляем только для показанной страницы, а не для всех статей сразу
+      articles = allArticles.slice((page - 1) * WIKI_PAGE_SIZE, page * WIKI_PAGE_SIZE);
     } else {
       const list = await getInhabitants(locale, type);
+      totalItems = list.length;
+      const pageItems = list.slice((page - 1) * WIKI_PAGE_SIZE, page * WIKI_PAGE_SIZE);
       inhabitants = await Promise.all(
-        list.map(async (item) => ({ ...item, image: await refreshWikiImage(item.imageUrl) }))
+        pageItems.map(async (item) => ({ ...item, image: await refreshWikiImage(item.imageUrl) }))
       );
     }
   } catch (error) {
     console.error("Wiki API error:", error);
     failed = true;
   }
+
+  const totalPages = Math.max(1, Math.ceil(totalItems / WIKI_PAGE_SIZE));
 
   const articleCovers = await Promise.all(
     articles.map((article) => refreshWikiImage(article.images[0]?.url))
@@ -290,6 +305,45 @@ export default async function Wiki({
           title={t("noInhabitants")}
           description={t("emptyDescription")}
         />
+      )}
+
+      {!failed && totalPages > 1 && (
+        <nav
+          className="mt-8 flex items-center justify-center gap-4 sm:mt-10"
+          aria-label="pagination"
+        >
+          {page > 1 ? (
+            <Link
+              href={wikiHref({ tab, sub: params.sub, type: params.type, page: page - 1 })}
+              scroll={false}
+              className="tap-fast inline-flex h-10 items-center gap-1 rounded-full border border-surface-border px-4 text-sm font-medium transition-colors hover:text-foreground"
+            >
+              <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          ) : (
+            <span className="inline-flex h-10 items-center gap-1 rounded-full border border-surface-border px-4 text-sm font-medium opacity-40">
+              <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+            </span>
+          )}
+
+          <span data-numeric className="text-sm font-semibold text-muted-foreground">
+            {page} / {totalPages}
+          </span>
+
+          {page < totalPages ? (
+            <Link
+              href={wikiHref({ tab, sub: params.sub, type: params.type, page: page + 1 })}
+              scroll={false}
+              className="tap-fast inline-flex h-10 items-center gap-1 rounded-full border border-surface-border px-4 text-sm font-medium transition-colors hover:text-foreground"
+            >
+              <ChevronRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          ) : (
+            <span className="inline-flex h-10 items-center gap-1 rounded-full border border-surface-border px-4 text-sm font-medium opacity-40">
+              <ChevronRight className="h-4 w-4" aria-hidden="true" />
+            </span>
+          )}
+        </nav>
       )}
     </div>
   );

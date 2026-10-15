@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ImageSlider from "@/components/component/imageSlider";
 import CommentThread from "@/components/component/commentThread";
+import CountryFlag from "@/components/component/countryFlag";
 import Link from "next/link";
 import { useToast } from "@/components/ui/toast";
 import { useRouter } from "next/navigation";
@@ -250,10 +251,10 @@ export default function DiscoveryDetailPage({
               <div>
                 <p className="font-medium">{aquarium.user.name || "Anonymous"}</p>
                 {aquarium.user.country && (
-                  <p className="text-sm text-muted-foreground flex items-center gap-1">
+                  <span className="text-sm text-muted-foreground flex items-center gap-1">
                     <MapPin className="w-3 h-3" />
-                    {aquarium.user.country}
-                  </p>
+                    <CountryFlag code={aquarium.user.country} />
+                  </span>
                 )}
               </div>
             </div>

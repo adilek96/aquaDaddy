@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { Pencil, Save, X, Fish, Globe2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import CountryFlag from "@/components/component/countryFlag";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -139,7 +140,14 @@ export default function Profile() {
                 {t("country")}
               </dt>
               <dd className="mt-1 truncate font-display text-2xl font-extrabold">
-                {country || "—"}
+                {country ? (
+                  <span className="inline-flex items-center gap-2">
+                    <CountryFlag code={country} showCode={false} size={22} />
+                    {country.toUpperCase()}
+                  </span>
+                ) : (
+                  "—"
+                )}
               </dd>
             </div>
           </dl>

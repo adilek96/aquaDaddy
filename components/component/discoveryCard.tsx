@@ -7,6 +7,7 @@ import { Star, MessageCircle, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
+import CountryFlag from "@/components/component/countryFlag";
 
 interface DiscoveryCardProps {
   aquarium: any;
@@ -99,6 +100,13 @@ export default function DiscoveryCard({ aquarium }: DiscoveryCardProps) {
             <span className="truncate text-sm text-muted-foreground">
               {aquarium.user?.name || "Anonymous"}
             </span>
+            {aquarium.user?.country && (
+              <CountryFlag
+                code={aquarium.user.country}
+                size={14}
+                className="ml-auto shrink-0"
+              />
+            )}
           </div>
         </div>
       </div>
