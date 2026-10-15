@@ -825,6 +825,24 @@ export default function UserAquarium({
                   </Link>
                 </div>
               </div>
+
+              {/* Delete Button — на мобильном правый сайдбар скрыт (hidden lg:block),
+                  поэтому удаление дублируем в мобильный блок */}
+              <div>
+                <SectionHeading title={tDetails("deleteAquarium")} />
+                <div className="space-y-4">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      openDeleteModal(aquarium, handleDeleteAquarium)
+                    }
+                    className="flex w-full items-center justify-between gap-2 rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm font-semibold text-destructive transition-colors duration-fast hover:bg-destructive/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/50 active:scale-[0.99]"
+                  >
+                    {tDetails("deleteAquarium")}
+                    <Trash2 className="h-4 w-4" aria-hidden="true" />
+                  </button>
+                </div>
+              </div>
             </div>
 
             {/* Left Column - Primary Info */}
