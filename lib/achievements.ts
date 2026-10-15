@@ -3,11 +3,11 @@ import { getInhabitants } from "@/lib/wiki";
 import { groupOf } from "@/lib/wikiTemplate";
 
 /**
- * Геймификация: каталог наград и их пороги заданы здесь, в коде. В базе
- * (модель Achievement) лежит только факт получения награды по ключу — чтобы
- * помнить дату и не выдавать повторно. Начисление идемпотентно и может
- * вызываться и при действии (добавил обитателя), и при чтении экрана наград —
- * так награда появится независимо от того, через веб или мобилку шло действие.
+ * Геймификация. Каталог наград (категория + порог) хранится в БД
+ * (модель AchievementDef) и редактируется из админки. Метрика каждой категории
+ * вычисляется кодом (ниже), поэтому category ограничена известным набором.
+ * В Achievement лежит только факт получения по ключу `${CATEGORY}_${threshold}`.
+ * Начисление идемпотентно и срабатывает и при действии, и при чтении экрана.
  */
 
 export type AchievementCategory =
@@ -16,28 +16,67 @@ export type AchievementCategory =
   | "maintenance"
   | "checkins";
 
+export const ACHIEVEMENT_CATEGORIES: AchievementCategory[] = [
+  "inhabitants",
+  "plants",
+  "maintenance",
+  "checkins",
+];
+
+const KNOWN_CATEGORIES = new Set<string>(ACHIEVEMENT_CATEGORIES);
+
 export type AchievementDef = {
   key: string;
   category: AchievementCategory;
   threshold: number;
 };
 
-// Пороги внутри категории — по возрастанию.
-export const ACHIEVEMENTS: AchievementDef[] = [
-  { key: "INHABITANTS_1", category: "inhabitants", threshold: 1 },
-  { key: "INHABITANTS_10", category: "inhabitants", threshold: 10 },
-  { key: "INHABITANTS_25", category: "inhabitants", threshold: 25 },
-  { key: "INHABITANTS_50", category: "inhabitants", threshold: 50 },
-  { key: "PLANTS_1", category: "plants", threshold: 1 },
-  { key: "PLANTS_10", category: "plants", threshold: 10 },
-  { key: "PLANTS_25", category: "plants", threshold: 25 },
-  { key: "MAINTENANCE_1", category: "maintenance", threshold: 1 },
-  { key: "MAINTENANCE_10", category: "maintenance", threshold: 10 },
-  { key: "MAINTENANCE_50", category: "maintenance", threshold: 50 },
-  { key: "CHECKINS_1", category: "checkins", threshold: 1 },
-  { key: "CHECKINS_10", category: "checkins", threshold: 10 },
-  { key: "CHECKINS_25", category: "checkins", threshold: 25 },
+export function achievementKey(category: string, threshold: number): string {
+  return `${category.toUpperCase()}_${threshold}`;
+}
+
+/** Исходный каталог — для первичного заполнения БД и как запас, если таблица пуста. */
+const SEED_BASE: { category: AchievementCategory; threshold: number }[] = [
+  { category: "inhabitants", threshold: 1 },
+  { category: "inhabitants", threshold: 10 },
+  { category: "inhabitants", threshold: 25 },
+  { category: "inhabitants", threshold: 50 },
+  { category: "plants", threshold: 1 },
+  { category: "plants", threshold: 10 },
+  { category: "plants", threshold: 25 },
+  { category: "maintenance", threshold: 1 },
+  { category: "maintenance", threshold: 10 },
+  { category: "maintenance", threshold: 50 },
+  { category: "checkins", threshold: 1 },
+  { category: "checkins", threshold: 10 },
+  { category: "checkins", threshold: 25 },
 ];
+
+export const SEED_ACHIEVEMENTS: AchievementDef[] = SEED_BASE.map((d) => ({
+  ...d,
+  key: achievementKey(d.category, d.threshold),
+}));
+
+/** Активные определения наград из БД (или сид, если таблица пуста/недоступна). */
+export async function getDefinitions(): Promise<AchievementDef[]> {
+  try {
+    const rows = await prisma.achievementDef.findMany({
+      where: { active: true },
+      orderBy: [{ category: "asc" }, { threshold: "asc" }],
+    });
+    const defs = rows
+      .filter((r) => KNOWN_CATEGORIES.has(r.category))
+      .map((r) => ({
+        key: r.key,
+        category: r.category as AchievementCategory,
+        threshold: r.threshold,
+      }));
+    if (defs.length > 0) return defs;
+  } catch (error) {
+    console.error("Не удалось загрузить каталог наград, использую сид:", error);
+  }
+  return SEED_ACHIEVEMENTS;
+}
 
 export type UserStats = Record<AchievementCategory, number>;
 
@@ -58,8 +97,7 @@ export async function computeUserStats(userId: string): Promise<UserStats> {
 /**
  * Категория обитателя (рыбы/растения/…) хранится в энциклопедии, а в записи
  * аквариума — только wikiId. Поэтому берём wikiId пользовательских обитателей
- * и сверяем с множеством id растений из вики. Если вики недоступна —
- * считаем 0, чтобы сохранение/экран не падали.
+ * и сверяем с множеством id растений из вики. Если вики недоступна — 0.
  */
 async function countPlants(userId: string): Promise<number> {
   const rows = await prisma.inhabitant.findMany({
@@ -83,36 +121,33 @@ async function countPlants(userId: string): Promise<number> {
 }
 
 /**
- * Начисляет недостающие награды. Идемпотентно. Возвращает ключи только что
- * выданных наград (для уведомления). Можно передать уже посчитанную статистику.
+ * Начисляет недостающие награды. Идемпотентно. Возвращает только что выданные
+ * (для уведомления). Можно передать уже посчитанную статистику.
  */
 export async function syncAchievements(
   userId: string,
   precomputed?: UserStats
-): Promise<string[]> {
+): Promise<AchievementDef[]> {
   const stats = precomputed ?? (await computeUserStats(userId));
+  const defs = await getDefinitions();
 
-  const earnedKeys = ACHIEVEMENTS.filter(
-    (a) => stats[a.category] >= a.threshold
-  ).map((a) => a.key);
-  if (earnedKeys.length === 0) return [];
+  const qualified = defs.filter((a) => (stats[a.category] ?? 0) >= a.threshold);
+  if (qualified.length === 0) return [];
 
   const existing = await prisma.achievement.findMany({
-    where: { userId, key: { in: earnedKeys } },
+    where: { userId, key: { in: qualified.map((q) => q.key) } },
     select: { key: true },
   });
   const have = new Set(existing.map((e) => e.key));
-  const toCreate = earnedKeys.filter((k) => !have.has(k));
+  const toCreate = qualified.filter((q) => !have.has(q.key));
   if (toCreate.length === 0) return [];
 
   await prisma.achievement.createMany({
-    data: toCreate.map((key) => ({ userId, key })),
+    data: toCreate.map((d) => ({ userId, key: d.key })),
     skipDuplicates: true,
   });
   return toCreate;
 }
-
-const ACHIEVEMENT_BY_KEY = new Map(ACHIEVEMENTS.map((a) => [a.key, a]));
 
 /**
  * Начисляет награды при действии и возвращает только что открытые (для тоста).
@@ -122,10 +157,7 @@ export async function awardAchievementsSafe(
   userId: string
 ): Promise<AchievementDef[]> {
   try {
-    const keys = await syncAchievements(userId);
-    return keys
-      .map((k) => ACHIEVEMENT_BY_KEY.get(k))
-      .filter((a): a is AchievementDef => Boolean(a));
+    return await syncAchievements(userId);
   } catch (error) {
     console.error("Не удалось начислить награды:", error);
     return [];
@@ -145,17 +177,18 @@ export async function getAchievementsState(userId: string): Promise<{
   newlyEarned: string[];
 }> {
   const stats = await computeUserStats(userId);
-  const newlyEarned = await syncAchievements(userId, stats);
+  const newlyEarnedDefs = await syncAchievements(userId, stats);
 
+  const defs = await getDefinitions();
   const earned = await prisma.achievement.findMany({ where: { userId } });
   const earnedMap = new Map(earned.map((e) => [e.key, e.earnedAt]));
 
-  const items: AchievementState[] = ACHIEVEMENTS.map((a) => ({
+  const items: AchievementState[] = defs.map((a) => ({
     ...a,
     earned: earnedMap.has(a.key),
     earnedAt: earnedMap.get(a.key)?.toISOString() ?? null,
     progress: stats[a.category],
   }));
 
-  return { stats, items, newlyEarned };
+  return { stats, items, newlyEarned: newlyEarnedDefs.map((d) => d.key) };
 }
