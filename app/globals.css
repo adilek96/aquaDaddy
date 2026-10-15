@@ -603,3 +603,21 @@ html[data-motion="off"] .surface-interactive:hover {
 html[data-motion="off"] .aq-scene .aq-bubbles circle {
   opacity: 0.4 !important;
 }
+
+/* Небольшой боковой отступ (3px) текстовых элементов на мобильной вёрстке:
+   на узких экранах заголовки и абзацы не прижимаются вплотную к краю.
+   В @layer base, чтобы явные Tailwind-отступы (px-*) оставались приоритетнее. */
+@layer base {
+  @media (max-width: 640px) {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p {
+      padding-left: 3px;
+      padding-right: 3px;
+    }
+  }
+}
