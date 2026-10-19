@@ -137,7 +137,7 @@ export default async function Wiki({
         </p>
       </header>
 
-      <div className="mb-6 max-w-xl animate-fade-in-up sm:mb-8">
+      <div className="relative z-dropdown mb-6 max-w-xl animate-fade-in-up sm:mb-8">
         <WikiSearch />
       </div>
 
