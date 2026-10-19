@@ -590,7 +590,10 @@
       "temperament": "Temperament",
       "light": "Lighting",
       "co2": "CO₂"
-    }
+    },
+    "share": "Share",
+    "copyLink": "Copy link",
+    "linkCopied": "Link copied"
   },
   "Achievements": {
     "title": "Achievements",

@@ -601,7 +601,10 @@
       "temperament": "Xasiyyət",
       "light": "İşıqlandırma",
       "co2": "CO₂"
-    }
+    },
+    "share": "Paylaş",
+    "copyLink": "Linki kopyala",
+    "linkCopied": "Link kopyalandı"
   },
   "Achievements": {
     "title": "Mükafatlar",

@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { ArrowLeft, MapPin } from "lucide-react";
 import WikiImage from "@/components/component/wikiImage";
+import ShareButton from "@/components/component/shareButton";
 import { getInhabitant, refreshWikiImage } from "@/lib/wiki";
 import {
   ARTICLE_SECTIONS,
@@ -172,13 +173,16 @@ export default async function WikiInhabitantPage({ params }: Props) {
 
   return (
     <article className="app-container max-w-4xl py-6 sm:py-10">
-      <Link
-        href={parent ? `/wiki/inhabitants/${parent.id}` : "/wiki?tab=inhabitants"}
-        className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-        {parent ? parent.title : t("backInhabitants")}
-      </Link>
+      <div className="mb-6 flex items-center justify-between gap-3">
+        <Link
+          href={parent ? `/wiki/inhabitants/${parent.id}` : "/wiki?tab=inhabitants"}
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          {parent ? parent.title : t("backInhabitants")}
+        </Link>
+        <ShareButton title={inhabitant.title || t("untitled")} />
+      </div>
 
       <header className="mb-8 grid animate-fade-in-up gap-6 sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] sm:items-center">
         <figure>

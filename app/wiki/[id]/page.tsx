@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { ArrowLeft } from "lucide-react";
 import WikiImage from "@/components/component/wikiImage";
+import ShareButton from "@/components/component/shareButton";
 import { articleExcerpt, getArticle, refreshWikiImage, renderArticleHtml } from "@/lib/wiki";
 
 type Props = { params: Promise<{ id: string }> };
@@ -37,13 +38,16 @@ export default async function WikiArticlePage({ params }: Props) {
 
   return (
     <article className="app-container max-w-3xl py-6 sm:py-10">
-      <Link
-        href="/wiki"
-        className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-        {t("back")}
-      </Link>
+      <div className="mb-6 flex items-center justify-between gap-3">
+        <Link
+          href="/wiki"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          {t("back")}
+        </Link>
+        <ShareButton title={article.title || t("untitled")} />
+      </div>
 
       <header className="mb-6 animate-fade-in-up">
         <h1 className="mb-3">{article.title || t("untitled")}</h1>
