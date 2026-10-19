@@ -588,7 +588,10 @@
       "compatibility": "Uyğunluq",
       "breeding": "Çoxalma",
       "facts": "Maraqlı faktlar"
-    }
+    },
+    "searchPlaceholder": "Ensiklopediyada axtarış",
+    "searchClear": "Təmizlə",
+    "searchNothing": "«{query}» üzrə heç nə tapılmadı"
   },
   "Achievements": {
     "title": "Mükafatlar",

@@ -64,6 +64,54 @@ export type WikiInhabitantDetails = WikiInhabitant & {
   inheritedSections?: SectionKey[];
 };
 
+export type WikiSearchHit = {
+  id: string;
+  title: string;
+  /** Короткий фрагмент совпадения или научное название. */
+  snippet?: string;
+  image?: string | null;
+  /** Только у обитателей. */
+  subtype?: string;
+  type?: AquariumType[];
+  parentId?: string | null;
+};
+
+export type WikiSearchResults = {
+  articles: WikiSearchHit[];
+  inhabitants: WikiSearchHit[];
+};
+
+type SearchResponse = {
+  articles?: WikiSearchHit[];
+  inhabitants?: WikiSearchHit[];
+};
+
+/**
+ * Живой поиск по энциклопедии (Meilisearch на стороне бэкенда).
+ * Картинки бэкенд уже переподписывает, язык отбирает сам (с откатом на
+ * русский), поэтому здесь ни кэша, ни слияния переводов — только проброс.
+ */
+export async function searchWiki(
+  queryText: string,
+  locale: string,
+  limit = 8
+): Promise<WikiSearchResults> {
+  const q = queryText.trim();
+  if (q.length < 2) return { articles: [], inhabitants: [] };
+
+  const res = await fetch(
+    `${API_URL}/search?${query({ q, locale, limit: String(limit) })}`,
+    { cache: "no-store" }
+  );
+  if (!res.ok) throw new Error(`Wiki API search: ${res.status}`);
+
+  const data = (await res.json()) as SearchResponse;
+  return {
+    articles: data.articles ?? [],
+    inhabitants: data.inhabitants ?? [],
+  };
+}
+
 async function getJson<T>(path: string): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
     next: { revalidate: REVALIDATE_SECONDS },

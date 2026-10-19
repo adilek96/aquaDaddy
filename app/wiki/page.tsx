@@ -4,6 +4,7 @@ import { BookOpen, ChevronLeft, ChevronRight, CloudOff, Fish } from "lucide-reac
 import { generateWikiMetadata } from "@/components/helpers/MetaTags";
 import { EmptyState } from "@/components/ui/empty-state";
 import WikiImage from "@/components/component/wikiImage";
+import WikiSearch from "@/components/component/wikiSearch";
 import {
   AQUARIUM_TYPES,
   articleExcerpt,
@@ -135,6 +136,10 @@ export default async function Wiki({
           {tHome("wiki-description")}
         </p>
       </header>
+
+      <div className="mb-6 max-w-xl animate-fade-in-up sm:mb-8">
+        <WikiSearch />
+      </div>
 
       <nav aria-label={tHome("wiki-title")} className="mb-4 flex flex-wrap gap-2">
         <Chip href={wikiHref({ tab: "articles" })} active={tab === "articles"}>

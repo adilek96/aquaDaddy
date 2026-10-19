@@ -577,7 +577,10 @@
       "compatibility": "Compatibility",
       "breeding": "Breeding",
       "facts": "Fun facts"
-    }
+    },
+    "searchPlaceholder": "Search the encyclopedia",
+    "searchClear": "Clear",
+    "searchNothing": "Nothing found for “{query}”"
   },
   "Achievements": {
     "title": "Achievements",

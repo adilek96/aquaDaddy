@@ -592,7 +592,10 @@
       "compatibility": "Совместимость",
       "breeding": "Размножение",
       "facts": "Интересные факты"
-    }
+    },
+    "searchPlaceholder": "Поиск по энциклопедии",
+    "searchClear": "Очистить",
+    "searchNothing": "По запросу «{query}» ничего не найдено"
   },
   "Achievements": {
     "title": "Награды",
