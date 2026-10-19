@@ -29,34 +29,76 @@ type Tab = "articles" | "inhabitants";
 // подтипу (рыбы, растения, креветки…), у статей по разделу.
 type Sort = "az" | "type";
 
+// Фасеты обитателей: подкатегория (подтип) и поля паспорта. Значения берём
+// из profile, фильтруем прямо на странице — список и так грузится целиком.
+type FacetKey = "subtype" | "difficulty" | "temperament" | "light" | "co2";
+const FACET_KEYS: FacetKey[] = ["subtype", "difficulty", "temperament", "light", "co2"];
+
 type SearchParams = {
   tab?: string;
   sub?: string;
   type?: string;
   page?: string;
   sort?: string;
-};
+} & Partial<Record<FacetKey, string>>;
 
 // Энциклопедия может разрастись до сотен карточек — показываем по 50 на страницу
 const WIKI_PAGE_SIZE = 50;
 
-function wikiHref(params: {
+type WikiHrefParams = {
   tab: Tab;
   sub?: string;
   type?: string;
   page?: number;
   sort?: Sort;
-}) {
+} & Partial<Record<FacetKey, string | undefined>>;
+
+function wikiHref(params: WikiHrefParams) {
   const search = new URLSearchParams();
   if (params.tab !== "articles") search.set("tab", params.tab);
   if (params.sub) search.set("sub", params.sub);
   if (params.type) search.set("type", params.type);
+  for (const key of FACET_KEYS) {
+    const value = params[key];
+    if (value) search.set(key, value);
+  }
   // az — значение по умолчанию, в адрес его не пишем
   if (params.sort && params.sort !== "az") search.set("sort", params.sort);
   // Смена вкладки или фильтра идёт без page — список сам вернётся на первую страницу
   if (params.page && params.page > 1) search.set("page", String(params.page));
   const qs = search.toString();
   return qs ? `/wiki?${qs}` : "/wiki";
+}
+
+// Канонический порядок значений фасетов (не алфавитный — по смыслу)
+const FACET_VALUES: Record<FacetKey, string[]> = {
+  subtype: [
+    "FISHS",
+    "SHRIMPS",
+    "CRAYFISH",
+    "CRABS",
+    "SNAILS",
+    "STARFISHS",
+    "CORALS",
+    "PLANTS",
+    "REPTILES",
+    "AMPHIBIANS",
+    "TURTLES",
+    "FROGS",
+  ],
+  difficulty: ["EASY", "MEDIUM", "HARD"],
+  temperament: ["PEACEFUL", "SEMI_AGGRESSIVE", "AGGRESSIVE", "PREDATOR"],
+  light: ["LOW", "MEDIUM", "HIGH"],
+  co2: ["NONE", "RECOMMENDED", "REQUIRED"],
+};
+
+type InhabitantItem = WikiInhabitant & { image?: string | null };
+
+/** Значение обитателя по ключу фасета: подтип либо строковое поле паспорта. */
+function facetValue(item: InhabitantItem, key: FacetKey): string | undefined {
+  if (key === "subtype") return item.subtype || undefined;
+  const value = item.profile?.[key];
+  return typeof value === "string" ? value : undefined;
 }
 
 function Chip({
@@ -112,12 +154,49 @@ export default async function Wiki({
   const subtypeLabel = (value: string) =>
     t.has(`subtype.${value}` as "subtype.FISHS") ? t(`subtype.${value}` as "subtype.FISHS") : value;
 
+  // Заголовок группы фасетов
+  const facetLabel = (key: FacetKey) => t(`filter.${key}` as "filter.subtype");
+
+  // Подпись значения фасета: подтип — из Wiki.subtype, остальные — из options
+  // (у освещённости набор значений общий — options.level)
+  const facetValueLabel = (key: FacetKey, value: string) => {
+    if (key === "subtype") return subtypeLabel(value);
+    const path = key === "light" ? "options.level" : `options.${key}`;
+    return t(`${path}.${value}` as "options.difficulty.EASY");
+  };
+
   // Сравнение названий на языке интерфейса (регистр и буквы правильно)
   const byTitle = (a: string, b: string) => a.localeCompare(b, locale, { sensitivity: "base" });
+
+  // Выбранные фасеты обитателей из адреса
+  const activeFacets: Partial<Record<FacetKey, string>> = {};
+  for (const key of FACET_KEYS) {
+    const value = params[key];
+    if (value) activeFacets[key] = value;
+  }
+
+  // Проходит ли обитатель активные фасеты (можно исключить один — для подсчёта
+  // доступных значений самого фасета)
+  const itemMatches = (item: InhabitantItem, except?: FacetKey) =>
+    FACET_KEYS.every((key) => {
+      if (key === except) return true;
+      const selected = activeFacets[key];
+      return !selected || facetValue(item, key) === selected;
+    });
+
+  // Ссылка-переключатель значения одного фасета (остальные сохраняются).
+  // value === undefined снимает фасет («Все»).
+  const facetHref = (key: FacetKey, value: string | undefined) => {
+    const next: WikiHrefParams = { tab, type: params.type, sort, ...activeFacets };
+    next[key] = value;
+    return wikiHref(next);
+  };
 
   let articles: WikiArticle[] = [];
   let inhabitants: (WikiInhabitant & { image: string | null })[] = [];
   let subCategories: WikiSubCategory[] = [];
+  // Группы фасетов для показа (только с непустым набором значений)
+  let facetGroups: { key: FacetKey; values: string[] }[] = [];
   let totalItems = 0;
   let failed = false;
 
@@ -145,15 +224,33 @@ export default async function Wiki({
       articles = allArticles.slice((page - 1) * WIKI_PAGE_SIZE, page * WIKI_PAGE_SIZE);
     } else {
       const list = await getInhabitants(locale, type);
-      list.sort((a, b) => {
+
+      // Доступные значения каждого фасета с drill-down: считаем среди
+      // элементов, прошедших все ОСТАЛЬНЫЕ фасеты. Так «характер» виден
+      // только когда в выборке есть рыбы/животные, а «освещённость» и «CO₂» —
+      // только когда есть растения; выбранное значение всегда оставляем.
+      facetGroups = FACET_KEYS.map((key) => {
+        const present = new Set<string>();
+        for (const item of list) {
+          if (!itemMatches(item, key)) continue;
+          const value = facetValue(item, key);
+          if (value) present.add(value);
+        }
+        const selected = activeFacets[key];
+        if (selected) present.add(selected);
+        return { key, values: FACET_VALUES[key].filter((v) => present.has(v)) };
+      }).filter((group) => group.values.length > 0);
+
+      const filtered = list.filter((item) => itemMatches(item));
+      filtered.sort((a, b) => {
         if (sort === "type") {
           const bySubtype = byTitle(subtypeLabel(a.subtype), subtypeLabel(b.subtype));
           if (bySubtype) return bySubtype;
         }
         return byTitle(a.title || "", b.title || "");
       });
-      totalItems = list.length;
-      const pageItems = list.slice((page - 1) * WIKI_PAGE_SIZE, page * WIKI_PAGE_SIZE);
+      totalItems = filtered.length;
+      const pageItems = filtered.slice((page - 1) * WIKI_PAGE_SIZE, page * WIKI_PAGE_SIZE);
       inhabitants = await Promise.all(
         pageItems.map(async (item) => ({ ...item, image: await refreshWikiImage(item.imageUrl) }))
       );
@@ -229,19 +326,58 @@ export default async function Wiki({
         </div>
       )}
 
+      {!failed && facetGroups.length > 0 && (
+        <div className="mb-4 flex flex-col gap-2.5">
+          {facetGroups.map((group) => {
+            const selected = activeFacets[group.key];
+            return (
+              <div key={group.key} className="flex flex-wrap items-center gap-2">
+                <span className="mr-1 w-full text-xs font-medium uppercase tracking-wide text-muted-foreground sm:w-28">
+                  {facetLabel(group.key)}
+                </span>
+                <Chip href={facetHref(group.key, undefined)} active={!selected}>
+                  {t("all")}
+                </Chip>
+                {group.values.map((value) => (
+                  <Chip
+                    key={value}
+                    href={facetHref(group.key, selected === value ? undefined : value)}
+                    active={selected === value}
+                  >
+                    {facetValueLabel(group.key, value)}
+                  </Chip>
+                ))}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       {!failed && (
         <div className="mb-6 flex flex-wrap items-center gap-2 sm:mb-8">
           <span className="mr-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
             {t("sortBy")}
           </span>
           <Chip
-            href={wikiHref({ tab, sub: params.sub, type: params.type, sort: "az" })}
+            href={wikiHref({
+              tab,
+              sub: params.sub,
+              type: params.type,
+              sort: "az",
+              ...activeFacets,
+            })}
             active={sort === "az"}
           >
             {t("sortAlphabet")}
           </Chip>
           <Chip
-            href={wikiHref({ tab, sub: params.sub, type: params.type, sort: "type" })}
+            href={wikiHref({
+              tab,
+              sub: params.sub,
+              type: params.type,
+              sort: "type",
+              ...activeFacets,
+            })}
             active={sort === "type"}
           >
             {t("sortType")}
@@ -384,7 +520,14 @@ export default async function Wiki({
         >
           {page > 1 ? (
             <Link
-              href={wikiHref({ tab, sub: params.sub, type: params.type, sort, page: page - 1 })}
+              href={wikiHref({
+                tab,
+                sub: params.sub,
+                type: params.type,
+                sort,
+                ...activeFacets,
+                page: page - 1,
+              })}
               scroll={false}
               className="tap-fast inline-flex h-10 items-center gap-1 rounded-full border border-surface-border px-4 text-sm font-medium transition-colors hover:text-foreground"
             >
@@ -402,7 +545,14 @@ export default async function Wiki({
 
           {page < totalPages ? (
             <Link
-              href={wikiHref({ tab, sub: params.sub, type: params.type, sort, page: page + 1 })}
+              href={wikiHref({
+                tab,
+                sub: params.sub,
+                type: params.type,
+                sort,
+                ...activeFacets,
+                page: page + 1,
+              })}
               scroll={false}
               className="tap-fast inline-flex h-10 items-center gap-1 rounded-full border border-surface-border px-4 text-sm font-medium transition-colors hover:text-foreground"
             >

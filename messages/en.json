@@ -583,7 +583,14 @@
     "searchNothing": "Nothing found for “{query}”",
     "sortBy": "Sort",
     "sortAlphabet": "Alphabetical",
-    "sortType": "By type"
+    "sortType": "By type",
+    "filter": {
+      "subtype": "Type",
+      "difficulty": "Difficulty",
+      "temperament": "Temperament",
+      "light": "Lighting",
+      "co2": "CO₂"
+    }
   },
   "Achievements": {
     "title": "Achievements",

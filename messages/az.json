@@ -594,7 +594,14 @@
     "searchNothing": "«{query}» üzrə heç nə tapılmadı",
     "sortBy": "Sıralama",
     "sortAlphabet": "Əlifba üzrə",
-    "sortType": "Növlər üzrə"
+    "sortType": "Növlər üzrə",
+    "filter": {
+      "subtype": "Növ",
+      "difficulty": "Çətinlik",
+      "temperament": "Xasiyyət",
+      "light": "İşıqlandırma",
+      "co2": "CO₂"
+    }
   },
   "Achievements": {
     "title": "Mükafatlar",

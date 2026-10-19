@@ -598,7 +598,14 @@
     "searchNothing": "По запросу «{query}» ничего не найдено",
     "sortBy": "Сортировка",
     "sortAlphabet": "По алфавиту",
-    "sortType": "По видам"
+    "sortType": "По видам",
+    "filter": {
+      "subtype": "Вид",
+      "difficulty": "Сложность",
+      "temperament": "Характер",
+      "light": "Освещённость",
+      "co2": "CO₂"
+    }
   },
   "Achievements": {
     "title": "Награды",
