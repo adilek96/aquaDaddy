@@ -595,7 +595,10 @@
     },
     "searchPlaceholder": "Поиск по энциклопедии",
     "searchClear": "Очистить",
-    "searchNothing": "По запросу «{query}» ничего не найдено"
+    "searchNothing": "По запросу «{query}» ничего не найдено",
+    "sortBy": "Сортировка",
+    "sortAlphabet": "По алфавиту",
+    "sortType": "По видам"
   },
   "Achievements": {
     "title": "Награды",

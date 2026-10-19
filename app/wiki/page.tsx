@@ -25,16 +25,34 @@ export async function generateMetadata() {
 
 type Tab = "articles" | "inhabitants";
 
-type SearchParams = { tab?: string; sub?: string; type?: string; page?: string };
+// Сортировка: по алфавиту (по умолчанию) или по видам — у обитателей по
+// подтипу (рыбы, растения, креветки…), у статей по разделу.
+type Sort = "az" | "type";
+
+type SearchParams = {
+  tab?: string;
+  sub?: string;
+  type?: string;
+  page?: string;
+  sort?: string;
+};
 
 // Энциклопедия может разрастись до сотен карточек — показываем по 50 на страницу
 const WIKI_PAGE_SIZE = 50;
 
-function wikiHref(params: { tab: Tab; sub?: string; type?: string; page?: number }) {
+function wikiHref(params: {
+  tab: Tab;
+  sub?: string;
+  type?: string;
+  page?: number;
+  sort?: Sort;
+}) {
   const search = new URLSearchParams();
   if (params.tab !== "articles") search.set("tab", params.tab);
   if (params.sub) search.set("sub", params.sub);
   if (params.type) search.set("type", params.type);
+  // az — значение по умолчанию, в адрес его не пишем
+  if (params.sort && params.sort !== "az") search.set("sort", params.sort);
   // Смена вкладки или фильтра идёт без page — список сам вернётся на первую страницу
   if (params.page && params.page > 1) search.set("page", String(params.page));
   const qs = search.toString();
@@ -86,6 +104,16 @@ export default async function Wiki({
   const tab: Tab = params.tab === "inhabitants" ? "inhabitants" : "articles";
   const type = AQUARIUM_TYPES.find((value) => value === params.type);
   const page = Math.max(1, Number.parseInt(params.page ?? "1", 10) || 1);
+  const sort: Sort = params.sort === "type" ? "type" : "az";
+
+  const typeLabel = (value: AquariumType) =>
+    tTypes(`aquariumType.${value.toLowerCase()}` as "aquariumType.freshwater");
+
+  const subtypeLabel = (value: string) =>
+    t.has(`subtype.${value}` as "subtype.FISHS") ? t(`subtype.${value}` as "subtype.FISHS") : value;
+
+  // Сравнение названий на языке интерфейса (регистр и буквы правильно)
+  const byTitle = (a: string, b: string) => a.localeCompare(b, locale, { sensitivity: "base" });
 
   let articles: WikiArticle[] = [];
   let inhabitants: (WikiInhabitant & { image: string | null })[] = [];
@@ -100,11 +128,30 @@ export default async function Wiki({
         getSubCategories(locale),
       ]);
       subCategories = subs;
+      // Сортируем весь список до разбивки на страницы: по разделу (по видам)
+      // с запасным ключом — названием, либо просто по алфавиту
+      allArticles.sort((a, b) => {
+        if (sort === "type") {
+          const bySection = byTitle(
+            a.subCategories[0]?.title || "",
+            b.subCategories[0]?.title || ""
+          );
+          if (bySection) return bySection;
+        }
+        return byTitle(a.title || "", b.title || "");
+      });
       totalItems = allArticles.length;
       // Фото обновляем только для показанной страницы, а не для всех статей сразу
       articles = allArticles.slice((page - 1) * WIKI_PAGE_SIZE, page * WIKI_PAGE_SIZE);
     } else {
       const list = await getInhabitants(locale, type);
+      list.sort((a, b) => {
+        if (sort === "type") {
+          const bySubtype = byTitle(subtypeLabel(a.subtype), subtypeLabel(b.subtype));
+          if (bySubtype) return bySubtype;
+        }
+        return byTitle(a.title || "", b.title || "");
+      });
       totalItems = list.length;
       const pageItems = list.slice((page - 1) * WIKI_PAGE_SIZE, page * WIKI_PAGE_SIZE);
       inhabitants = await Promise.all(
@@ -122,12 +169,6 @@ export default async function Wiki({
     articles.map((article) => refreshWikiImage(article.images[0]?.url))
   );
 
-  const typeLabel = (value: AquariumType) =>
-    tTypes(`aquariumType.${value.toLowerCase()}` as "aquariumType.freshwater");
-
-  const subtypeLabel = (value: string) =>
-    t.has(`subtype.${value}` as "subtype.FISHS") ? t(`subtype.${value}` as "subtype.FISHS") : value;
-
   return (
     <div className="app-container py-6 sm:py-10">
       <header className="mb-6 animate-fade-in-up sm:mb-8">
@@ -142,27 +183,27 @@ export default async function Wiki({
       </div>
 
       <nav aria-label={tHome("wiki-title")} className="mb-4 flex flex-wrap gap-2">
-        <Chip href={wikiHref({ tab: "articles" })} active={tab === "articles"}>
+        <Chip href={wikiHref({ tab: "articles", sort })} active={tab === "articles"}>
           <BookOpen className="mr-2 h-4 w-4" aria-hidden="true" />
           {t("tabArticles")}
         </Chip>
-        <Chip href={wikiHref({ tab: "inhabitants" })} active={tab === "inhabitants"}>
+        <Chip href={wikiHref({ tab: "inhabitants", sort })} active={tab === "inhabitants"}>
           <Fish className="mr-2 h-4 w-4" aria-hidden="true" />
           {t("tabInhabitants")}
         </Chip>
       </nav>
 
       {!failed && (
-        <div className="mb-6 flex flex-wrap gap-2 border-t border-surface-border pt-4 sm:mb-8">
+        <div className="mb-4 flex flex-wrap gap-2 border-t border-surface-border pt-4">
           {tab === "articles" ? (
             <>
-              <Chip href={wikiHref({ tab })} active={!params.sub}>
+              <Chip href={wikiHref({ tab, sort })} active={!params.sub}>
                 {t("all")}
               </Chip>
               {subCategories.map((sub) => (
                 <Chip
                   key={sub.id}
-                  href={wikiHref({ tab, sub: sub.id })}
+                  href={wikiHref({ tab, sub: sub.id, sort })}
                   active={params.sub === sub.id}
                 >
                   {sub.title}
@@ -171,16 +212,40 @@ export default async function Wiki({
             </>
           ) : (
             <>
-              <Chip href={wikiHref({ tab })} active={!type}>
+              <Chip href={wikiHref({ tab, sort })} active={!type}>
                 {t("all")}
               </Chip>
               {AQUARIUM_TYPES.map((value) => (
-                <Chip key={value} href={wikiHref({ tab, type: value })} active={type === value}>
+                <Chip
+                  key={value}
+                  href={wikiHref({ tab, type: value, sort })}
+                  active={type === value}
+                >
                   {typeLabel(value)}
                 </Chip>
               ))}
             </>
           )}
+        </div>
+      )}
+
+      {!failed && (
+        <div className="mb-6 flex flex-wrap items-center gap-2 sm:mb-8">
+          <span className="mr-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            {t("sortBy")}
+          </span>
+          <Chip
+            href={wikiHref({ tab, sub: params.sub, type: params.type, sort: "az" })}
+            active={sort === "az"}
+          >
+            {t("sortAlphabet")}
+          </Chip>
+          <Chip
+            href={wikiHref({ tab, sub: params.sub, type: params.type, sort: "type" })}
+            active={sort === "type"}
+          >
+            {t("sortType")}
+          </Chip>
         </div>
       )}
 
@@ -319,7 +384,7 @@ export default async function Wiki({
         >
           {page > 1 ? (
             <Link
-              href={wikiHref({ tab, sub: params.sub, type: params.type, page: page - 1 })}
+              href={wikiHref({ tab, sub: params.sub, type: params.type, sort, page: page - 1 })}
               scroll={false}
               className="tap-fast inline-flex h-10 items-center gap-1 rounded-full border border-surface-border px-4 text-sm font-medium transition-colors hover:text-foreground"
             >
@@ -337,7 +402,7 @@ export default async function Wiki({
 
           {page < totalPages ? (
             <Link
-              href={wikiHref({ tab, sub: params.sub, type: params.type, page: page + 1 })}
+              href={wikiHref({ tab, sub: params.sub, type: params.type, sort, page: page + 1 })}
               scroll={false}
               className="tap-fast inline-flex h-10 items-center gap-1 rounded-full border border-surface-border px-4 text-sm font-medium transition-colors hover:text-foreground"
             >

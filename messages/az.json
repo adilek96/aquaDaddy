@@ -591,7 +591,10 @@
     },
     "searchPlaceholder": "Ensiklopediyada axtarış",
     "searchClear": "Təmizlə",
-    "searchNothing": "«{query}» üzrə heç nə tapılmadı"
+    "searchNothing": "«{query}» üzrə heç nə tapılmadı",
+    "sortBy": "Sıralama",
+    "sortAlphabet": "Əlifba üzrə",
+    "sortType": "Növlər üzrə"
   },
   "Achievements": {
     "title": "Mükafatlar",

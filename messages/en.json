@@ -580,7 +580,10 @@
     },
     "searchPlaceholder": "Search the encyclopedia",
     "searchClear": "Clear",
-    "searchNothing": "Nothing found for “{query}”"
+    "searchNothing": "Nothing found for “{query}”",
+    "sortBy": "Sort",
+    "sortAlphabet": "Alphabetical",
+    "sortType": "By type"
   },
   "Achievements": {
     "title": "Achievements",
