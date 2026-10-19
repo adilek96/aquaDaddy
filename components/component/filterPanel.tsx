@@ -23,7 +23,7 @@ export default function FilterPanel({
   const [open, setOpen] = useState(count > 0);
 
   return (
-    <div className="mb-6 border-t border-surface-border pt-4 sm:mb-8">
+    <div className="mb-4">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
