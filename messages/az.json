@@ -604,7 +604,8 @@
     },
     "share": "Paylaş",
     "copyLink": "Linki kopyala",
-    "linkCopied": "Link kopyalandı"
+    "linkCopied": "Link kopyalandı",
+    "filtersButton": "Filtrlər"
   },
   "Achievements": {
     "title": "Mükafatlar",

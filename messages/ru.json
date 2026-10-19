@@ -608,7 +608,8 @@
     },
     "share": "Поделиться",
     "copyLink": "Скопировать ссылку",
-    "linkCopied": "Ссылка скопирована"
+    "linkCopied": "Ссылка скопирована",
+    "filtersButton": "Фильтры"
   },
   "Achievements": {
     "title": "Награды",

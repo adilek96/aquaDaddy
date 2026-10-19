@@ -5,6 +5,7 @@ import { generateWikiMetadata } from "@/components/helpers/MetaTags";
 import { EmptyState } from "@/components/ui/empty-state";
 import WikiImage from "@/components/component/wikiImage";
 import WikiSearch from "@/components/component/wikiSearch";
+import FilterPanel from "@/components/component/filterPanel";
 import {
   AQUARIUM_TYPES,
   articleExcerpt,
@@ -192,6 +193,14 @@ export default async function Wiki({
     return wikiHref(next);
   };
 
+  // Сколько фильтров применено — для бейджа на кнопке «Фильтры»
+  const activeFilterCount =
+    tab === "articles"
+      ? params.sub
+        ? 1
+        : 0
+      : (type ? 1 : 0) + Object.keys(activeFacets).length;
+
   let articles: WikiArticle[] = [];
   let inhabitants: (WikiInhabitant & { image: string | null })[] = [];
   let subCategories: WikiSubCategory[] = [];
@@ -291,98 +300,98 @@ export default async function Wiki({
       </nav>
 
       {!failed && (
-        <div className="mb-4 flex flex-wrap gap-2 border-t border-surface-border pt-4">
-          {tab === "articles" ? (
-            <>
-              <Chip href={wikiHref({ tab, sort })} active={!params.sub}>
-                {t("all")}
-              </Chip>
-              {subCategories.map((sub) => (
-                <Chip
-                  key={sub.id}
-                  href={wikiHref({ tab, sub: sub.id, sort })}
-                  active={params.sub === sub.id}
-                >
-                  {sub.title}
-                </Chip>
-              ))}
-            </>
-          ) : (
-            <>
-              <Chip href={wikiHref({ tab, sort })} active={!type}>
-                {t("all")}
-              </Chip>
-              {AQUARIUM_TYPES.map((value) => (
-                <Chip
-                  key={value}
-                  href={wikiHref({ tab, type: value, sort })}
-                  active={type === value}
-                >
-                  {typeLabel(value)}
-                </Chip>
-              ))}
-            </>
-          )}
-        </div>
-      )}
-
-      {!failed && facetGroups.length > 0 && (
-        <div className="mb-4 flex flex-col gap-2.5">
-          {facetGroups.map((group) => {
-            const selected = activeFacets[group.key];
-            return (
-              <div key={group.key} className="flex flex-wrap items-center gap-2">
-                <span className="mr-1 w-full text-xs font-medium uppercase tracking-wide text-muted-foreground sm:w-28">
-                  {facetLabel(group.key)}
-                </span>
-                <Chip href={facetHref(group.key, undefined)} active={!selected}>
+        <FilterPanel label={t("filtersButton")} count={activeFilterCount}>
+          {/* Раздел (статьи) или тип аквариума (обитатели) */}
+          <div className="flex flex-wrap gap-2">
+            {tab === "articles" ? (
+              <>
+                <Chip href={wikiHref({ tab, sort })} active={!params.sub}>
                   {t("all")}
                 </Chip>
-                {group.values.map((value) => (
+                {subCategories.map((sub) => (
                   <Chip
-                    key={value}
-                    href={facetHref(group.key, selected === value ? undefined : value)}
-                    active={selected === value}
+                    key={sub.id}
+                    href={wikiHref({ tab, sub: sub.id, sort })}
+                    active={params.sub === sub.id}
                   >
-                    {facetValueLabel(group.key, value)}
+                    {sub.title}
                   </Chip>
                 ))}
-              </div>
-            );
-          })}
-        </div>
-      )}
+              </>
+            ) : (
+              <>
+                <Chip href={wikiHref({ tab, sort })} active={!type}>
+                  {t("all")}
+                </Chip>
+                {AQUARIUM_TYPES.map((value) => (
+                  <Chip
+                    key={value}
+                    href={wikiHref({ tab, type: value, sort })}
+                    active={type === value}
+                  >
+                    {typeLabel(value)}
+                  </Chip>
+                ))}
+              </>
+            )}
+          </div>
 
-      {!failed && (
-        <div className="mb-6 flex flex-wrap items-center gap-2 sm:mb-8">
-          <span className="mr-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            {t("sortBy")}
-          </span>
-          <Chip
-            href={wikiHref({
-              tab,
-              sub: params.sub,
-              type: params.type,
-              sort: "az",
-              ...activeFacets,
+          {/* Фасеты обитателей */}
+          {facetGroups.length > 0 &&
+            facetGroups.map((group) => {
+              const selected = activeFacets[group.key];
+              return (
+                <div key={group.key} className="flex flex-wrap items-center gap-2">
+                  <span className="mr-1 w-full text-xs font-medium uppercase tracking-wide text-muted-foreground sm:w-28">
+                    {facetLabel(group.key)}
+                  </span>
+                  <Chip href={facetHref(group.key, undefined)} active={!selected}>
+                    {t("all")}
+                  </Chip>
+                  {group.values.map((value) => (
+                    <Chip
+                      key={value}
+                      href={facetHref(group.key, selected === value ? undefined : value)}
+                      active={selected === value}
+                    >
+                      {facetValueLabel(group.key, value)}
+                    </Chip>
+                  ))}
+                </div>
+              );
             })}
-            active={sort === "az"}
-          >
-            {t("sortAlphabet")}
-          </Chip>
-          <Chip
-            href={wikiHref({
-              tab,
-              sub: params.sub,
-              type: params.type,
-              sort: "type",
-              ...activeFacets,
-            })}
-            active={sort === "type"}
-          >
-            {t("sortType")}
-          </Chip>
-        </div>
+
+          {/* Сортировка */}
+          <div className="flex flex-wrap items-center gap-2 border-t border-surface-border pt-3">
+            <span className="mr-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              {t("sortBy")}
+            </span>
+            <Chip
+              href={wikiHref({
+                tab,
+                sub: params.sub,
+                type: params.type,
+                sort: "az",
+                ...activeFacets,
+              })}
+              active={sort === "az"}
+            >
+              {t("sortAlphabet")}
+            </Chip>
+            <Chip
+              href={wikiHref({
+                tab,
+                sub: params.sub,
+                type: params.type,
+                sort: "type",
+                ...activeFacets,
+              })}
+              active={sort === "type"}
+            >
+              {t("sortType")}
+            </Chip>
+          </div>
+        </FilterPanel>
       )}
 
       {failed ? (
